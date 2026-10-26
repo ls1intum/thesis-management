@@ -198,12 +198,15 @@ const InterviewBookingPage = () => {
   }
 
   useEffect(() => {
-    if (processId && auth.isAuthenticated) {
+    // The authenticated fetches need the application session, which the authentication provider establishes
+    // during its startup; `isReady` marks the end of that startup, so wait for it (and for `isAuthenticated`)
+    // instead of racing the requests against it, which would surface as a red toast in the corner.
+    if (processId && auth.isReady && auth.isAuthenticated) {
       fetchMyBooking()
       fetchTopicInformation()
     }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- fetchMyBooking and fetchTopicInformation are recreated each render; effect should only re-run on processId/auth changes
-  }, [processId, auth.isAuthenticated])
+  }, [processId, auth.isReady, auth.isAuthenticated])
 
   const [cancelModalOpen, setCancelModalOpen] = useState(false)
 

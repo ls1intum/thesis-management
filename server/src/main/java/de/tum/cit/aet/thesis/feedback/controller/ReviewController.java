@@ -1,0 +1,217 @@
+package de.tum.cit.aet.thesis.feedback.controller;
+
+import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
+import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
+import de.tum.cit.aet.thesis.feedback.dto.AIReviewRequestDTO;
+import de.tum.cit.aet.thesis.feedback.dto.ClassifyFeedbackRequestDTO;
+import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
+import de.tum.cit.aet.thesis.feedback.dto.ImportNotesRequestDTO;
+import de.tum.cit.aet.thesis.feedback.dto.ImportedNotesDTO;
+import de.tum.cit.aet.thesis.feedback.model.ReviewType;
+import de.tum.cit.aet.thesis.feedback.progress.ProgressReporter;
+import de.tum.cit.aet.thesis.feedback.progress.ReviewProgressPublisher;
+import de.tum.cit.aet.thesis.feedback.service.AIFeedbackService;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
+import de.tum.cit.aet.thesis.thesis.dto.ThesisDto;
+import de.tum.cit.aet.thesis.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.thesis.service.ThesisService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+
+import java.util.UUID;
+
+/** REST controller for AI generated feedback. */
+@Slf4j
+@RestController
+@RequestMapping("/v2/ai-review")
+@Conditional(AIFeaturesEnabled.class)
+public class ReviewController {
+	private final AIFeedbackService aiFeedbackService;
+	private final ThesisService thesisService;
+	private final ReviewProgressPublisher progressPublisher;
+	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+
+	/**
+	 * Creates the AI review controller.
+	 *
+	 * @param aiFeedbackService the service that runs the AI review pipeline and persists findings
+	 * @param thesisService the service used to load the target thesis
+	 * @param progressPublisher publishes per-call progress events to a client that supplied a job id
+	 * @param currentUserProviderProvider the provider for the current authenticated user
+	 */
+	public ReviewController(
+			AIFeedbackService aiFeedbackService,
+			ThesisService thesisService,
+			ReviewProgressPublisher progressPublisher,
+			ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
+		this.aiFeedbackService = aiFeedbackService;
+		this.thesisService = thesisService;
+		this.progressPublisher = progressPublisher;
+		this.currentUserProviderProvider = currentUserProviderProvider;
+	}
+
+	/**
+	 * Student-facing auto endpoint: runs the AI review pipeline against the thesis's already
+	 * uploaded proposal or thesis PDF and persists each finding as a {@code ThesisFeedback}
+	 * row with {@code generationSource = AI}. Returns the refreshed thesis so the client can
+	 * re-render the feedback list.
+	 *
+	 * @param request the thesis id and review type to run
+	 * @return the refreshed thesis with the newly persisted AI feedback
+	 */
+	@PostMapping("auto")
+	@PreAuthorize("isAuthenticated()")
+	public ResponseEntity<ThesisDto> autoReview(@Valid @RequestBody AIReviewRequestDTO request) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(request.thesisId());
+
+		// Both the student on the thesis and any supervisor may trigger the auto flow.
+		boolean supervisorAccess = thesis.hasSupervisorAccess(currentUser);
+		if (!thesis.hasStudentAccess(currentUser) && !supervisorAccess) {
+			throw new AccessDeniedException(
+					"You must be a student or supervisor on the thesis to run an AI review.");
+		}
+
+		// Students may only run the review that matches the thesis's current phase: a PROPOSAL
+		// review during the proposal phase, a THESIS review during writing. Supervisors keep an
+		// explicit override so they can, e.g., re-run a proposal review after writing has begun.
+		if (!supervisorAccess) {
+			assertReviewTypeMatchesPhase(thesis, request.reviewType());
+		}
+
+		aiFeedbackService.assertHasDocument(thesis, request.reviewType());
+		Thesis updated = request.jobId() == null
+				? aiFeedbackService.autoReviewAndSave(thesis, request.reviewType())
+				: aiFeedbackService.autoReviewAndSave(thesis, request.reviewType(), progressFor(request.jobId(), currentUser));
+
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(
+				updated,
+				updated.hasSupervisorAccess(currentUser),
+				updated.hasStudentAccess(currentUser)));
+	}
+
+	/**
+	 * Instructor-facing preview endpoint: runs the AI review pipeline and returns editable
+	 * drafts without saving anything. The instructor UI appends these to its unsaved batch so
+	 * the instructor can edit, delete, or accept each item before committing.
+	 *
+	 * @param request the thesis id and review type to run
+	 * @return the assessment, summary, and editable drafts
+	 */
+	@PostMapping("preview")
+	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+	public ResponseEntity<AIPreviewResponseDTO> previewReview(@Valid @RequestBody AIReviewRequestDTO request) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(request.thesisId());
+
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException(
+					"You must be a supervisor on the thesis to preview AI feedback.");
+		}
+
+		AIPreviewResponseDTO response = request.jobId() == null
+				? aiFeedbackService.previewReview(thesis, request.reviewType())
+				: aiFeedbackService.previewReview(thesis, request.reviewType(), progressFor(request.jobId(), currentUser));
+		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * Instructor-facing classification endpoint: suggests a category and severity for one feedback
+	 * line the instructor is currently typing, so they do not have to pick both from dropdowns by
+	 * hand. Persists nothing — the suggestion lands in the instructor's unsaved draft, which they
+	 * can still change before saving the batch.
+	 *
+	 * @param request the thesis the feedback belongs to and the feedback line to classify
+	 * @return the suggested category and severity; either may be absent if the model did not commit
+	 *         to a value
+	 */
+	@PostMapping("classify-feedback")
+	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+	public ResponseEntity<FeedbackClassificationDTO> classifyFeedback(
+			@Valid @RequestBody ClassifyFeedbackRequestDTO request) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(request.thesisId());
+
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException(
+					"You must be a supervisor on the thesis to classify feedback.");
+		}
+
+		return ResponseEntity.ok(aiFeedbackService.classifyFeedbackLine(thesis, request.feedback()));
+	}
+
+	/**
+	 * Instructor-facing note import endpoint: splits the notes an instructor took offline while
+	 * reading into individual feedback entries, suggesting a category and severity for each one the
+	 * notes say enough about. Persists nothing — the entries land in the instructor's unsaved
+	 * batch, where each can still be edited, relabelled, or deleted before saving.
+	 *
+	 * @param request the thesis the notes were taken for and the raw notes to split
+	 * @return the entries carved out of the notes, in the order the notes raise them
+	 */
+	@PostMapping("import-notes")
+	@PreAuthorize("hasAnyRole('admin', 'advisor', 'supervisor')")
+	public ResponseEntity<ImportedNotesDTO> importNotes(
+			@Valid @RequestBody ImportNotesRequestDTO request) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(request.thesisId());
+
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException(
+					"You must be a supervisor on the thesis to import notes.");
+		}
+
+		return ResponseEntity.ok(aiFeedbackService.importNotes(thesis, request.notes()));
+	}
+
+	/**
+	 * Rejects a student-triggered review whose type does not match the thesis's current phase.
+	 * The proposal phase only accepts {@link ReviewType#PROPOSAL} reviews and the writing phase
+	 * only {@link ReviewType#THESIS} reviews; every other state has no student review at all.
+	 */
+	private static void assertReviewTypeMatchesPhase(Thesis thesis, ReviewType reviewType) {
+		ThesisState state = thesis.getState();
+		ReviewType allowed = switch (state) {
+			case PROPOSAL -> ReviewType.PROPOSAL;
+			case WRITING -> ReviewType.THESIS;
+			default -> null;
+		};
+
+		if (allowed == null) {
+			throw new ResourceInvalidParametersException(
+					"AI reviews can only be run while the thesis is in the proposal or writing phase.");
+		}
+
+		if (reviewType != allowed) {
+			throw new ResourceInvalidParametersException(
+					"A " + reviewType + " review cannot be run while the thesis is in the "
+							+ state + " phase.");
+		}
+	}
+
+	private CurrentUserProvider currentUserProvider() {
+		return currentUserProviderProvider.getObject();
+	}
+
+	/**
+	 * Builds a reporter that publishes progress to the current user's
+	 * {@code /queue/ai-review-progress/{jobId}} destination, keyed by their university id — the
+	 * same principal name their STOMP session authenticates as.
+	 */
+	private ProgressReporter progressFor(UUID jobId, User currentUser) {
+		return progressPublisher.reporterFor(currentUser.getUniversityId(), jobId);
+	}
+}

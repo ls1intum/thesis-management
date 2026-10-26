@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, expandAccordion, hideWebpackOverlay, navigateTo } from '../helpers'
+import { authStatePath, hideWebpackOverlay, navigateTo, navigateToThesisConfig } from '../helpers'
 
 test.describe('Thesis Configuration - User search filters by role', () => {
   test.use({ storageState: authStatePath('supervisor') })
@@ -7,16 +7,12 @@ test.describe('Thesis Configuration - User search filters by role', () => {
   test('student selector shows students and not supervisors or examiners', async ({ page }) => {
     test.setTimeout(120_000)
 
-    // Navigate to thesis 1 (WRITING state, supervisor is assigned)
-    await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000001')
+    // Navigate to the standalone Configuration page for thesis 1
+    await navigateToThesisConfig(page, '00000000-0000-4000-d000-000000000001')
     await hideWebpackOverlay(page)
-    await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
-      timeout: 15_000,
-    })
 
-    // Open the Configuration accordion (retry under heavy parallel load)
     const studentTextbox = page.getByRole('combobox', { name: 'Student(s)' })
-    await expandAccordion(page, 'Configuration', studentTextbox)
+    await expect(studentTextbox).toBeVisible({ timeout: 15_000 })
 
     const studentListbox = page.getByRole('listbox', { name: 'Student(s)' })
 
@@ -60,7 +56,9 @@ test.describe('Thesis Configuration - Lazy user fetching', () => {
   test.describe('as student', () => {
     test.use({ storageState: authStatePath('student') })
 
-    test('no /v2/users requests are made when loading the thesis page', async ({ page }) => {
+    test('student cannot reach the configuration page and no /v2/users requests are made', async ({
+      page,
+    }) => {
       test.setTimeout(60_000)
 
       // Track all requests to /v2/users
@@ -71,21 +69,17 @@ test.describe('Thesis Configuration - Lazy user fetching', () => {
         }
       })
 
-      await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000001')
+      // Navigating to the configuration URL should redirect the student back to the thesis page
+      await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000001/configuration')
       await hideWebpackOverlay(page)
+      await expect(page).toHaveURL(/\/theses\/00000000-0000-4000-d000-000000000001$/, {
+        timeout: 15_000,
+      })
       await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
         timeout: 15_000,
       })
 
-      // Open the Configuration accordion to render the UserMultiSelect components
-      await expandAccordion(
-        page,
-        'Configuration',
-        page.locator('.mantine-Accordion-panel').filter({ hasText: 'Thesis Title' }),
-      )
-
-      // Students should not trigger any /v2/users requests (selects are disabled
-      // and lazy fetching skips the initial load)
+      // Students never see the UserMultiSelect components, so no /v2/users requests should occur
       expect(userRequests).toHaveLength(0)
     })
   })
@@ -104,18 +98,9 @@ test.describe('Thesis Configuration - Lazy user fetching', () => {
         }
       })
 
-      await navigateTo(page, '/theses/00000000-0000-4000-d000-000000000001')
+      // Navigate to the standalone configuration page which renders the UserMultiSelect components
+      await navigateToThesisConfig(page, '00000000-0000-4000-d000-000000000001')
       await hideWebpackOverlay(page)
-      await expect(page.getByRole('heading', { name: /automated code review/i })).toBeVisible({
-        timeout: 15_000,
-      })
-
-      // Open the Configuration accordion to render the UserMultiSelect components
-      await expandAccordion(
-        page,
-        'Configuration',
-        page.getByRole('combobox', { name: 'Student(s)' }),
-      )
 
       // No /v2/users requests should have been made yet (lazy fetching)
       expect(userRequests).toHaveLength(0)

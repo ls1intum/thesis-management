@@ -277,6 +277,7 @@ public class UserDeletionService {
 		user.setNationality(null);
 		user.setStudyDegree(null);
 		user.setStudyProgram(null);
+		user.setLegacyStudyProgram(null);
 		user.setEnrolledAt(null);
 		user.setAvatar(null);
 		user.setProjects(null);
@@ -319,6 +320,7 @@ public class UserDeletionService {
 		user.setNationality(null);
 		user.setStudyDegree(null);
 		user.setStudyProgram(null);
+		user.setLegacyStudyProgram(null);
 		user.setEnrolledAt(null);
 		user.setAvatar(null);
 		user.setCvFilename(null);

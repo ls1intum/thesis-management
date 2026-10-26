@@ -9,7 +9,9 @@ import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility
 import de.tum.cit.aet.thesis.presentation.controller.payload.ReplacePresentationPayload;
 import de.tum.cit.aet.thesis.presentation.repository.ThesisPresentationRepository;
 import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisCommentType;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
@@ -328,6 +330,63 @@ class ThesisControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void acceptAbstractSuggestion_Success() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis");
+			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
+			thesis.setAbstractSuggestion("<p>Suggested abstract from the PDF.</p>");
+			thesisRepository.save(thesis);
+
+			String response = mockMvc.perform(MockMvcRequestBuilders
+							.post("/v2/theses/{thesisId}/abstract-suggestion/accept", thesisId)
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode json = objectMapper.readTree(response);
+			assertThat(json.get("abstractText").asString()).isEqualTo("<p>Suggested abstract from the PDF.</p>");
+
+			Thesis updated = thesisRepository.findById(thesisId).orElseThrow();
+			assertThat(updated.getAbstractField()).isEqualTo("<p>Suggested abstract from the PDF.</p>");
+			assertThat(updated.getAbstractSuggestion()).isNull();
+			assertThat(updated.getAbstractSource()).isEqualTo(ThesisAbstractSource.EXTRACTED);
+		}
+
+		@Test
+		void dismissAbstractSuggestion_Success() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis");
+			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
+			thesis.setAbstractField("<p>Existing abstract.</p>");
+			thesis.setAbstractSuggestion("<p>Suggested abstract from the PDF.</p>");
+			thesisRepository.save(thesis);
+
+			mockMvc.perform(MockMvcRequestBuilders
+							.post("/v2/theses/{thesisId}/abstract-suggestion/dismiss", thesisId)
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isOk());
+
+			Thesis updated = thesisRepository.findById(thesisId).orElseThrow();
+			assertThat(updated.getAbstractSuggestion()).isNull();
+			assertThat(updated.getAbstractField()).isEqualTo("<p>Existing abstract.</p>");
+			assertThat(updated.getAbstractSource()).isEqualTo(ThesisAbstractSource.MANUAL);
+		}
+
+		@Test
+		void acceptAbstractSuggestion_AccessDenied_AsUnrelatedStudent() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis");
+			Thesis thesis = thesisRepository.findById(thesisId).orElseThrow();
+			thesis.setAbstractSuggestion("<p>Suggested abstract from the PDF.</p>");
+			thesisRepository.save(thesis);
+
+			mockMvc.perform(MockMvcRequestBuilders
+							.post("/v2/theses/{thesisId}/abstract-suggestion/accept", thesisId)
+							.header("Authorization", createRandomAuthentication("student")))
+					.andExpect(status().isForbidden());
+
+			Thesis updated = thesisRepository.findById(thesisId).orElseThrow();
+			assertThat(updated.getAbstractSuggestion()).isEqualTo("<p>Suggested abstract from the PDF.</p>");
+		}
+
+		@Test
 		void updateThesisCredits_Success() throws Exception {
 			UUID thesisId = createTestThesis("Test Thesis");
 
@@ -375,8 +434,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
 					List.of(
-							new RequestChangesPayload.RequestedChange("Please fix section 1", false),
-							new RequestChangesPayload.RequestedChange("Update references", false)
+							new RequestChangesPayload.RequestedChange("Please fix section 1", false, null, null, null),
+							new RequestChangesPayload.RequestedChange("Update references", false, null, null, null)
 					)
 			);
 
@@ -394,13 +453,45 @@ class ThesisControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void requestChanges_persistsPerEntrySource() throws Exception {
+			UUID thesisId = createTestThesis("Mixed feedback thesis");
+
+			// A single batch mixing a manually typed row (no source -> HUMAN) with an AI draft the
+			// instructor reviewed (AI_REVIEWED_BY_HUMAN). Each row must keep its own provenance.
+			RequestChangesPayload payload = new RequestChangesPayload(
+					ThesisFeedbackType.THESIS,
+					List.of(
+							new RequestChangesPayload.RequestedChange(
+									"Manually typed feedback", false, null, null, null),
+							new RequestChangesPayload.RequestedChange(
+									"AI-drafted feedback", false, null, null,
+									ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN)
+					)
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
+							.header("Authorization", createRandomAdminAuthentication())
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(payload)))
+					.andExpect(status().isOk());
+
+			assertThat(thesisFeedbackRepository.findAll())
+					.extracting(f -> f.getFeedback(), f -> f.getGenerationSource())
+					.containsExactlyInAnyOrder(
+							org.assertj.core.groups.Tuple.tuple(
+									"Manually typed feedback", ThesisFeedbackSource.HUMAN),
+							org.assertj.core.groups.Tuple.tuple(
+									"AI-drafted feedback", ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN));
+		}
+
+		@Test
 		void completeFeedback_Success() throws Exception {
 			UUID thesisId = createTestThesis("Test Thesis");
 			String adminAuth = createRandomAdminAuthentication();
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", false))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", false, null, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
@@ -428,7 +519,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", true))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", true, null, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
@@ -456,7 +547,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", false))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", false, null, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
@@ -482,7 +573,7 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			RequestChangesPayload payload = new RequestChangesPayload(
 					ThesisFeedbackType.THESIS,
-					List.of(new RequestChangesPayload.RequestedChange("Fix this", false))
+					List.of(new RequestChangesPayload.RequestedChange("Fix this", false, null, null, null))
 			);
 
 			String feedbackResponse = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)

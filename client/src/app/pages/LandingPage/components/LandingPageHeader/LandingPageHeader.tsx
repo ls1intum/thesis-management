@@ -8,9 +8,10 @@ import { getApiResponseErrorMessage } from '@/core/requests/handler'
 
 interface LandingPageHeaderProps {
   researchGroupId?: string
+  supervisorName?: string
 }
 
-const LandingPageHeader = ({ researchGroupId }: LandingPageHeaderProps) => {
+const LandingPageHeader = ({ researchGroupId, supervisorName }: LandingPageHeaderProps) => {
   const computedColorScheme = useComputedColorScheme()
 
   const [researchGroup, setResearchGroup] = useState<IResearchGroup | undefined>()
@@ -34,6 +35,19 @@ const LandingPageHeader = ({ researchGroupId }: LandingPageHeaderProps) => {
     )
   }, [researchGroupId])
 
+  const title = supervisorName
+    ? `Topics supervised by ${supervisorName}`
+    : researchGroup
+      ? researchGroup.name
+      : 'Find a Thesis Topic'
+
+  const subtitle = supervisorName
+    ? `Thesis topics currently offered by ${supervisorName}.`
+    : researchGroup
+      ? researchGroup.description
+      : 'Whether you are looking for inspiration or have a unique idea in mind, ' +
+        'Thesis Management makes it easy. Explore topics posted by instructors or suggest your own.'
+
   return (
     <Card
       radius='md'
@@ -44,14 +58,11 @@ const LandingPageHeader = ({ researchGroupId }: LandingPageHeaderProps) => {
       <Flex justify='flex-start' align='center' gap='xl' wrap='nowrap'>
         <Flex direction='column' gap='xs' flex={1}>
           <Flex justify='space-between' align='flex-start' gap='xs'>
-            <Title order={2}>{researchGroup ? researchGroup.name : 'Find a Thesis Topic'}</Title>
+            <Title order={2}>{title}</Title>
             <LogoCircle size={40} logoSize={30} hiddenFrom='sm' />
           </Flex>
           <Title order={5} c='dimmed'>
-            {researchGroup
-              ? researchGroup.description
-              : 'Whether you are looking for inspiration or have a unique idea in mind, ' +
-                'Thesis Management makes it easy. Explore topics posted by instructors or suggest your own.'}
+            {subtitle}
           </Title>
         </Flex>
 

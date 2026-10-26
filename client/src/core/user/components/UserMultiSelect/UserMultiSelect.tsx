@@ -2,7 +2,7 @@ import { MultiSelect } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { doRequest } from '@/core/requests/request'
 import type { PaginationResponse } from '@/core/requests/responses/pagination'
-import type { ILightUser } from '@/core/user/requests/responses/user'
+import type { ILightUser, IMinimalUser } from '@/core/user/requests/responses/user'
 import { useDebouncedValue } from '@mantine/hooks'
 import type { GetInputPropsReturnType } from '@mantine/form'
 import { formatUser } from '@/core/utils/format'
@@ -23,7 +23,7 @@ interface IUserMultiSelectProps extends GetInputPropsReturnType {
   /** Whether the field is required. */
   required?: boolean
   /** Pre-loaded users to display as selected options without requiring an API call. */
-  initialUsers?: ILightUser[]
+  initialUsers?: IMinimalUser[]
 }
 
 /**
@@ -51,7 +51,7 @@ export const UserMultiSelect = (props: IUserMultiSelectProps) => {
   // Incremented on user interaction (click/dropdown open) to trigger a fetch.
   // Starts at 0 meaning no fetch has been requested yet.
   const [fetchVersion, setFetchVersion] = useState(0)
-  const [data, setData] = useState<Array<{ value: string; label: string; user: ILightUser }>>([])
+  const [data, setData] = useState<Array<{ value: string; label: string; user: IMinimalUser }>>([])
   const [searchValue, setSearchValue] = useState('')
 
   const [debouncedSearchValue] = useDebouncedValue(searchValue, 500)

@@ -7,11 +7,12 @@ package de.tum.cit.aet.thesis.mock;
  * the Gradle {@code test} task resolves from the {@code POSTGRES_IMAGE_TAG} entry in the repo-root
  * {@code .env} file (shared with the docker-compose files) or the same-named environment variable.
  * The fallback keeps IDE-launched tests (which do not go through Gradle) working. When bumping the
- * PostgreSQL version, update {@code .env} and the other references listed in {@code docs/DATABASE.md}.
+ * PostgreSQL version, update {@code .env} and the other references listed in
+ * {@code documentation/docs/developer/database.mdx}.
  */
 public final class TestContainerImages {
 
-	public static final String POSTGRES = "postgres:" + System.getProperty("postgres.image.tag", "18.4-alpine");
+	public static final String POSTGRES = "postgres:" + System.getProperty("postgres.image.tag", "18.6-alpine");
 
 	private TestContainerImages() {
 	}

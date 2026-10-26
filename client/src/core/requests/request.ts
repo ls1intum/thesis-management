@@ -91,7 +91,7 @@ export function doRequest<T>(
       return {
         ok: true,
         status: result.status,
-        data: await readSuccessBody(result, options.responseType),
+        data: (await readSuccessBody(result, options.responseType)) as T,
       }
     } else {
       let errorMessage: string | undefined = undefined

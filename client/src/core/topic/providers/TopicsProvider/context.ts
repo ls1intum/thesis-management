@@ -9,6 +9,7 @@ export interface ITopicsFilters {
   researchSpecific?: boolean
   search?: string
   researchGroupIds?: string[]
+  supervisorName?: string
 }
 
 export interface ITopicsContext {

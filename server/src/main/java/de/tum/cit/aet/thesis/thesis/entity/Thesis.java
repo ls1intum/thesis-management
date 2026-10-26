@@ -2,9 +2,13 @@ package de.tum.cit.aet.thesis.thesis.entity;
 
 import de.tum.cit.aet.thesis.core.application.entity.Application;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.core.organization.entity.School;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
 import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
@@ -77,6 +81,14 @@ public class Thesis {
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
+	@Column(name = "abstract_source", nullable = false)
+	private ThesisAbstractSource abstractSource = ThesisAbstractSource.MANUAL;
+
+	@Column(name = "abstract_suggestion")
+	private String abstractSuggestion;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
 	@Column(name = "state", nullable = false)
 	private ThesisState state;
 
@@ -121,6 +133,10 @@ public class Thesis {
 	@JoinColumn(name = "research_group_id", nullable = false)
 	private ResearchGroup researchGroup;
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "study_program_id")
+	private StudyProgram studyProgram;
+
 	@OneToMany(mappedBy = "thesis", fetch = FetchType.EAGER)
 	@OrderBy("position ASC")
 	private List<ThesisRole> roles = new ArrayList<>();
@@ -145,6 +161,9 @@ public class Thesis {
 	@OneToMany(mappedBy = "thesis", fetch = FetchType.LAZY)
 	@OrderBy("uploadedAt DESC")
 	private List<ThesisFile> files = new ArrayList<>();
+
+	@OneToMany(mappedBy = "thesis", fetch = FetchType.LAZY)
+	private List<AIReviewSummary> aiReviewSummaries = new ArrayList<>();
 
 	@OneToMany(mappedBy = "thesis", fetch = FetchType.EAGER)
 	private Set<ThesisStateChange> states = new HashSet<>();
@@ -325,5 +344,28 @@ public class Thesis {
 		}
 
 		return Optional.empty();
+	}
+
+	/**
+	 * Returns the portal students submit this thesis to, if the organisation defines one: the portal of the
+	 * school of the thesis' study program, otherwise the portal of the research group's school. {@code null}
+	 * means that the instance default applies.
+	 *
+	 * @return the thesis portal URL or {@code null}
+	 */
+	public String getSubmissionPortalUrl() {
+		School programSchool = studyProgram == null ? null : studyProgram.getSchool();
+
+		if (programSchool != null && programSchool.getThesisPortalUrl() != null && !programSchool.getThesisPortalUrl().isBlank()) {
+			return programSchool.getThesisPortalUrl();
+		}
+
+		School groupSchool = researchGroup == null ? null : researchGroup.getSchool();
+
+		if (groupSchool != null && groupSchool.getThesisPortalUrl() != null && !groupSchool.getThesisPortalUrl().isBlank()) {
+			return groupSchool.getThesisPortalUrl();
+		}
+
+		return null;
 	}
 }

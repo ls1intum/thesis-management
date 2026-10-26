@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.core.user.controller.payload;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.UUID;
 
 public record UpdateUserInformationPayload(
 		String firstName,
@@ -9,7 +10,7 @@ public record UpdateUserInformationPayload(
 		String gender,
 		String nationality,
 		String studyDegree,
-		String studyProgram,
+		UUID studyProgramId,
 		Instant enrolledAt,
 		String specialSkills,
 		String interests,

@@ -14,6 +14,8 @@ export interface ResearchGroupFormValues {
   description: string
   websiteUrl: string
   headUsername: string
+  schoolId: string | null
+  departmentId: string | null
 }
 
 const CreateResearchGroupModal = ({

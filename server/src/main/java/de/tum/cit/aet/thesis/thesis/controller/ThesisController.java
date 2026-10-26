@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.thesis.controller;
 import de.tum.cit.aet.thesis.core.application.controller.payload.UpdateNotePayload;
 import de.tum.cit.aet.thesis.core.constants.StringLimits;
 import de.tum.cit.aet.thesis.core.dto.PaginationDto;
+import de.tum.cit.aet.thesis.core.organization.service.OrganizationService;
 import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.utility.RequestValidator;
@@ -22,6 +23,7 @@ import de.tum.cit.aet.thesis.thesis.controller.payload.RequestChangesPayload;
 import de.tum.cit.aet.thesis.thesis.controller.payload.UpdateThesisCreditsPayload;
 import de.tum.cit.aet.thesis.thesis.controller.payload.UpdateThesisInfoPayload;
 import de.tum.cit.aet.thesis.thesis.controller.payload.UpdateThesisPayload;
+import de.tum.cit.aet.thesis.thesis.controller.payload.UpdateThesisStudyProgramPayload;
 import de.tum.cit.aet.thesis.thesis.dto.ThesisAnonymizationResultDto;
 import de.tum.cit.aet.thesis.thesis.dto.ThesisAnonymizationWarningsDto;
 import de.tum.cit.aet.thesis.thesis.dto.ThesisCommentDto;
@@ -70,6 +72,7 @@ public class ThesisController {
 	private final ThesisPresentationService thesisPresentationService;
 	private final ThesisAnonymizationService thesisAnonymizationService;
 	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+	private final OrganizationService organizationService;
 
 	/**
 	 * Injects the thesis service, comment service, presentation service, anonymization service, and current user provider.
@@ -79,15 +82,18 @@ public class ThesisController {
 	 * @param thesisPresentationService the service for thesis presentation operations
 	 * @param thesisAnonymizationService the service for thesis anonymization operations
 	 * @param currentUserProviderProvider the provider for the current authenticated user
+	 * @param organizationService the organization service used to resolve the study program
 	 */
 	@Autowired
 	public ThesisController(ThesisService thesisService, ThesisCommentService thesisCommentService, ThesisPresentationService thesisPresentationService,
-		ThesisAnonymizationService thesisAnonymizationService, ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
+		ThesisAnonymizationService thesisAnonymizationService, ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
+		OrganizationService organizationService) {
 		this.thesisService = thesisService;
 		this.thesisCommentService = thesisCommentService;
 		this.thesisPresentationService = thesisPresentationService;
 		this.thesisAnonymizationService = thesisAnonymizationService;
 		this.currentUserProviderProvider = currentUserProviderProvider;
+		this.organizationService = organizationService;
 	}
 
 	private CurrentUserProvider currentUserProvider() {
@@ -133,7 +139,8 @@ public class ThesisController {
 				limit,
 				sortBy,
 				sortOrder,
-				researchGroupIds
+				researchGroupIds,
+				null
 		);
 
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(
@@ -181,8 +188,36 @@ public class ThesisController {
 				payload.additionalStudentUsernames(),
 				null,
 				true,
-				RequestValidator.validateNotNull(payload.researchGroupId())
+				RequestValidator.validateNotNull(payload.researchGroupId()),
+				organizationService.resolveStudyProgramForAssignment(payload.studyProgramId(), null)
 		);
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+	}
+
+	/**
+	 * Changes the study program a thesis is assigned to. The submission portal link follows the school of the study program.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @param payload the payload with the new study program, {@code null} removes it
+	 * @return the updated thesis
+	 */
+	@PutMapping("/{thesisId}/study-program")
+	public ResponseEntity<ThesisDto> updateThesisStudyProgram(
+			@PathVariable UUID thesisId,
+			@RequestBody UpdateThesisStudyProgramPayload payload
+	) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(thesisId);
+
+		if (!thesis.hasSupervisorAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a supervisor of this thesis to change its study program");
+		}
+
+		thesis = thesisService.updateStudyProgram(
+				thesis,
+				organizationService.resolveStudyProgramForAssignment(payload.studyProgramId(), thesis.getStudyProgram())
+		);
+
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}
 
@@ -276,6 +311,50 @@ public class ThesisController {
 				RequestValidator.validateStringMaxLengthAllowNull(payload.primaryTitle(), StringLimits.THESIS_TITLE.getLimit()),
 				payload.secondaryTitles()
 		);
+
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+	}
+
+	/**
+	 * Accepts the pending auto-extracted abstract suggestion, applying it to the thesis abstract.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @return the updated thesis
+	 */
+	@PostMapping("/{thesisId}/abstract-suggestion/accept")
+	public ResponseEntity<ThesisDto> acceptAbstractSuggestion(
+			@PathVariable UUID thesisId
+	) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(thesisId);
+
+		if (!thesis.hasStudentAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a student of this thesis to manage the abstract suggestion");
+		}
+
+		thesis = thesisService.acceptAbstractSuggestion(thesis);
+
+		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
+	}
+
+	/**
+	 * Dismisses the pending auto-extracted abstract suggestion without changing the abstract.
+	 *
+	 * @param thesisId the unique identifier of the thesis
+	 * @return the updated thesis
+	 */
+	@PostMapping("/{thesisId}/abstract-suggestion/dismiss")
+	public ResponseEntity<ThesisDto> dismissAbstractSuggestion(
+			@PathVariable UUID thesisId
+	) {
+		User currentUser = currentUserProvider().getUser();
+		Thesis thesis = thesisService.findById(thesisId);
+
+		if (!thesis.hasStudentAccess(currentUser)) {
+			throw new AccessDeniedException("You need to be a student of this thesis to manage the abstract suggestion");
+		}
+
+		thesis = thesisService.dismissAbstractSuggestion(thesis);
 
 		return ResponseEntity.ok(ThesisDto.fromThesisEntity(thesis, thesis.hasSupervisorAccess(currentUser), thesis.hasStudentAccess(currentUser)));
 	}

@@ -2,7 +2,7 @@ import type {
   ILightResearchGroup,
   IMinimalResearchGroup,
 } from '@/core/group/requests/responses/researchGroup'
-import type { ILightUser, IMinimalUser } from '@/core/user/requests/responses/user'
+import type { IMinimalUser } from '@/core/user/requests/responses/user'
 
 export enum TopicState {
   OPEN = 'OPEN',
@@ -47,8 +47,8 @@ export interface ITopic extends ITopicOverview {
   updatedAt: string
   intendedStart: string | null
   applicationDeadline: string | null
-  createdBy: ILightUser
+  createdBy: IMinimalUser
   researchGroup: ILightResearchGroup
-  supervisors: ILightUser[]
-  examiners: ILightUser[]
+  supervisors: IMinimalUser[]
+  examiners: IMinimalUser[]
 }

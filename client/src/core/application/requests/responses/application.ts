@@ -1,4 +1,4 @@
-import type { ILightUser, IUser } from '@/core/user/requests/responses/user'
+import type { IMinimalUser, IUser } from '@/core/user/requests/responses/user'
 import type { ITopic } from '@/core/topic/requests/responses/topic'
 import type { ILightResearchGroup } from '@/core/group/requests/responses/researchGroup'
 
@@ -21,7 +21,7 @@ export interface IApplication {
   comment: string
   createdAt: string
   reviewers: Array<{
-    user: ILightUser
+    user: IMinimalUser
     reason: string
     reviewedAt: string
   }> | null

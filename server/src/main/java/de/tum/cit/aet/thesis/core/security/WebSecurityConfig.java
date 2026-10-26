@@ -108,6 +108,11 @@ public class WebSecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/v2/avatars/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/info").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+						// A native WebSocket handshake cannot carry an Authorization header, so this
+						// endpoint is intentionally unauthenticated at the HTTP layer; each STOMP
+						// session is authenticated from its CONNECT frame instead, by
+						// StompAuthChannelInterceptor.
+						.requestMatchers("/ws/**").permitAll()
 						.anyRequest().authenticated()
 				);
 

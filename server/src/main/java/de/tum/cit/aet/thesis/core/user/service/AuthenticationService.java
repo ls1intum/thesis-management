@@ -4,6 +4,7 @@ import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.core.notification.entity.NotificationSetting;
 import de.tum.cit.aet.thesis.core.notification.entity.key.NotificationSettingId;
 import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import de.tum.cit.aet.thesis.core.upload.constants.UploadFileType;
 import de.tum.cit.aet.thesis.core.upload.service.UploadService;
 import de.tum.cit.aet.thesis.core.user.entity.User;
@@ -141,13 +142,13 @@ public class AuthenticationService {
 	 * @param gender the user's gender
 	 * @param nationality the user's nationality
 	 * @param studyDegree the user's study degree
-	 * @param studyProgram the user's study program
+	 * @param studyProgram the user's study program, may be {@code null}
 	 * @param enrolledAt the enrollment date
 	 * @param specialSkills the user's special skills
 	 * @param interests the user's interests
 	 * @param projects the user's projects
 	 * @param customData additional custom data fields
-	 * @param avatar the avatar image file
+	 * @param avatar the new avatar image file, {@code null} or empty keeps the current one
 	 * @param examinationReport the examination report file
 	 * @param cv the CV file
 	 * @param degreeReport the degree report file
@@ -160,7 +161,7 @@ public class AuthenticationService {
 			String gender,
 			String nationality,
 			String studyDegree,
-			String studyProgram,
+			StudyProgram studyProgram,
 			Instant enrolledAt,
 			String specialSkills,
 			String interests,
@@ -183,14 +184,46 @@ public class AuthenticationService {
 		user.setProjects(projects);
 		user.setCustomData(customData);
 
-		if (avatar != null) {
-			user.setAvatar(avatar.isEmpty() ? null : uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE));
+		// An empty upload (for example a browser that could not render a large picture) must never delete the current
+		// picture; there is no way to remove it through this endpoint.
+		if (avatar != null && !avatar.isEmpty()) {
+			user.setAvatar(uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE));
 		}
 
 		user.setExaminationFilename(examinationReport == null ? null : uploadService.store(examinationReport, 3 * 1024 * 1024, UploadFileType.PDF));
 		user.setCvFilename(cv == null ? null : uploadService.store(cv, 3 * 1024 * 1024, UploadFileType.PDF));
 		user.setDegreeFilename(degreeReport == null ? null : uploadService.store(degreeReport, 3 * 1024 * 1024, UploadFileType.PDF));
 
+		return userRepository.save(user);
+	}
+
+	/**
+	 * Replaces the user's profile picture. The previous file is kept because uploads are stored by content hash
+	 * and may also be referenced by other entities (e.g. thesis files or comment attachments).
+	 *
+	 * @param user the user to update
+	 * @param avatar the new avatar image file
+	 * @return the updated user
+	 */
+	public User updateAvatar(User user, MultipartFile avatar) {
+		user.setAvatar(uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE));
+
+		return userRepository.save(user);
+	}
+
+	/**
+	 * Records that the user dismissed the "add a profile picture" prompt so they are not asked again.
+	 * Does nothing if the prompt was already dismissed.
+	 *
+	 * @param user the user who dismissed the prompt
+	 * @return the updated user
+	 */
+	public User dismissAvatarPrompt(User user) {
+		if (user.isAvatarPromptDismissed()) {
+			return user;
+		}
+
+		user.setAvatarPromptDismissedAt(Instant.now());
 		return userRepository.save(user);
 	}
 

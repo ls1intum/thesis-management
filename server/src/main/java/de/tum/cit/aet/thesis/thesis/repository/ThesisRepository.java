@@ -18,6 +18,8 @@ import java.util.UUID;
 
 @Repository
 public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
+	boolean existsByStudyProgramId(UUID studyProgramId);
+
 	@Query("""
 			SELECT DISTINCT t FROM Thesis t
 			LEFT JOIN ThesisRole r ON t.id = r.thesis.id
@@ -40,6 +42,12 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
 			)
 			AND (:states IS NULL OR t.state IN :states)
 			AND (:types IS NULL OR t.type IN :types)
+			AND (:supervisorName IS NULL OR EXISTS (
+				SELECT 1 FROM ThesisRole sr
+				WHERE sr.thesis.id = t.id
+					AND sr.id.role = de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName.SUPERVISOR
+					AND LOWER(TRIM(CONCAT(COALESCE(sr.user.firstName, ''), ' ', COALESCE(sr.user.lastName, '')))) = :supervisorName
+			))
 			AND (
 				:searchQuery IS NULL OR (
 					LOWER(t.title) LIKE %:searchQuery%
@@ -57,6 +65,7 @@ public interface ThesisRepository extends JpaRepository<Thesis, UUID> {
 			@Param("searchQuery") String searchQuery,
 			@Param("states") Set<ThesisState> states,
 			@Param("types") Set<String> types,
+			@Param("supervisorName") String supervisorName,
 			Pageable page
 	);
 

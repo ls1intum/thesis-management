@@ -1,8 +1,11 @@
 package de.tum.cit.aet.thesis.core.user.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import de.tum.cit.aet.thesis.core.upload.service.UploadService;
+import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
@@ -34,6 +37,9 @@ class AvatarControllerTest extends BaseIntegrationTest {
 	private UserRepository userRepository;
 
 	@Autowired
+	private UploadService uploadService;
+
+	@Autowired
 	private ThesisRepository thesisRepository;
 
 	@Autowired
@@ -41,6 +47,23 @@ class AvatarControllerTest extends BaseIntegrationTest {
 
 	@Nested
 	class GetAvatarAuthenticated {
+		@Test
+		void getAvatar_ServedPicture_IsOnlyCachedPrivately() throws Exception {
+			// The answer depends on who asks (404 for anonymous requests about non-public people), so a shared
+			// cache must not keep a picture and hand it to someone who would have received a 404.
+			TestUser student = createRandomTestUser(List.of("student"));
+			String filename = uploadService.storeBytes(new byte[] {1, 2, 3, 4}, "png", 1024);
+			User user = userRepository.findById(student.userId()).orElseThrow();
+			user.setAvatar(filename);
+			userRepository.save(user);
+
+			mockMvc.perform(MockMvcRequestBuilders.get("/v2/avatars/{userId}", student.userId())
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isOk())
+					.andExpect(header().string("Cache-Control", org.hamcrest.Matchers.containsString("private")))
+					.andExpect(header().string("Cache-Control", org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("public"))));
+		}
+
 		@Test
 		void getAvatar_UserWithNoAvatar_Returns404() throws Exception {
 			TestUser user = createRandomTestUser(List.of("student"));

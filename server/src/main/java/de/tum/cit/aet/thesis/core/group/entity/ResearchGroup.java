@@ -1,5 +1,7 @@
 package de.tum.cit.aet.thesis.core.group.entity;
 
+import de.tum.cit.aet.thesis.core.organization.entity.Department;
+import de.tum.cit.aet.thesis.core.organization.entity.School;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,6 +59,14 @@ public class ResearchGroup {
 
 	@Column(name = "campus")
 	private String campus;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "school_id")
+	private School school;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "department_id")
+	private Department department;
 
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)

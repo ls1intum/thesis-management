@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import de.tum.cit.aet.thesis.core.notification.entity.NotificationSetting;
 import de.tum.cit.aet.thesis.core.notification.entity.key.NotificationSettingId;
 import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import de.tum.cit.aet.thesis.core.upload.constants.UploadFileType;
 import de.tum.cit.aet.thesis.core.upload.service.UploadService;
 import de.tum.cit.aet.thesis.core.user.entity.User;
@@ -71,6 +72,10 @@ class AuthenticationServiceTest {
 		when(uploadService.store(any(), any(), any(UploadFileType.class))).thenReturn("stored-file");
 		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+		StudyProgram studyProgram = new StudyProgram();
+		studyProgram.setKey("COMPUTER_SCIENCE");
+		studyProgram.setName("Computer Science");
+
 		User result = authenticationService.updateUserInformation(
 				testUser,
 				"Updated",
@@ -78,7 +83,7 @@ class AuthenticationServiceTest {
 				"Male",
 				"German",
 				"Bachelor",
-				"Computer Science",
+				studyProgram,
 				Instant.now(),
 				"Java",
 				"AI",
@@ -91,6 +96,7 @@ class AuthenticationServiceTest {
 		);
 
 		assertNotNull(result);
+		assertEquals("Computer Science", result.getStudyProgramName());
 		verify(uploadService).store(any(), any(), eq(UploadFileType.IMAGE));
 		verify(userRepository).save(any(User.class));
 	}
@@ -234,5 +240,69 @@ class AuthenticationServiceTest {
 		assertEquals("99887766", result.getMatriculationNumber());
 		assertEquals("New", result.getFirstName());
 		assertEquals("Student", result.getLastName());
+	}
+	@Test
+	void updateAvatar_ReplacesAvatarAndKeepsOldFileBecauseStorageIsShared() {
+		MockMultipartFile avatar = new MockMultipartFile("avatar", "avatar.png", "image/png", "test".getBytes());
+		testUser.setAvatar("old.png");
+
+		when(uploadService.store(any(), any(), eq(UploadFileType.IMAGE))).thenReturn("new.png");
+		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		User result = authenticationService.updateAvatar(testUser, avatar);
+
+		assertEquals("new.png", result.getAvatar());
+		verify(uploadService, never()).deleteFile(any());
+	}
+
+	@Test
+	void dismissAvatarPrompt_FirstTime_StoresTimestamp() {
+		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		assertFalse(testUser.isAvatarPromptDismissed());
+
+		User result = authenticationService.dismissAvatarPrompt(testUser);
+
+		assertTrue(result.isAvatarPromptDismissed());
+		assertNotNull(result.getAvatarPromptDismissedAt());
+	}
+
+	@Test
+	void dismissAvatarPrompt_AlreadyDismissed_KeepsOriginalTimestampAndDoesNotSave() {
+		Instant dismissedAt = Instant.parse("2026-01-01T00:00:00Z");
+		testUser.setAvatarPromptDismissedAt(dismissedAt);
+
+		User result = authenticationService.dismissAvatarPrompt(testUser);
+
+		assertEquals(dismissedAt, result.getAvatarPromptDismissedAt());
+		verify(userRepository, never()).save(any(User.class));
+	}
+
+	@Test
+	void updateAuthenticatedUser_DoesNotTouchAvatarPromptDecision() {
+		String universityId = "ab12cde";
+		Instant dismissedAt = Instant.parse("2026-01-01T00:00:00Z");
+		testUser.setUniversityId(universityId);
+		testUser.setAvatarPromptDismissedAt(dismissedAt);
+
+		setupJwtMock(universityId, Map.of("email", "test@example.com", "given_name", "Test", "family_name", "User"));
+		when(userRepository.findByUniversityId(universityId)).thenReturn(Optional.of(testUser));
+		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		User result = authenticationService.updateAuthenticatedUser(jwtToken);
+
+		assertEquals(dismissedAt, result.getAvatarPromptDismissedAt());
+	}
+
+	@Test
+	void updateUserInformation_WithoutAvatar_KeepsAvatarPromptDecision() {
+		Instant dismissedAt = Instant.parse("2026-01-01T00:00:00Z");
+		testUser.setAvatarPromptDismissedAt(dismissedAt);
+		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		User result = authenticationService.updateUserInformation(
+				testUser, "A", "B", null, null, null, null, null, null, null, null, new HashMap<>(),
+				null, null, null, null);
+
+		assertEquals(dismissedAt, result.getAvatarPromptDismissedAt());
 	}
 }

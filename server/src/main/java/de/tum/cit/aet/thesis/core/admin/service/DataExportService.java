@@ -344,7 +344,7 @@ public class DataExportService {
 		data.put("gender", user.getGender());
 		data.put("nationality", user.getNationality());
 		data.put("studyDegree", user.getStudyDegree());
-		data.put("studyProgram", user.getStudyProgram());
+		data.put("studyProgram", user.getStudyProgramName());
 		data.put("interests", user.getInterests());
 		data.put("specialSkills", user.getSpecialSkills());
 		data.put("projects", user.getProjects());

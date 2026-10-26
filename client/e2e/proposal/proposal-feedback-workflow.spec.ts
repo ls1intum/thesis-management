@@ -94,10 +94,14 @@ test.describe('Proposal Feedback - Supervisor requests changes', () => {
     // Modal should open with "Request Changes" title
     await expect(page.getByRole('dialog')).toBeVisible({ timeout: 10_000 })
 
-    // Fill in the new change requests textarea (one per line)
-    await page
-      .getByLabel('New Change Requests (one request per line)')
-      .fill('Please add a literature review section\nFix the formatting of the references')
+    // The redesigned dialog has one empty entry ready to fill. Type the first change into it,
+    // then use the "Add Entry" button to add a second one before saving.
+    const entryTextareas = page
+      .getByRole('dialog')
+      .getByPlaceholder('Describe the change you want the student to make…')
+    await entryTextareas.first().fill('Please add a literature review section')
+    await page.getByRole('dialog').getByRole('button', { name: 'Add Entry' }).click()
+    await entryTextareas.nth(1).fill('Fix the formatting of the references')
 
     // Snapshot mailbox BEFORE the action
     const beforeIds = await snapshotMailbox('student2@test.local')

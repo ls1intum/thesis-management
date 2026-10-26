@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, createTestPdfBuffer, expandAccordion, navigateTo } from '../helpers'
+import {
+  authStatePath,
+  createTestPdfBuffer,
+  expandAccordion,
+  navigateTo,
+  navigateToThesisConfig,
+} from '../helpers'
 import {
   snapshotMailbox,
   waitForNewMessages,
@@ -215,8 +221,8 @@ test.describe('Thesis Lifecycle - Close Thesis', () => {
       return
     }
 
-    // Expand the Configuration accordion
-    await expandAccordion(page, 'Configuration', page.getByRole('button', { name: 'Close Thesis' }))
+    // Navigate to the standalone Configuration page
+    await navigateToThesisConfig(page, '00000000-0000-4000-d000-000000000015')
 
     // Verify "Close Thesis" button is visible (red outline)
     const closeButton = page.getByRole('button', { name: 'Close Thesis' })

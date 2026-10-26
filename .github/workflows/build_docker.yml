@@ -40,10 +40,17 @@ jobs:
         if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && steps.changed-files.outputs.any_changed == 'true'
         run: |
           VERSION="${{ steps.version.outputs.version }}"
+          HEAD_COMMIT=$(git rev-parse HEAD)
           git fetch --tags --quiet
-          if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null || \
-             git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
-            echo "::error::Version ${VERSION} has already been released (git tag exists). Please bump the version using supporting_scripts/update_version.sh before merging."
+          TAG_COMMIT=""
+          for ref in "refs/tags/${VERSION}" "refs/tags/v${VERSION}"; do
+            if git rev-parse -q --verify "${ref}" >/dev/null; then
+              TAG_COMMIT=$(git rev-parse "${ref}^{commit}")
+              break
+            fi
+          done
+          if [[ -n "${TAG_COMMIT}" && "${TAG_COMMIT}" != "${HEAD_COMMIT}" ]]; then
+            echo "::error::Version ${VERSION} has already been released at ${TAG_COMMIT}, but this build is for ${HEAD_COMMIT}. Bump the version using supporting_scripts/update_version.sh before merging."
             exit 1
           fi
 
@@ -58,6 +65,47 @@ jobs:
       - name: Install Docker Buildx
         if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
         uses: docker/setup-buildx-action@v4
+
+      # Generate SBOMs on the runner before the Docker build so they land
+      # in the build context and get bundled into the server jar via
+      # processResources. They're consumed at runtime by the admin
+      # dependency overview and the weekly vulnerability scan. Not tracked
+      # in the repo (server/sbom, client/sbom are gitignored).
+      - name: Set up JDK 25
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        uses: actions/setup-java@v6
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+          cache: 'gradle'
+
+      - name: Generate server SBOM
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        working-directory: ./server
+        run: |
+          chmod +x ./gradlew
+          ./gradlew cyclonedxBom --no-daemon
+
+      - name: Enable Corepack
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        run: corepack enable
+
+      - name: Set up Node.js
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24.21.0'
+
+      # `pnpm sbom --lockfile-only` reads the lockfile directly, so we
+      # deliberately do NOT run `pnpm install` — skipping it saves time
+      # and avoids running dependency lifecycle scripts. Corepack provides
+      # pnpm. Invoke the generator via `node` (not `pnpm run sbom`) so
+      # pnpm doesn't try to verify/install deps or run lifecycle scripts
+      # before executing our script.
+      - name: Generate client SBOM
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
+        working-directory: ./client
+        run: node scripts/generate-sbom.js
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -114,10 +162,17 @@ jobs:
         if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && steps.changed-files.outputs.any_changed == 'true'
         run: |
           VERSION="${{ steps.version.outputs.version }}"
+          HEAD_COMMIT=$(git rev-parse HEAD)
           git fetch --tags --quiet
-          if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null || \
-             git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
-            echo "::error::Version ${VERSION} has already been released (git tag exists). Please bump the version using supporting_scripts/update_version.sh before merging."
+          TAG_COMMIT=""
+          for ref in "refs/tags/${VERSION}" "refs/tags/v${VERSION}"; do
+            if git rev-parse -q --verify "${ref}" >/dev/null; then
+              TAG_COMMIT=$(git rev-parse "${ref}^{commit}")
+              break
+            fi
+          done
+          if [[ -n "${TAG_COMMIT}" && "${TAG_COMMIT}" != "${HEAD_COMMIT}" ]]; then
+            echo "::error::Version ${VERSION} has already been released at ${TAG_COMMIT}, but this build is for ${HEAD_COMMIT}. Bump the version using supporting_scripts/update_version.sh before merging."
             exit 1
           fi
 

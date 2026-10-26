@@ -4,7 +4,7 @@ export interface IUpdateUserInformationPayload {
   gender: string
   nationality: string
   studyDegree: string
-  studyProgram: string
+  studyProgramId: string
   enrolledAt: Date | null
   specialSkills: string
   interests: string

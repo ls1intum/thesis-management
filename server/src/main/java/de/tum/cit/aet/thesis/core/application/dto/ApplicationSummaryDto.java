@@ -23,7 +23,7 @@ public record ApplicationSummaryDto(
 		return new ApplicationSummaryDto(
 			application.getId(),
 			application.getUser().getStudyDegree(),
-			application.getUser().getStudyProgram(),
+			application.getUser().getStudyProgramName(),
 			application.getTopic() != null ? application.getTopic().getTitle()
 				: application.getThesisTitle(),
 			application.getMotivation(),

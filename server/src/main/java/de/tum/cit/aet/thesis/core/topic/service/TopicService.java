@@ -87,6 +87,7 @@ public class TopicService {
 	 * @param sortBy the field to sort by
 	 * @param sortOrder the sort direction (asc or desc)
 	 * @param researchGroupIds the research group IDs to filter by
+	 * @param supervisorName the full name ("first last") of a supervisor to filter by, case-insensitive
 	 * @return a page of topics matching the filters
 	 */
 	public Page<Topic> getAll(
@@ -98,7 +99,8 @@ public class TopicService {
 			int limit,
 			String sortBy,
 			String sortOrder,
-			UUID[] researchGroupIds
+			UUID[] researchGroupIds,
+			String supervisorName
 	) {
 		Sort.Order order = new Sort.Order(
 				sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
@@ -120,6 +122,9 @@ public class TopicService {
 		}
 		String[] statesFilter = (states != null && states.length > 0) ? states : new String[] { TopicState.OPEN.name() };
 
+		String supervisorNameFilter = (supervisorName == null || supervisorName.isBlank())
+				? null : supervisorName.trim();
+
 		return topicRepository.searchTopics(
 				researchGroup == null
 						? (researchGroupIds == null ? null
@@ -128,6 +133,7 @@ public class TopicService {
 				typesFilter,
 				statesFilter,
 				searchQueryFilter,
+				supervisorNameFilter,
 				PageRequest.of(page, limit, Sort.by(order))
 		);
 	}
@@ -177,6 +183,7 @@ public class TopicService {
 				Collections.singleton(researchGroupId),
 				null,
 				new String[] { TopicState.OPEN.name() },
+				null,
 				null,
 				PageRequest.of(0, Integer.MAX_VALUE, Sort.unsorted())
 		).toList();

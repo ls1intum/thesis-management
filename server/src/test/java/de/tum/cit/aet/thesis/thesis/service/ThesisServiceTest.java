@@ -12,6 +12,7 @@ import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.core.group.service.ResearchGroupSettingsService;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.core.upload.constants.UploadFileType;
 import de.tum.cit.aet.thesis.core.upload.service.UploadService;
@@ -77,6 +78,8 @@ class ThesisServiceTest {
 	private ResearchGroupSettingsService researchGroupSettingsService;
 	@Mock
 	private UserService userService;
+	@Mock
+	private AbstractAutoFillService abstractAutoFillService;
 
 	private ThesisService thesisService;
 	private Thesis testThesis;
@@ -91,7 +94,7 @@ class ThesisServiceTest {
 				uploadService, mailingService, accessManagementService,
 				thesisFeedbackRepository, thesisFileRepository,
 				currentUserProviderProvider, researchGroupRepository, researchGroupSettingsService,
-				userService
+				userService, abstractAutoFillService
 		);
 		when(currentUserProviderProvider.getObject()).thenReturn(currentUserProvider);
 
@@ -139,6 +142,66 @@ class ThesisServiceTest {
 		verify(thesisRepository).save(any(Thesis.class));
 		verify(mailingService).sendThesisCreatedEmail(any(), eq(result));
 		verify(accessManagementService).addStudentGroup(eq(student));
+	}
+
+	private StudyProgram studyProgram(String name) {
+		StudyProgram program = new StudyProgram();
+		program.setId(UUID.randomUUID());
+		program.setKey(name.toUpperCase());
+		program.setName(name);
+		return program;
+	}
+
+	private Thesis createThesisFor(User student, StudyProgram explicitStudyProgram) {
+		User examiner = EntityMockFactory.createUserWithGroup("Examiner", "supervisor");
+		User supervisor = EntityMockFactory.createUserWithGroup("Supervisor", "advisor");
+
+		List<UUID> examinerIds = new ArrayList<>(List.of(examiner.getId()));
+		List<UUID> supervisorIds = new ArrayList<>(List.of(supervisor.getId()));
+		List<UUID> studentIds = new ArrayList<>(List.of(student.getId()));
+		UUID researchGroupId = testResearchGroup.getId();
+
+		when(userRepository.findAllById(examinerIds)).thenReturn(new ArrayList<>(List.of(examiner)));
+		when(userRepository.findAllById(supervisorIds)).thenReturn(new ArrayList<>(List.of(supervisor)));
+		when(userRepository.findAllById(studentIds)).thenReturn(new ArrayList<>(List.of(student)));
+		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(currentUserProvider.getUser()).thenReturn(testUser);
+		when(researchGroupRepository.findById(researchGroupId)).thenReturn(Optional.ofNullable(testResearchGroup));
+
+		return thesisService.createThesis(
+				"Test Thesis", "Bachelor", "ENGLISH", examinerIds, supervisorIds, studentIds, List.of(), null, false,
+				researchGroupId, explicitStudyProgram);
+	}
+
+	@Test
+	void createThesis_WithoutExplicitStudyProgram_TakesTheOneOfTheStudent() {
+		User student = EntityMockFactory.createUserWithGroup("Student", "student");
+		StudyProgram studentProgram = studyProgram("Informatics");
+		student.setStudyProgram(studentProgram);
+
+		Thesis result = createThesisFor(student, null);
+
+		assertEquals(studentProgram, result.getStudyProgram());
+	}
+
+	@Test
+	void createThesis_WithExplicitStudyProgram_PrefersItOverTheOneOfTheStudent() {
+		User student = EntityMockFactory.createUserWithGroup("Student", "student");
+		student.setStudyProgram(studyProgram("Informatics"));
+		StudyProgram explicit = studyProgram("Management");
+
+		Thesis result = createThesisFor(student, explicit);
+
+		assertEquals(explicit, result.getStudyProgram());
+	}
+
+	@Test
+	void createThesis_StudentWithoutStudyProgram_LeavesTheThesisWithoutOne() {
+		User student = EntityMockFactory.createUserWithGroup("Student", "student");
+
+		Thesis result = createThesisFor(student, null);
+
+		assertNull(result.getStudyProgram());
 	}
 
 	@Test
@@ -394,7 +457,7 @@ class ThesisServiceTest {
 
 		when(thesisRepository.save(any(Thesis.class))).thenAnswer(invocation -> invocation.getArgument(0));
 		when(thesisRepository.searchTheses(
-				any(), any(), any(), any(), any(), any(), any()
+				any(), any(), any(), any(), any(), any(), any(), any()
 		)).thenReturn(new PageImpl<>(Collections.emptyList()));
 
 		Thesis result = thesisService.completeThesis(testThesis);

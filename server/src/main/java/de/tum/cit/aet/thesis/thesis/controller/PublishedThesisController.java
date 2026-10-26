@@ -49,6 +49,7 @@ public class PublishedThesisController {
 	 * @param search the search query to filter theses
 	 * @param researchGroupIds the research group IDs to filter by
 	 * @param types the thesis types to filter by
+	 * @param supervisorName full name ("first last") of a supervisor to filter by, case-insensitive
 	 * @return the paginated list of published theses
 	 */
 	@GetMapping
@@ -59,7 +60,8 @@ public class PublishedThesisController {
 			@RequestParam(required = false, defaultValue = "desc") String sortOrder,
 			@RequestParam(required = false) String search,
 			@RequestParam(required = false, defaultValue = "") UUID[] researchGroupIds,
-			@RequestParam(required = false) String[] types
+			@RequestParam(required = false) String[] types,
+			@RequestParam(required = false) String supervisorName
 	) {
 		limit = RequestValidator.clampPageSize(limit);
 		Page<Thesis> theses = thesisService.getAll(
@@ -72,7 +74,8 @@ public class PublishedThesisController {
 				limit,
 				sortBy,
 				sortOrder,
-				researchGroupIds
+				researchGroupIds,
+				supervisorName
 		);
 
 		return ResponseEntity.ok(PaginationDto.fromSpringPage(theses.map(PublishedThesisDto::fromThesisEntity)));

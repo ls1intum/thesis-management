@@ -9,6 +9,7 @@ import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroupSettings;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.core.group.service.ResearchGroupSettingsService;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
 import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
 import de.tum.cit.aet.thesis.core.upload.constants.UploadFileType;
 import de.tum.cit.aet.thesis.core.upload.service.UploadService;
@@ -23,6 +24,7 @@ import de.tum.cit.aet.thesis.core.utility.RequestValidator;
 import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
@@ -88,6 +90,7 @@ public class ThesisService {
 	private final ResearchGroupRepository researchGroupRepository;
 	private final ResearchGroupSettingsService researchGroupSettingsService;
 	private final UserService userService;
+	private final AbstractAutoFillService abstractAutoFillService;
 
 	@Value("${thesis-management.client.host}")
 	private String clientHost;
@@ -110,6 +113,7 @@ public class ThesisService {
 	 * @param researchGroupRepository the research group repository
 	 * @param researchGroupSettingsService the research group settings service
 	 * @param userService the user service
+	 * @param abstractAutoFillService the abstract auto-fill service
 	 */
 	@Autowired
 	public ThesisService(
@@ -124,7 +128,8 @@ public class ThesisService {
 			AccessManagementService accessManagementService,
 			ThesisFeedbackRepository thesisFeedbackRepository, ThesisFileRepository thesisFileRepository,
 			ObjectProvider<CurrentUserProvider> currentUserProviderProvider, ResearchGroupRepository researchGroupRepository, ResearchGroupSettingsService researchGroupSettingsService,
-			UserService userService
+			UserService userService,
+			AbstractAutoFillService abstractAutoFillService
 	) {
 		this.thesisRoleRepository = thesisRoleRepository;
 		this.thesisRepository = thesisRepository;
@@ -141,6 +146,7 @@ public class ThesisService {
 		this.researchGroupRepository = researchGroupRepository;
 		this.researchGroupSettingsService = researchGroupSettingsService;
 		this.userService = userService;
+		this.abstractAutoFillService = abstractAutoFillService;
 	}
 
 	private CurrentUserProvider currentUserProvider() {
@@ -166,6 +172,7 @@ public class ThesisService {
 	 * @param sortBy the field to sort by
 	 * @param sortOrder the sort direction, "asc" or "desc"
 	 * @param researchGroupIds the research group IDs to filter by
+	 * @param supervisorName the full name ("first last") of a supervisor to filter by, case-insensitive
 	 * @return the paginated list of theses
 	 */
 	public Page<Thesis> getAll(
@@ -178,13 +185,16 @@ public class ThesisService {
 		int limit,
 		String sortBy,
 		String sortOrder,
-		UUID[] researchGroupIds
+		UUID[] researchGroupIds,
+		String supervisorName
 	) {
 		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
 				HibernateHelper.validateSortField(Thesis.class, sortBy));
 		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
 		Set<ThesisState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
 		Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
+		String supervisorNameFilter = (supervisorName == null || supervisorName.isBlank())
+				? null : supervisorName.trim().toLowerCase();
 
 		Set<UUID> researchGroupIdsFilter = null;
 
@@ -214,6 +224,7 @@ public class ThesisService {
 				searchQueryFilter,
 				statesFilter,
 				typesFilter,
+				supervisorNameFilter,
 				PageRequest.of(page, limit, Sort.by(order))
 		);
 	}
@@ -246,6 +257,41 @@ public class ThesisService {
 			boolean notifyUser,
 			UUID researchGroupId
 	) {
+		return createThesis(thesisTitle, thesisType, language, examinerIds, supervisorIds, studentIds,
+				additionalStudentUsernames, application, notifyUser, researchGroupId, null);
+	}
+
+	/**
+	 * Creates a new thesis like {@link #createThesis(String, String, String, List, List, List, List, Application, boolean, UUID)}
+	 * and assigns it to a study program. Without an explicit study program the thesis takes the one of its first
+	 * student that has one.
+	 *
+	 * @param thesisTitle the title of the thesis
+	 * @param thesisType the type of the thesis
+	 * @param language the language of the thesis
+	 * @param examinerIds the IDs of the examiners
+	 * @param supervisorIds the IDs of the supervisors
+	 * @param studentIds the IDs of the students
+	 * @param additionalStudentUsernames the usernames of additional students
+	 * @param application the application the thesis originates from, may be {@code null}
+	 * @param notifyUser whether to notify the involved users
+	 * @param researchGroupId the ID of the research group the thesis belongs to
+	 * @param studyProgram the study program of the thesis, may be {@code null} to derive it from the students
+	 * @return the created thesis
+	 */
+	public Thesis createThesis(
+			String thesisTitle,
+			String thesisType,
+			String language,
+			List<UUID> examinerIds,
+			List<UUID> supervisorIds,
+			List<UUID> studentIds,
+			List<String> additionalStudentUsernames,
+			Application application,
+			boolean notifyUser,
+			UUID researchGroupId,
+			StudyProgram studyProgram
+	) {
 		ResearchGroup researchGroup = researchGroupRepository.findById(researchGroupId)
 				.orElseThrow(() -> new ResourceNotFoundException("Research group not found"));
 
@@ -274,6 +320,13 @@ public class ThesisService {
 		assignThesisRoles(thesis, examinerIds, supervisorIds, effectiveStudentIds);
 		saveStateChange(thesis, nextState);
 
+		StudyProgram thesisStudyProgram = studyProgram != null ? studyProgram : firstStudyProgramOfStudents(thesis);
+
+		if (thesisStudyProgram != null) {
+			thesis.setStudyProgram(thesisStudyProgram);
+			thesis = thesisRepository.save(thesis);
+		}
+
 		if (notifyUser) {
 			mailingService.sendThesisCreatedEmail(currentUserProvider().getUser(), thesis);
 		}
@@ -283,6 +336,31 @@ public class ThesisService {
 		}
 
 		return thesis;
+	}
+
+	private static StudyProgram firstStudyProgramOfStudents(Thesis thesis) {
+		return thesis.getStudents().stream()
+				.map(User::getStudyProgram)
+				.filter(Objects::nonNull)
+				.findFirst()
+				.orElse(null);
+	}
+
+	/**
+	 * Changes the study program a thesis is assigned to. The portal link on the thesis page follows the
+	 * school of the study program.
+	 *
+	 * @param thesis the thesis to update
+	 * @param studyProgram the new study program, may be {@code null}
+	 * @return the updated thesis
+	 */
+	public Thesis updateStudyProgram(Thesis thesis, StudyProgram studyProgram) {
+		requireNotAnonymized(thesis);
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+		thesis.setStudyProgram(studyProgram);
+
+		return thesisRepository.save(thesis);
 	}
 
 	/**
@@ -388,10 +466,58 @@ public class ThesisService {
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 		thesis.setAbstractField(abstractText != null ? abstractText : "");
 		thesis.setInfo(infoText != null ? infoText : "");
+		// A human saved the abstract: mark it manual so later uploads never overwrite it,
+		// and clear any pending extraction suggestion.
+		thesis.setAbstractSource(ThesisAbstractSource.MANUAL);
+		thesis.setAbstractSuggestion(null);
 
 		thesis = thesisRepository.save(thesis);
 
 		return thesis;
+	}
+
+	/**
+	 * Accepts a pending abstract suggestion, promoting it to the thesis abstract.
+	 *
+	 * <p>The suggestion becomes the abstract, the source is marked {@code EXTRACTED}, and the
+	 * pending suggestion is cleared.
+	 *
+	 * @param thesis the thesis whose suggestion is accepted
+	 * @return the updated thesis
+	 * @throws ResourceNotFoundException if there is no pending suggestion to accept
+	 */
+	public Thesis acceptAbstractSuggestion(Thesis thesis) {
+		requireNotAnonymized(thesis);
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		if (thesis.getAbstractSuggestion() == null) {
+			throw new ResourceNotFoundException("No abstract suggestion to accept");
+		}
+
+		thesis.setAbstractField(thesis.getAbstractSuggestion());
+		thesis.setAbstractSource(ThesisAbstractSource.EXTRACTED);
+		thesis.setAbstractSuggestion(null);
+
+		return thesisRepository.save(thesis);
+	}
+
+	/**
+	 * Dismisses a pending abstract suggestion, keeping the current abstract unchanged.
+	 *
+	 * <p>Dismissing marks the abstract source {@code MANUAL} so a later confident upload only
+	 * suggests again rather than silently overwriting the kept abstract.
+	 *
+	 * @param thesis the thesis whose suggestion is dismissed
+	 * @return the updated thesis
+	 */
+	public Thesis dismissAbstractSuggestion(Thesis thesis) {
+		requireNotAnonymized(thesis);
+		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+		// Dismissing is an explicit human decision to keep the current abstract, so mark it
+		// MANUAL — a later confident upload must not silently overwrite it.
+		thesis.setAbstractSource(ThesisAbstractSource.MANUAL);
+		thesis.setAbstractSuggestion(null);
+
+		return thesisRepository.save(thesis);
 	}
 
 	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
@@ -476,8 +602,35 @@ public class ThesisService {
 	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
 	@Transactional
 	public Thesis requestChanges(Thesis thesis, ThesisFeedbackType type, List<RequestChangesPayload.RequestedChange> requestedChanges) {
+		return requestChanges(thesis, type, requestedChanges, de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource.HUMAN);
+	}
+
+	/**
+	 * Persists a batch of feedback items with an explicit source marker. Used by the AI-auto
+	 * endpoint (which writes items with {@code source == AI}) and by the manual endpoint (which
+	 * defaults to {@code HUMAN}). A per-item source, when present, wins over the batch source so a
+	 * single batch can mix manual and AI-reviewed rows.
+	 *
+	 * @param thesis the thesis the feedback belongs to
+	 * @param type the feedback type (proposal, thesis, or presentation)
+	 * @param requestedChanges the feedback rows to persist
+	 * @param source the batch-level source applied when a row does not specify its own
+	 * @return the thesis with the new feedback rows attached
+	 */
+	@Transactional
+	public Thesis requestChanges(
+			Thesis thesis,
+			ThesisFeedbackType type,
+			List<RequestChangesPayload.RequestedChange> requestedChanges,
+			de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource source) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
+
+		// Pin every new feedback row to the currently-latest revision of the underlying document
+		// so later uploads don't silently re-target old comments at v2/v3. Presentation feedback
+		// is not versioned — its column stays null.
+		UUID documentVersionId = resolveLatestDocumentVersionId(thesis, type);
+
 		for (var requestedChange : requestedChanges) {
 			ThesisFeedback feedback = new ThesisFeedback();
 
@@ -487,6 +640,12 @@ public class ThesisService {
 			feedback.setType(type);
 			feedback.setFeedback(RequestValidator.validateStringMaxLength(requestedChange.feedback(), StringLimits.LONGTEXT.getLimit()));
 			feedback.setCompletedAt(requestedChange.completed() ? Instant.now() : null);
+			feedback.setCategory(requestedChange.category());
+			feedback.setSeverity(requestedChange.severity());
+			// Per-item source wins so a mixed batch can carry both manual (HUMAN) and AI-reviewed
+			// (AI_REVIEWED_BY_HUMAN) rows; fall back to the batch source when the item omits it.
+			feedback.setGenerationSource(requestedChange.source() != null ? requestedChange.source() : source);
+			feedback.setDocumentVersionId(documentVersionId);
 
 			feedback = thesisFeedbackRepository.save(feedback);
 
@@ -494,11 +653,31 @@ public class ThesisService {
 			thesis.setFeedback(thesis.getFeedback());
 		}
 
-		if (type == ThesisFeedbackType.PROPOSAL) {
+		if (type == ThesisFeedbackType.PROPOSAL && source != de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource.AI) {
+			// Only notify supervisors by email for human-initiated change requests. Auto AI
+			// runs happen on demand from the student and don't warrant an outgoing email.
 			mailingService.sendProposalChangeRequestEmail(currentUserProvider().getUser(), thesis);
 		}
 
 		return thesis;
+	}
+
+	/**
+	 * Resolves the id of the currently-latest revision of the document a feedback item refers to.
+	 * PROPOSAL feedback points at {@code thesis_proposals}, THESIS feedback at {@code thesis_files},
+	 * PRESENTATION feedback is not versioned and returns {@code null}. Returns {@code null} when
+	 * the thesis has no matching document yet — callers save the row anyway; the field just stays
+	 * unset until a document exists.
+	 */
+	private UUID resolveLatestDocumentVersionId(Thesis thesis, ThesisFeedbackType type) {
+		return switch (type) {
+			case PROPOSAL -> {
+				List<de.tum.cit.aet.thesis.proposal.entity.ThesisProposal> proposals = thesis.getProposals();
+				yield (proposals == null || proposals.isEmpty()) ? null : proposals.getFirst().getId();
+			}
+			case THESIS -> thesis.getLatestFile("THESIS").map(ThesisFile::getId).orElse(null);
+			case PRESENTATION -> null;
+		};
 	}
 
 	/* PROPOSAL */
@@ -534,6 +713,9 @@ public class ThesisService {
 		thesisProposalRepository.save(proposal);
 
 		mailingService.sendProposalUploadedEmail(proposal);
+
+		// Auto-fill the abstract from the uploaded proposal PDF (best-effort; never fails the upload).
+		abstractAutoFillService.process(thesis, proposalFile);
 
 		return thesisRepository.save(thesis);
 	}
@@ -618,6 +800,11 @@ public class ThesisService {
 
 		List<ThesisFile> files = thesis.getFiles();
 		files.addFirst(thesisFileRepository.save(thesisFile));
+
+		// Auto-fill the abstract from the uploaded thesis document (best-effort; never fails the upload).
+		if ("THESIS".equals(type)) {
+			abstractAutoFillService.process(thesis, file);
+		}
 
 		return thesisRepository.save(thesis);
 	}
@@ -959,6 +1146,7 @@ public class ThesisService {
 						ThesisState.ASSESSED,
 						ThesisState.GRADED
 				),
+				null,
 				null,
 				PageRequest.ofSize(1)
 		);

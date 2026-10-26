@@ -163,4 +163,36 @@ describe('doRequest', () => {
     expect(result.status).toBe(401)
     expect(handler).not.toHaveBeenCalled()
   })
+
+  it('parses a JSON body', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(200, { id: 1 }))
+
+    const response = await doRequest<{ id: number }>('/v2/things', {
+      method: 'GET',
+      requiresAuth: true,
+    })
+
+    expect(response).toEqual({ ok: true, status: 200, data: { id: 1 } })
+  })
+
+  it('returns the message of the server for an error response', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(400, { message: 'Still in use' }))
+
+    const response = await doRequest('/v2/things/1', { method: 'DELETE', requiresAuth: true })
+
+    expect(response.ok).toBe(false)
+    expect(response.status).toBe(400)
+    expect(response.ok ? undefined : response.error?.message).toBe('Still in use')
+  })
+
+  it('sends the JSON body with its content type', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(200, {}))
+
+    await doRequest('/v2/things', { method: 'POST', requiresAuth: true, data: { name: 'x' } })
+
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
+    expect(url).toContain('/api/v2/things')
+    expect(init.headers).toMatchObject({ 'Content-Type': 'application/json' })
+    expect(init.body).toBe(JSON.stringify({ name: 'x' }))
+  })
 })

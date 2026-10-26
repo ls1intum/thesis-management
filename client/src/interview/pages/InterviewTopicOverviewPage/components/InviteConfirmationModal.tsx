@@ -1,13 +1,13 @@
 import { Alert, Button, Group, Modal, Paper, ScrollArea, Stack, Text, Title } from '@mantine/core'
 import AvatarUser from '@/core/components/AvatarUser/AvatarUser'
-import type { ILightUser } from '@/core/user/requests/responses/user'
+import type { IMinimalUser } from '@/core/user/requests/responses/user'
 import { useInterviewProcessContext } from '@/interview/providers/InterviewProcessProvider/hooks'
 import { WarningCircleIcon } from '@phosphor-icons/react'
 
 interface IinviteConfirmationModalProps {
   inviteModalOpen: boolean
   setInviteModalOpen: (open: boolean) => void
-  interviewees: ILightUser[]
+  interviewees: IMinimalUser[]
   sendInvite: (() => void) | undefined
   onCancel?: () => void
 }

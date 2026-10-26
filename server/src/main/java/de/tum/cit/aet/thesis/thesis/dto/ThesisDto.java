@@ -2,12 +2,21 @@ package de.tum.cit.aet.thesis.thesis.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import de.tum.cit.aet.thesis.core.group.dto.LightResearchGroupDto;
+import de.tum.cit.aet.thesis.core.organization.dto.StudyProgramDto;
 import de.tum.cit.aet.thesis.core.user.dto.LightUserDto;
+import de.tum.cit.aet.thesis.core.user.dto.MinimalUserDto;
+import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
+import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
+import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationState;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationType;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility;
 import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisAbstractSource;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSeverity;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
@@ -36,18 +45,23 @@ public record ThesisDto(
 	Set<String> keywords,
 	String infoText,
 	String abstractText,
+	ThesisAbstractSource abstractSource,
+	String abstractSuggestion,
 	ThesisState state,
 	UUID applicationId,
 	Instant startDate,
 	Instant endDate,
 	Instant createdAt,
 	LightResearchGroupDto researchGroup,
+	StudyProgramDto studyProgram,
+	String submissionPortalUrl,
 
 	ThesisAssessmentDto assessment,
 	List<ThesisProposalDto> proposals,
 	List<ThesisFeedbackDto> feedback,
 	List<ThesisFilesDto> files,
 	ThesisGradeDto grade,
+	List<ThesisAIReviewSummaryDto> aiReviewSummaries,
 
 	List<ThesisPresentationDto> presentations,
 
@@ -110,18 +124,23 @@ public static ThesisDto fromThesisEntity(Thesis thesis, boolean supervisorAccess
 		thesis.getKeywords(),
 		thesis.getInfo(),
 		thesis.getAbstractField(),
+		thesis.getAbstractSource(),
+		studentAccess ? thesis.getAbstractSuggestion() : null,
 		thesis.getState(),
 		thesis.getApplication() == null ? null : thesis.getApplication().getId(),
 		thesis.getStartDate(),
 		thesis.getEndDate(),
 		thesis.getCreatedAt(),
 		LightResearchGroupDto.fromResearchGroupEntity(thesis.getResearchGroup()),
+		StudyProgramDto.fromStudyProgramEntity(thesis.getStudyProgram()),
+		thesis.getSubmissionPortalUrl(),
 		supervisorAccess && !assessments.isEmpty()
 			? ThesisDto.ThesisAssessmentDto.fromAssessmentEntity(assessments.getFirst()) : null,
 		proposals.stream().map(ThesisProposalDto::fromProposalEntity).toList(),
 		thesis.getFeedback().stream().map(ThesisFeedbackDto::fromThesisFeedbackEntity).toList(),
 		thesis.getFiles().stream().map(ThesisFilesDto::fromThesisFileEntity).toList(),
 		studentAccess ? ThesisGradeDto.fromThesisEntity(thesis) : null,
+		thesis.getAiReviewSummaries().stream().map(ThesisAIReviewSummaryDto::fromEntity).toList(),
 		presentations.stream().map(ThesisPresentationDto::fromPresentationEntity).toList(),
 		students,
 		supervisors,
@@ -137,7 +156,7 @@ public record ThesisAssessmentDto(
 	String negatives,
 	String gradeSuggestion,
 	String createdAt,
-	LightUserDto createdBy,
+	MinimalUserDto createdBy,
 	List<ThesisGradeComponentDTO> gradeComponents
 ) {
 
@@ -156,7 +175,7 @@ public record ThesisAssessmentDto(
 		assessment.getNegatives(),
 		assessment.getGradeSuggestion(),
 		assessment.getCreatedAt().toString(),
-		LightUserDto.fromUserEntity(assessment.getCreatedBy()),
+		MinimalUserDto.fromUserEntity(assessment.getCreatedBy()),
 		gradeComponents
 	);
 	}
@@ -166,9 +185,9 @@ public record ThesisProposalDto(
 	UUID proposalId,
 	String filename,
 	Instant createdAt,
-	LightUserDto createdBy,
+	MinimalUserDto createdBy,
 	Instant approvedAt,
-	LightUserDto approvedBy
+	MinimalUserDto approvedBy
 ) {
 
 	public static ThesisProposalDto fromProposalEntity(ThesisProposal proposal) {
@@ -180,9 +199,9 @@ public record ThesisProposalDto(
 		proposal.getId(),
 		proposal.getProposalFilename(),
 		proposal.getCreatedAt(),
-		LightUserDto.fromUserEntity(proposal.getCreatedBy()),
+		MinimalUserDto.fromUserEntity(proposal.getCreatedBy()),
 		proposal.getApprovedAt(),
-		LightUserDto.fromUserEntity(proposal.getApprovedBy())
+		MinimalUserDto.fromUserEntity(proposal.getApprovedBy())
 	);
 	}
 }
@@ -199,7 +218,7 @@ public record ThesisPresentationDto(
 	String presentationNoteHtml,
 	Instant scheduledAt,
 	Instant createdAt,
-	LightUserDto createdBy
+	MinimalUserDto createdBy
 ) {
 	public static ThesisPresentationDto fromPresentationEntity(ThesisPresentation presentation) {
 	if (presentation == null) {
@@ -218,18 +237,23 @@ public record ThesisPresentationDto(
 		presentation.getPresentationNoteHtml(),
 		presentation.getScheduledAt(),
 		presentation.getCreatedAt(),
-		LightUserDto.fromUserEntity(presentation.getCreatedBy())
+		MinimalUserDto.fromUserEntity(presentation.getCreatedBy())
 	);
 	}
 }
 
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record ThesisFeedbackDto(
 	UUID feedbackId,
 	ThesisFeedbackType type,
 	String feedback,
-	LightUserDto requestedBy,
+	MinimalUserDto requestedBy,
 	Instant requestedAt,
-	Instant completedAt
+	Instant completedAt,
+	ThesisFeedbackCategory category,
+	ThesisFeedbackSeverity severity,
+	ThesisFeedbackSource generationSource,
+	UUID documentVersionId
 ) {
 
 	public static ThesisFeedbackDto fromThesisFeedbackEntity(ThesisFeedback feedback) {
@@ -241,9 +265,41 @@ public record ThesisFeedbackDto(
 		feedback.getId(),
 		feedback.getType(),
 		feedback.getFeedback(),
-		LightUserDto.fromUserEntity(feedback.getRequestedBy()),
+		MinimalUserDto.fromUserEntity(feedback.getRequestedBy()),
 		feedback.getRequestedAt(),
-		feedback.getCompletedAt()
+		feedback.getCompletedAt(),
+		feedback.getCategory(),
+		feedback.getSeverity(),
+		feedback.getGenerationSource(),
+		feedback.getDocumentVersionId()
+	);
+	}
+}
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public record ThesisAIReviewSummaryDto(
+	ReviewType type,
+	Integer score,
+	AssessmentCategory assessment,
+	String summary,
+	// Points at the proposalId (PROPOSAL) or thesis fileId (THESIS) the review ran against. The
+	// client compares it with the latest revision and hides the summary once it no longer matches.
+	UUID documentVersionId,
+	Instant updatedAt
+) {
+
+	public static ThesisAIReviewSummaryDto fromEntity(AIReviewSummary summary) {
+	if (summary == null) {
+		return null;
+	}
+
+	return new ThesisAIReviewSummaryDto(
+		summary.getType(),
+		summary.getScore(),
+		summary.getAssessment(),
+		summary.getSummary(),
+		summary.getDocumentVersionId(),
+		summary.getUpdatedAt()
 	);
 	}
 }
@@ -254,7 +310,7 @@ public record ThesisFilesDto(
 	String filename,
 	String uploadName,
 	Instant uploadedAt,
-	LightUserDto uploadedBy
+	MinimalUserDto uploadedBy
 ) {
 
 	public static ThesisFilesDto fromThesisFileEntity(ThesisFile file) {
@@ -268,7 +324,7 @@ public record ThesisFilesDto(
 		file.getFilename(),
 		file.getUploadName(),
 		file.getUploadedAt(),
-		LightUserDto.fromUserEntity(file.getUploadedBy())
+		MinimalUserDto.fromUserEntity(file.getUploadedBy())
 	);
 	}
 }

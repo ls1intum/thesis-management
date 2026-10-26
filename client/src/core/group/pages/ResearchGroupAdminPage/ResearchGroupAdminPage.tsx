@@ -90,6 +90,8 @@ const ResearchGroupAdminPage = () => {
       campus: values.campus,
       description: values.description,
       websiteUrl: values.websiteUrl,
+      schoolId: values.schoolId,
+      departmentId: values.departmentId,
     }
 
     doRequest(

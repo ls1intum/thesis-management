@@ -12,7 +12,8 @@ public record CreateThesisPayload(
 		List<String> additionalStudentUsernames,
 		List<UUID> supervisorIds,
 		List<UUID> examinerIds,
-		UUID researchGroupId
+		UUID researchGroupId,
+		UUID studyProgramId
 ) {
 	public CreateThesisPayload {
 		additionalStudentUsernames = additionalStudentUsernames == null
@@ -29,6 +30,19 @@ public record CreateThesisPayload(
 			List<UUID> examinerIds,
 			UUID researchGroupId
 	) {
-		this(thesisTitle, thesisType, language, studentIds, List.of(), supervisorIds, examinerIds, researchGroupId);
+		this(thesisTitle, thesisType, language, studentIds, List.of(), supervisorIds, examinerIds, researchGroupId, null);
+	}
+
+	public CreateThesisPayload(
+			String thesisTitle,
+			String thesisType,
+			String language,
+			List<UUID> studentIds,
+			List<String> additionalStudentUsernames,
+			List<UUID> supervisorIds,
+			List<UUID> examinerIds,
+			UUID researchGroupId
+	) {
+		this(thesisTitle, thesisType, language, studentIds, additionalStudentUsernames, supervisorIds, examinerIds, researchGroupId, null);
 	}
 }

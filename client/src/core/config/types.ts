@@ -5,10 +5,16 @@ export interface IGlobalConfig {
 
   chair_name: string
   chair_url: string
+  // Portal students submit their final thesis to, unless the school of the thesis defines its own
+  thesis_portal_url: string
 
   environment?: Environment
 
   allow_suggested_topics: boolean
+
+  // Mirrors the server's AI_FEATURES_ENABLED flag. When false, the AI module is not registered
+  // on the server (its /v2/ai-review/** endpoints 404), so the AI feedback buttons are hidden.
+  ai_enabled: boolean
 
   server_host: string
   passkey_rp_id: string
@@ -16,7 +22,6 @@ export interface IGlobalConfig {
   passkey_prompt_apps: string[]
 
   genders: Record<string, string>
-  study_programs: Record<string, string>
   study_degrees: Record<string, string>
   languages: Record<string, string>
 

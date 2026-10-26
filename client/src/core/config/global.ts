@@ -46,10 +46,15 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
 
   chair_name: getEnvironmentVariable('CHAIR_NAME') ?? 'ThesisManagement',
   chair_url: getEnvironmentVariable('CHAIR_URL') ?? window.origin,
+  thesis_portal_url: getEnvironmentVariable('THESIS_PORTAL_URL') ?? 'https://portal.cit.tum.de/',
 
   environment: parseEnvironment(getEnvironmentVariable('ENVIRONMENT')),
 
   allow_suggested_topics: (getEnvironmentVariable('ALLOW_SUGGESTED_TOPICS') ?? 'true') === 'true',
+
+  // Defaults to false to match the server's AI_FEATURES_ENABLED default, so AI buttons stay
+  // hidden unless a deployment explicitly turns the feature on (as application-dev.yml does).
+  ai_enabled: (getEnvironmentVariable('AI_FEATURES_ENABLED') ?? 'false') === 'true',
 
   genders: getEnvironmentVariable<Record<string, string>>('GENDERS', true) ?? {
     MALE: 'Male',
@@ -63,13 +68,6 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     MASTER: 'Master',
   },
 
-  study_programs: getEnvironmentVariable<Record<string, string>>('STUDY_PROGRAMS', true) ?? {
-    COMPUTER_SCIENCE: 'Computer Science',
-    INFORMATION_SYSTEMS: 'Information Systems',
-    GAMES_ENGINEERING: 'Games Engineering',
-    MANAGEMENT_AND_TECHNOLOGY: 'Management and Technology',
-    OTHER: 'Other',
-  },
   topic_views_options: getEnvironmentVariable('TOPIC_VIEWS_OPTIONS', true) ?? {
     OPEN: 'Open Topics',
     PUBLISHED: 'Published Topics',

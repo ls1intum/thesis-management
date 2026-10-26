@@ -4,6 +4,7 @@ import de.tum.cit.aet.thesis.core.constants.StringLimits;
 import de.tum.cit.aet.thesis.core.notification.controller.payload.UpdateNotificationSettingPayload;
 import de.tum.cit.aet.thesis.core.notification.dto.NotificationSettingDto;
 import de.tum.cit.aet.thesis.core.notification.entity.NotificationSetting;
+import de.tum.cit.aet.thesis.core.organization.service.OrganizationService;
 import de.tum.cit.aet.thesis.core.upload.service.UploadService;
 import de.tum.cit.aet.thesis.core.user.controller.payload.UpdateUserInformationPayload;
 import de.tum.cit.aet.thesis.core.user.dto.UserDto;
@@ -38,6 +39,7 @@ public class UserInfoController {
 	private final UserRepository userRepository;
 	private final UploadService uploadService;
 	private final GravatarService gravatarService;
+	private final OrganizationService organizationService;
 
 	/**
 	 * Constructs a new UserInfoController with the required dependencies.
@@ -46,13 +48,16 @@ public class UserInfoController {
 	 * @param userRepository the user repository
 	 * @param uploadService the upload service
 	 * @param gravatarService the gravatar service
+	 * @param organizationService the organization service used to resolve the study program
 	 */
 	@Autowired
-	public UserInfoController(AuthenticationService authenticationService, UserRepository userRepository, UploadService uploadService, GravatarService gravatarService) {
+	public UserInfoController(AuthenticationService authenticationService, UserRepository userRepository, UploadService uploadService,
+			GravatarService gravatarService, OrganizationService organizationService) {
 		this.authenticationService = authenticationService;
 		this.userRepository = userRepository;
 		this.uploadService = uploadService;
 		this.gravatarService = gravatarService;
+		this.organizationService = organizationService;
 	}
 
 	/**
@@ -99,7 +104,7 @@ public class UserInfoController {
 				RequestValidator.validateStringMaxLengthAllowNull(payload.gender(), StringLimits.SHORTTEXT.getLimit()),
 				RequestValidator.validateStringMaxLengthAllowNull(payload.nationality(), StringLimits.SHORTTEXT.getLimit()),
 				RequestValidator.validateStringMaxLengthAllowNull(payload.studyDegree(), StringLimits.SHORTTEXT.getLimit()),
-				RequestValidator.validateStringMaxLengthAllowNull(payload.studyProgram(), StringLimits.SHORTTEXT.getLimit()),
+				organizationService.resolveStudyProgramForAssignment(payload.studyProgramId(), authenticatedUser.getStudyProgram()),
 				payload.enrolledAt(),
 				RequestValidator.validateStringMaxLengthAllowNull(payload.specialSkills(), StringLimits.LONGTEXT.getLimit()),
 				RequestValidator.validateStringMaxLengthAllowNull(payload.interests(), StringLimits.LONGTEXT.getLimit()),
@@ -112,6 +117,36 @@ public class UserInfoController {
 		);
 
 		return ResponseEntity.ok(UserDto.fromUserEntity(authenticatedUser));
+	}
+
+	/**
+	 * Replaces the authenticated user's profile picture without touching any other profile data.
+	 *
+	 * @param avatar the avatar image file
+	 * @param authentication the authentication of the current request
+	 * @return the updated user profile information
+	 */
+	@PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<UserDto> uploadAvatar(
+			@RequestPart("avatar") MultipartFile avatar,
+			Authentication authentication
+	) {
+		User user = this.authenticationService.getAuthenticatedUser(authentication);
+
+		return ResponseEntity.ok(UserDto.fromUserEntity(this.authenticationService.updateAvatar(user, avatar)));
+	}
+
+	/**
+	 * Records that the authenticated user dismissed the "add a profile picture" prompt.
+	 *
+	 * @param authentication the authentication of the current request
+	 * @return the updated user profile information
+	 */
+	@PostMapping("/dismiss-avatar-prompt")
+	public ResponseEntity<UserDto> dismissAvatarPrompt(Authentication authentication) {
+		User user = this.authenticationService.getAuthenticatedUser(authentication);
+
+		return ResponseEntity.ok(UserDto.fromUserEntity(this.authenticationService.dismissAvatarPrompt(user)));
 	}
 
 	/**
@@ -177,14 +212,9 @@ public class UserInfoController {
 			return ResponseEntity.notFound().build();
 		}
 
-		String oldAvatar = user.getAvatar();
 		String storedFilename = uploadService.storeBytes(imageBytes.get(), "png", 1024 * 1024);
 		user.setAvatar(storedFilename);
 		user = userRepository.save(user);
-
-		if (oldAvatar != null && !oldAvatar.equals(storedFilename)) {
-			uploadService.deleteFile(oldAvatar);
-		}
 
 		return ResponseEntity.ok(UserDto.fromUserEntity(user));
 	}

@@ -97,13 +97,7 @@ const ApplicationData = (props: IApplicationDataProps) => {
               />
             </Grid.Col>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
-              <LabeledItem
-                label='Study Program'
-                value={
-                  GLOBAL_CONFIG.study_programs[application.user.studyProgram ?? ''] ??
-                  application.user.studyProgram
-                }
-              />
+              <LabeledItem label='Study Program' value={application.user.studyProgram} />
             </Grid.Col>
             <Grid.Col span={{ xs: 4, sm: 3 }}>
               <LabeledItem

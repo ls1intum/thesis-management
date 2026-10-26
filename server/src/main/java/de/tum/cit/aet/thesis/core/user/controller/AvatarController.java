@@ -91,9 +91,11 @@ public class AvatarController {
 			return ResponseEntity.notFound().build();
 		}
 
+		// private: the visibility check above depends on who asks, so shared caches must not hand a picture
+		// to a requester that would have received a 404
 		return ResponseEntity.ok()
 				.contentType(MediaType.IMAGE_PNG)
-				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic())
+				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePrivate())
 				.body(resource);
 	}
 }

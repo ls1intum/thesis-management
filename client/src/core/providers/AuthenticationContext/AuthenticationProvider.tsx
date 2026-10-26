@@ -8,6 +8,7 @@ import { AuthenticationContext } from '@/core/providers/AuthenticationContext/co
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import { jwtDecode } from 'jwt-decode'
 import { useSignal } from '@/core/hooks/utility'
+import { useClearAvatarCacheOnSignOut } from '@/core/components/CustomAvatar/useClearAvatarCacheOnSignOut'
 import type { IUser } from '@/core/user/requests/responses/user'
 import { doRequest } from '@/core/requests/request'
 import { showSimpleError } from '@/core/utils/notification'
@@ -195,6 +196,8 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   const [hasSession, setHasSession] = useState(false)
   const hasSessionRef = useRef(false)
   const [user, setUser] = useState<IUser>()
+
+  useClearAvatarCacheOnSignOut(hasSession)
   const { signal: readySignal, triggerSignal: triggerReadySignal, ref: readyRef } = useSignal()
   const isReady = readyRef.isTriggerred
   const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
@@ -308,8 +311,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     }
 
     const responseData = (await response.json().catch(() => undefined)) as
-      | { challenge?: string }
-      | undefined
+      { challenge?: string } | undefined
 
     if (!responseData?.challenge) {
       throw new Error('Passkey challenge response is missing the challenge value')

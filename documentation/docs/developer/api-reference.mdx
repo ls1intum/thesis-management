@@ -1,0 +1,28 @@
+---
+title: API Reference
+sidebar_position: 5
+description: Where to find the OpenAPI spec and the Postman collection.
+---
+
+# API Reference
+
+The REST API is described in two places:
+
+- **OpenAPI (`endpoints.yaml`)** — the machine-readable spec is checked into
+  the repository at
+  [`documentation/static/files/endpoints.yaml`](https://github.com/ls1intum/thesis-management/blob/develop/documentation/static/files/endpoints.yaml).
+  It is also served from this site at
+  [`/files/endpoints.yaml`](/files/endpoints.yaml). Import it into any OpenAPI
+  viewer (Swagger UI, Redoc, VS Code REST Client, IntelliJ, …).
+- **Postman collection** — a ready-to-use collection lives at
+  [`documentation/static/files/Thesis Management API.postman_collection.json`](https://github.com/ls1intum/thesis-management/blob/develop/documentation/static/files/Thesis%20Management%20API.postman_collection.json).
+  It is also served from this site at
+  [`/files/Thesis Management API.postman_collection.json`](/files/Thesis%20Management%20API.postman_collection.json).
+  Import it into Postman for interactive exploration.
+
+## Local Swagger UI
+
+When the server is running locally, an interactive Swagger UI is served at
+`http://localhost:8180/swagger-ui/index.html`. It is generated from the same
+Spring annotations that the checked-in spec is derived from, so it always
+reflects the code you're running against.

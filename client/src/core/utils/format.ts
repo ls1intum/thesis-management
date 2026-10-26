@@ -273,10 +273,6 @@ export function getInterviewStateColor(state: InterviewState, isDark: boolean): 
   }
 }
 
-export function formateStudyProgram(program: string) {
-  return GLOBAL_CONFIG.study_programs[program] ?? program
-}
-
 /**
  * Ensures a user-supplied link target has an explicit scheme so it resolves as
  * an absolute URL rather than as a relative path under the current page.

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -20,4 +21,11 @@ public interface ThesisFileRepository extends JpaRepository<ThesisFile, UUID> {
 
 	@Query("SELECT f.filename FROM ThesisFile f WHERE f.thesis.id = :thesisId")
 	List<String> findFilenamesByThesisId(@Param("thesisId") UUID thesisId);
+
+	/**
+	 * The thesis's newest file of the given type, read straight from the database. Mirrors what
+	 * {@code Thesis.getLatestFile} picks out of the {@code uploadedAt DESC} collection, but
+	 * without going through it — callers use this precisely when that snapshot may be outdated.
+	 */
+	Optional<ThesisFile> findFirstByThesisIdAndTypeOrderByUploadedAtDesc(UUID thesisId, String type);
 }

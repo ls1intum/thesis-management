@@ -34,7 +34,7 @@ const PrivacyPage = () => {
             Your Data
           </Title>
           <Text>
-            You can request an export of all your personal data stored in the system.{' '}
+            You can request an export of your profile, application, thesis, and uploaded-file data.{' '}
             <Anchor component={Link} to='/data-export'>
               Go to Data Export
             </Anchor>

@@ -1,0 +1,415 @@
+{
+  "defaultResearchGroupSchool": "CIT",
+  "schools": [
+    {
+      "name": "TUM School of Computation, Information and Technology",
+      "abbreviation": "CIT",
+      "websiteUrl": "https://www.cit.tum.de/en/cit/home/",
+      "thesisPortalUrl": "https://portal.cit.tum.de/",
+      "departments": [
+        {
+          "name": "Mathematics"
+        },
+        {
+          "name": "Computer Engineering"
+        },
+        {
+          "name": "Computer Science"
+        },
+        {
+          "name": "Electrical Engineering"
+        }
+      ]
+    },
+    {
+      "name": "TUM School of Engineering and Design",
+      "abbreviation": "ED",
+      "websiteUrl": "https://www.ed.tum.de/en/",
+      "thesisPortalUrl": "https://portal.ed.tum.de/",
+      "departments": [
+        {
+          "name": "Aerospace and Geodesy"
+        },
+        {
+          "name": "Architecture"
+        },
+        {
+          "name": "Civil and Environmental Engineering"
+        },
+        {
+          "name": "Energy and Process Engineering"
+        },
+        {
+          "name": "Engineering Physics and Computation"
+        },
+        {
+          "name": "Materials Engineering"
+        },
+        {
+          "name": "Mechanical Engineering"
+        },
+        {
+          "name": "Mobility Systems Engineering"
+        }
+      ]
+    },
+    {
+      "name": "TUM School of Natural Sciences",
+      "abbreviation": "NAT",
+      "websiteUrl": "https://www.nat.tum.de/en/nat/home/",
+      "thesisPortalUrl": null,
+      "departments": [
+        {
+          "name": "Biosciences"
+        },
+        {
+          "name": "Chemistry"
+        },
+        {
+          "name": "Physics"
+        }
+      ]
+    },
+    {
+      "name": "TUM School of Life Sciences",
+      "abbreviation": "LS",
+      "websiteUrl": "https://www.ls.tum.de/en/ls/home/",
+      "thesisPortalUrl": null,
+      "departments": [
+        {
+          "name": "Molecular Life Sciences"
+        },
+        {
+          "name": "Life Science Systems"
+        },
+        {
+          "name": "Life Science Engineering"
+        }
+      ]
+    },
+    {
+      "name": "TUM School of Medicine and Health",
+      "abbreviation": "MH",
+      "websiteUrl": "https://www.mh.tum.de/en/",
+      "thesisPortalUrl": "https://portal.mh.tum.de/",
+      "departments": [
+        {
+          "name": "Clinical Medicine"
+        },
+        {
+          "name": "Preclinical Medicine"
+        },
+        {
+          "name": "Health and Sport Sciences"
+        }
+      ]
+    },
+    {
+      "name": "TUM School of Management",
+      "abbreviation": "MGT",
+      "websiteUrl": "https://www.mgt.tum.de/",
+      "thesisPortalUrl": "https://portal.mgt.tum.de/",
+      "departments": [
+        {
+          "name": "Economics and Policy"
+        },
+        {
+          "name": "Finance and Accounting"
+        },
+        {
+          "name": "Innovation and Entrepreneurship"
+        },
+        {
+          "name": "Marketing, Strategy and Leadership"
+        },
+        {
+          "name": "Operations and Technology"
+        }
+      ]
+    },
+    {
+      "name": "TUM School of Social Sciences and Technology",
+      "abbreviation": "SOT",
+      "websiteUrl": "https://www.sot.tum.de/en/sot/home/",
+      "thesisPortalUrl": "https://portal.sot.tum.de/",
+      "departments": [
+        {
+          "name": "Educational Sciences"
+        },
+        {
+          "name": "Science, Technology and Society"
+        },
+        {
+          "name": "Governance"
+        }
+      ]
+    }
+  ],
+  "studyPrograms": [
+    {
+      "key": "COMPUTER_SCIENCE",
+      "name": "Informatics",
+      "school": "CIT"
+    },
+    {
+      "key": "GAMES_ENGINEERING",
+      "name": "Informatics: Games Engineering",
+      "school": "CIT"
+    },
+    {
+      "key": "INFORMATION_SYSTEMS",
+      "name": "Information Systems",
+      "school": "CIT"
+    },
+    {
+      "key": "BIOINFORMATICS",
+      "name": "Bioinformatics",
+      "school": "CIT"
+    },
+    {
+      "key": "BIOMEDICAL_COMPUTING",
+      "name": "Biomedical Computing",
+      "school": "CIT"
+    },
+    {
+      "key": "AI_IN_BIOMEDICINE",
+      "name": "AI in Biomedicine",
+      "school": "CIT"
+    },
+    {
+      "key": "DATA_ENGINEERING_AND_ANALYTICS",
+      "name": "Data Engineering and Analytics",
+      "school": "CIT"
+    },
+    {
+      "key": "INFORMATION_ENGINEERING",
+      "name": "Information Engineering",
+      "school": "CIT"
+    },
+    {
+      "key": "ELECTRICAL_AND_COMPUTER_ENGINEERING",
+      "name": "Electrical and Computer Engineering",
+      "school": "CIT"
+    },
+    {
+      "key": "COMMUNICATIONS_AND_ELECTRONICS_ENGINEERING",
+      "name": "Communications and Electronics Engineering",
+      "school": "CIT"
+    },
+    {
+      "key": "MICROELECTRONICS_AND_CHIP_DESIGN",
+      "name": "Microelectronics and Chip Design",
+      "school": "CIT"
+    },
+    {
+      "key": "NEUROENGINEERING",
+      "name": "Neuroengineering",
+      "school": "CIT"
+    },
+    {
+      "key": "ROBOTICS_COGNITION_INTELLIGENCE",
+      "name": "Robotics, Cognition, Intelligence",
+      "school": "CIT"
+    },
+    {
+      "key": "COMPUTATIONAL_SCIENCE_AND_ENGINEERING",
+      "name": "Computational Science and Engineering",
+      "school": "CIT"
+    },
+    {
+      "key": "MATHEMATICS",
+      "name": "Mathematics",
+      "school": "CIT"
+    },
+    {
+      "key": "MATHEMATICS_IN_DATA_SCIENCE",
+      "name": "Mathematics in Data Science",
+      "school": "CIT"
+    },
+    {
+      "key": "MATHEMATICAL_FINANCE_AND_ACTUARIAL_SCIENCE",
+      "name": "Mathematical Finance and Actuarial Science",
+      "school": "CIT"
+    },
+    {
+      "key": "MATHEMATICS_IN_SCIENCE_AND_ENGINEERING",
+      "name": "Mathematics in Science and Engineering",
+      "school": "CIT"
+    },
+    {
+      "key": "TOPMATH",
+      "name": "TopMath",
+      "school": "CIT"
+    },
+    {
+      "key": "SOFTWARE_ENGINEERING",
+      "name": "Software Engineering",
+      "school": "CIT"
+    },
+    {
+      "key": "MANAGEMENT_AND_TECHNOLOGY",
+      "name": "Management and Technology",
+      "school": "MGT"
+    },
+    {
+      "key": "SUSTAINABLE_MANAGEMENT_AND_TECHNOLOGY",
+      "name": "Sustainable Management and Technology",
+      "school": "MGT"
+    },
+    {
+      "key": "MANAGEMENT_AND_DATA_SCIENCE",
+      "name": "Management and Data Science",
+      "school": "MGT"
+    },
+    {
+      "key": "MANAGEMENT",
+      "name": "Management",
+      "school": "MGT"
+    },
+    {
+      "key": "MANAGEMENT_AND_DIGITAL_TECHNOLOGY",
+      "name": "Management and Digital Technology",
+      "school": "MGT"
+    },
+    {
+      "key": "FINANCE_AND_INFORMATION_MANAGEMENT",
+      "name": "Finance and Information Management",
+      "school": "MGT"
+    },
+    {
+      "key": "CONSUMER_SCIENCE",
+      "name": "Consumer Science",
+      "school": "MGT"
+    },
+    {
+      "key": "AEROSPACE",
+      "name": "Aerospace",
+      "school": "ED"
+    },
+    {
+      "key": "ARCHITECTURE",
+      "name": "Architecture",
+      "school": "ED"
+    },
+    {
+      "key": "CIVIL_ENGINEERING",
+      "name": "Civil Engineering",
+      "school": "ED"
+    },
+    {
+      "key": "ENVIRONMENTAL_ENGINEERING",
+      "name": "Environmental Engineering",
+      "school": "ED"
+    },
+    {
+      "key": "GEODESY_AND_GEOINFORMATION",
+      "name": "Geodesy and Geoinformation",
+      "school": "ED"
+    },
+    {
+      "key": "MECHANICAL_ENGINEERING",
+      "name": "Mechanical Engineering",
+      "school": "ED"
+    },
+    {
+      "key": "MATERIALS_SCIENCE_AND_ENGINEERING",
+      "name": "Materials Science and Engineering",
+      "school": "ED"
+    },
+    {
+      "key": "PHYSICS",
+      "name": "Physics",
+      "school": "NAT"
+    },
+    {
+      "key": "CHEMISTRY",
+      "name": "Chemistry",
+      "school": "NAT"
+    },
+    {
+      "key": "BIOCHEMISTRY",
+      "name": "Biochemistry",
+      "school": "NAT"
+    },
+    {
+      "key": "BIOLOGY",
+      "name": "Biology",
+      "school": "NAT"
+    },
+    {
+      "key": "QUANTUM_SCIENCE_AND_TECHNOLOGY",
+      "name": "Quantum Science and Technology",
+      "school": "NAT"
+    },
+    {
+      "key": "MOLECULAR_BIOTECHNOLOGY",
+      "name": "Molecular Biotechnology",
+      "school": "LS"
+    },
+    {
+      "key": "NUTRITIONAL_SCIENCE",
+      "name": "Nutritional Science",
+      "school": "LS"
+    },
+    {
+      "key": "FOOD_TECHNOLOGY",
+      "name": "Food Technology",
+      "school": "LS"
+    },
+    {
+      "key": "BREWING_AND_BEVERAGE_TECHNOLOGY",
+      "name": "Brewing and Beverage Technology",
+      "school": "LS"
+    },
+    {
+      "key": "AGRICULTURAL_SCIENCES_AND_HORTICULTURAL_SCIENCES",
+      "name": "Agricultural Sciences and Horticultural Sciences",
+      "school": "LS"
+    },
+    {
+      "key": "AGRICULTURAL_BIOSCIENCES",
+      "name": "Agricultural Biosciences",
+      "school": "LS"
+    },
+    {
+      "key": "AGROSYSTEM_SCIENCES",
+      "name": "Agrosystem Sciences",
+      "school": "LS"
+    },
+    {
+      "key": "AGRIFOOD_ECONOMICS_POLICY_AND_REGULATION",
+      "name": "AgriFood Economics, Policy and Regulation",
+      "school": "LS"
+    },
+    {
+      "key": "HUMAN_MEDICINE",
+      "name": "Human Medicine",
+      "school": "MH"
+    },
+    {
+      "key": "SPORT_SCIENCE",
+      "name": "Sport Science",
+      "school": "MH"
+    },
+    {
+      "key": "POLITICAL_SCIENCE",
+      "name": "Political Science",
+      "school": "SOT"
+    },
+    {
+      "key": "SCIENCE_TECHNOLOGY_AND_SOCIETY",
+      "name": "Science, Technology and Society",
+      "school": "SOT"
+    },
+    {
+      "key": "AI_IN_SOCIETY",
+      "name": "AI in Society",
+      "school": "SOT"
+    },
+    {
+      "key": "OTHER",
+      "name": "Other",
+      "school": null
+    }
+  ]
+}

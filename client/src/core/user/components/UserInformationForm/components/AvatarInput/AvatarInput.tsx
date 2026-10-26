@@ -1,23 +1,12 @@
-import { getAvatar } from '@/core/utils/user'
-import AvatarEditor, { type AvatarEditorRef } from 'react-avatar-editor'
+import { CustomAvatar } from '@/core/components/CustomAvatar/CustomAvatar'
 import { useAuthenticationContext, useLoggedInUser } from '@/core/hooks/authentication'
-import {
-  Avatar,
-  Button,
-  Center,
-  Group,
-  Input,
-  Modal,
-  Slider,
-  Stack,
-  Text,
-  Tooltip,
-} from '@mantine/core'
+import { Avatar, Button, Group, Input, Stack, Text, Tooltip } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { doRequest } from '@/core/requests/request'
 import { showSimpleError } from '@/core/utils/notification'
 import type { IUser } from '@/core/user/requests/responses/user'
+import AvatarCropModal from '@/core/user/components/AvatarCropModal/AvatarCropModal'
 
 const IMPORT_TOOLTIP =
   'Imports your profile picture from Gravatar (gravatar.com), a US-based service.' +
@@ -34,31 +23,29 @@ interface IAvatarInputProps {
 const AvatarInput = (props: IAvatarInputProps) => {
   const { value, onChange, label, required } = props
 
-  const editorRef = useRef<AvatarEditorRef | null>(null)
   const { updateUser } = useAuthenticationContext()
   const user = useLoggedInUser()
 
-  const avatarUrl = useMemo(() => {
-    return value ? URL.createObjectURL(value) : getAvatar(user)
-  }, [user, value])
+  // Preview of a picture that was chosen but not saved yet. The object URL is created and revoked in the same
+  // effect, so a render that is thrown away (or a Strict Mode remount) can neither leak nor break it.
+  const [previewUrl, setPreviewUrl] = useState<string>()
 
-  const [file, setFile] = useState<File>()
-  const [scale, setScale] = useState(1)
-  const [importLoading, setImportLoading] = useState(false)
-
-  const onSave = async () => {
-    const canvas = editorRef.current?.getImageScaledToCanvas().toDataURL()
-
-    if (!canvas) {
+  useEffect(() => {
+    if (!value) {
+      setPreviewUrl(undefined)
       return
     }
 
-    const data = await fetch(canvas).then((res) => res.blob())
+    const url = URL.createObjectURL(value)
+    setPreviewUrl(url)
 
-    onChange(new File([data], 'avatar.png'))
-    setFile(undefined)
-    setScale(1)
-  }
+    return () => {
+      URL.revokeObjectURL(url)
+    }
+  }, [value])
+
+  const [file, setFile] = useState<File>()
+  const [importLoading, setImportLoading] = useState(false)
 
   const importProfilePicture = async () => {
     setImportLoading(true)
@@ -92,12 +79,18 @@ const AvatarInput = (props: IAvatarInputProps) => {
         accept={IMAGE_MIME_TYPE}
       >
         <Group>
-          <Avatar
-            src={avatarUrl}
-            name={`${user.firstName} ${user.lastName}`}
-            color='initials'
-            size='xl'
-          />
+          {previewUrl ? (
+            <Avatar
+              src={previewUrl}
+              name={`${user.firstName} ${user.lastName}`}
+              color='initials'
+              size='xl'
+            />
+          ) : (
+            // The saved picture is only served to signed-in users (and publicly listed people), so it has to
+            // be loaded with the login token; a plain image URL shows initials for most users.
+            <CustomAvatar user={user} size='xl' />
+          )}
           <Stack>
             <Text size='xl' inline>
               Drag the file here or click to select file
@@ -121,33 +114,14 @@ const AvatarInput = (props: IAvatarInputProps) => {
           </Tooltip>
         </Group>
       )}
-      <Modal opened={Boolean(file)} onClose={() => setFile(undefined)}>
-        {file && (
-          <Stack>
-            <Center>
-              <AvatarEditor
-                ref={editorRef}
-                image={file}
-                width={300}
-                height={300}
-                border={20}
-                scale={scale}
-                color={[255, 255, 255, 0.6]}
-                rotate={0}
-              />
-            </Center>
-            <Slider value={scale} onChange={(x) => setScale(x)} min={1} max={3} step={0.1} />
-            <Button
-              onClick={() => {
-                void onSave()
-              }}
-              fullWidth
-            >
-              Save Avatar
-            </Button>
-          </Stack>
-        )}
-      </Modal>
+      <AvatarCropModal
+        file={file}
+        onClose={() => setFile(undefined)}
+        onSave={(cropped) => {
+          onChange(cropped)
+          setFile(undefined)
+        }}
+      />
     </Input.Wrapper>
   )
 }

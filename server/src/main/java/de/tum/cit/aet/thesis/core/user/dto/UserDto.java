@@ -12,6 +12,7 @@ import java.util.UUID;
 public record UserDto(
 		UUID userId,
 		String avatar,
+		boolean avatarPromptDismissed,
 		String universityId,
 		String matriculationNumber,
 		String email,
@@ -21,6 +22,7 @@ public record UserDto(
 		String nationality,
 		String studyDegree,
 		String studyProgram,
+		UUID studyProgramId,
 		String projects,
 		String interests,
 		String specialSkills,
@@ -41,9 +43,10 @@ public record UserDto(
 		}
 
 		return new UserDto(
-				user.getId(), user.getAdjustedAvatar(), user.getUniversityId(), user.getMatriculationNumber(), user.getEmail() != null ? user.getEmail().toString() : null,
+				user.getId(), user.getAdjustedAvatar(), user.isAvatarPromptDismissed(),
+				user.getUniversityId(), user.getMatriculationNumber(), user.getEmail() != null ? user.getEmail().toString() : null,
 				user.getFirstName(), user.getLastName(), user.getGender(), user.getNationality(),
-				user.getStudyDegree(), user.getStudyProgram(), user.getProjects(), user.getInterests(),
+				user.getStudyDegree(), user.getStudyProgramName(), user.getStudyProgram() == null ? null : user.getStudyProgram().getId(), user.getProjects(), user.getInterests(),
 				user.getSpecialSkills(), user.getCustomData(), user.getEnrolledAt(), user.getUpdatedAt(), user.getJoinedAt(),
 				user.getGroups() == null ? Collections.emptySet() : new HashSet<>(user.getGroups().stream().map(x -> x.getId().getGroup()).toList()),
 				user.getResearchGroup() == null ? "" : user.getResearchGroup().getName(),

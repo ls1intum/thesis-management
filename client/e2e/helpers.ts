@@ -36,6 +36,17 @@ export async function navigateToDetail(
 }
 
 /**
+ * Navigate to the standalone Configuration page for a thesis and wait for the
+ * "Update" button to become visible so tests can start interacting with the
+ * form. Only supervisors/examiners/admins reach this page; students are
+ * redirected to /theses/:id by the page component itself.
+ */
+export async function navigateToThesisConfig(page: Page, thesisId: string) {
+  await navigateTo(page, `/theses/${thesisId}/configuration`)
+  await expect(page.getByRole('button', { name: 'Update' })).toBeVisible({ timeout: 15_000 })
+}
+
+/**
  * Use a specific auth state file for a test.
  */
 export function authStatePath(
@@ -156,16 +167,21 @@ export async function searchAndSelectMultiSelect(page: Page, label: string, opti
  * click sometimes doesn't register, so this helper retries up to
  * {@link maxAttempts} times.
  *
+ * Pass a string `section` to locate the accordion by its label text, or pass
+ * a `Locator` when the caller has already resolved the specific item (useful
+ * when multiple accordions share the same label — e.g. the Overview and
+ * Writing sections each expose a "Comments" accordion).
+ *
  * @param contentLocator  A locator for an element inside the accordion panel
  *                        that becomes visible only when the panel is expanded.
  */
 export async function expandAccordion(
   page: Page,
-  sectionLabel: string,
+  section: string | Locator,
   contentLocator: Locator,
   maxAttempts = 3,
 ) {
-  const item = getAccordionItem(page, sectionLabel)
+  const item = typeof section === 'string' ? getAccordionItem(page, section) : section
   const control = item.locator('.mantine-Accordion-control').first()
   await control.waitFor({ state: 'visible', timeout: 10_000 })
 
@@ -197,6 +213,20 @@ export function getAccordionItem(page: Page, sectionLabel: string) {
         has: page.getByText(sectionLabel, { exact: true }),
       }),
     })
+    .first()
+}
+
+/**
+ * Locate the "Comments" accordion inside the merged Overview section (the
+ * supervisor-only one that carries the "Not visible to student" badge). This
+ * disambiguates from the WRITING section's separate "Comments" accordion,
+ * which uses the same label but has no badge.
+ */
+export function getSupervisorCommentsAccordion(page: Page) {
+  return page
+    .locator('.mantine-Accordion-item')
+    .filter({ hasText: 'Comments' })
+    .filter({ hasText: 'Not visible to student' })
     .first()
 }
 
@@ -280,4 +310,43 @@ export async function logoutWithApi(context: BrowserContext) {
   await context.request.delete(`${SERVER_ORIGIN}/api/v2/auth/session`, {
     headers: { 'X-CSRF-Token': csrfToken },
   })
+}
+
+/**
+ * Create a valid PDF buffer with a real "Abstract" section so the server's abstract
+ * extractor can confidently extract it. The body contains a line-end hyphenation
+ * ("com-" / "prehensive") that must be rejoined into "comprehensive", and a
+ * "1 Introduction" heading that bounds the abstract.
+ */
+export function createAbstractTestPdfBuffer(): Buffer {
+  const content =
+    'BT /F1 14 Tf 72 720 Td (Abstract) Tj ET\n' +
+    'BT /F1 10 Tf 72 695 Td (This thesis presents a com-) Tj ET\n' +
+    'BT /F1 10 Tf 72 680 Td (prehensive evaluation of automated review systems.) Tj ET\n' +
+    'BT /F1 14 Tf 72 650 Td (1 Introduction) Tj ET\n' +
+    'BT /F1 10 Tf 72 625 Td (The introduction begins here with more detail.) Tj ET\n'
+
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+    `<< /Length ${Buffer.byteLength(content)} >>\nstream\n${content}endstream`,
+  ]
+
+  let pdf = '%PDF-1.4\n'
+  const offsets: number[] = []
+  objects.forEach((body, index) => {
+    offsets.push(Buffer.byteLength(pdf))
+    pdf += `${index + 1} 0 obj\n${body}\nendobj\n`
+  })
+
+  const xrefOffset = Buffer.byteLength(pdf)
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`
+  offsets.forEach((offset) => {
+    pdf += `${String(offset).padStart(10, '0')} 00000 n \n`
+  })
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`
+
+  return Buffer.from(pdf, 'latin1')
 }

@@ -31,6 +31,8 @@ const GeneralResearchGroupSettings = ({
           campus: values.campus,
           description: values.description,
           websiteUrl: values.websiteUrl,
+          schoolId: values.schoolId,
+          departmentId: values.departmentId,
         },
       },
       (res) => {
@@ -61,6 +63,8 @@ const GeneralResearchGroupSettings = ({
           description: researchGroupData?.description,
           websiteUrl: researchGroupData?.websiteUrl,
           head: researchGroupData?.head,
+          school: researchGroupData?.school,
+          department: researchGroupData?.department,
         }}
         onSubmit={handleSubmit}
         submitLabel='Save Changes'

@@ -189,6 +189,9 @@ if is_port_open 3100; then
   kill_pid "client"
   wait_for_port_release 3100
 fi
+# The dev server profile enables AI features (thesis-management.ai.enabled=true), so mirror
+# that on the client bundle to keep the AI feedback buttons visible for ai-feedback.spec.ts.
+export AI_FEATURES_ENABLED=true
 log "Building client (production)..."
 (cd "$CLIENT_DIR" && pnpm build > "$ROOT_DIR/.e2e-client-build.log" 2>&1) || {
   err "Client build failed. See $ROOT_DIR/.e2e-client-build.log"

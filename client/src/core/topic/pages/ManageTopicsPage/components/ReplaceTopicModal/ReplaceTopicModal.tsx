@@ -26,7 +26,7 @@ import { useTopicsContext } from '@/core/topic/providers/TopicsProvider/hooks'
 import { formatThesisType } from '@/core/utils/format'
 import type { PaginationResponse } from '@/core/requests/responses/pagination'
 import type { ILightResearchGroup } from '@/core/group/requests/responses/researchGroup'
-import type { ILightUser } from '@/core/user/requests/responses/user'
+import type { IMinimalUser } from '@/core/user/requests/responses/user'
 import { useHasGroupAccess, useUser } from '@/core/hooks/authentication'
 import { DateInput } from '@mantine/dates'
 
@@ -46,7 +46,7 @@ const ReplaceTopicModal = (props: ICreateTopicModalProps) => {
 
   const { addTopic, updateTopic } = useTopicsContext()
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
-  const [autoSelectedExaminers, setAutoSelectedExaminers] = useState<ILightUser[]>([])
+  const [autoSelectedExaminers, setAutoSelectedExaminers] = useState<IMinimalUser[]>([])
   const hasAdminAccess = useHasGroupAccess('admin')
   const currentUser = useUser()
   // Only admins can actually move a topic between research groups: the server

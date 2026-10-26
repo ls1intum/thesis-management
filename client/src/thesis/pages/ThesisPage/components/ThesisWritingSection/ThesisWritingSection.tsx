@@ -3,7 +3,11 @@ import { ThesisState } from '@/thesis/requests/responses/thesis'
 import { Accordion, Center, Grid, Group, Stack, Text, Table, Alert } from '@mantine/core'
 import ConfirmationButton from '@/core/components/ConfirmationButton/ConfirmationButton'
 import { doRequest } from '@/core/requests/request'
-import { checkMinimumThesisState, isThesisClosed } from '@/thesis/utils/thesis'
+import {
+  checkMinimumThesisState,
+  getThesisSubmissionPortalUrl,
+  isThesisClosed,
+} from '@/thesis/utils/thesis'
 import {
   useLoadedThesisContext,
   useThesisUpdateAction,
@@ -21,6 +25,9 @@ import { AuthenticatedFileDownloadButton } from '@/core/components/Authenticated
 import { AuthenticatedFilePreviewButton } from '@/core/components/AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
 import { DownloadSimple, Eye, UploadSimple, WarningCircle } from '@phosphor-icons/react'
 import FileHistoryTable from '@/thesis/pages/ThesisPage/components/FileHistoryTable/FileHistoryTable'
+import ThesisFeedbackOverview from '@/thesis/pages/ThesisPage/components/ThesisFeedbackOverview/ThesisFeedbackOverview'
+import ThesisFeedbackRequestButton from '@/thesis/pages/ThesisPage/components/ThesisFeedbackRequestButton/ThesisFeedbackRequestButton'
+import ThesisAIFeedbackButton from '@/thesis/pages/ThesisPage/components/ThesisAIFeedbackButton/ThesisAIFeedbackButton'
 
 const ThesisWritingSection = () => {
   const { thesis, access, updateThesis } = useLoadedThesisContext()
@@ -99,7 +106,7 @@ const ThesisWritingSection = () => {
   const thesisSubmissionReminder = (
     <>
       This is not the official submission website. Please also make sure to submit your thesis{' '}
-      <a href='https://portal.cit.tum.de/' target='_blank' rel='noopener noreferrer'>
+      <a href={getThesisSubmissionPortalUrl(thesis)} target='_blank' rel='noopener noreferrer'>
         here
       </a>
       .
@@ -308,6 +315,18 @@ const ThesisWritingSection = () => {
           )}
 
           <Stack mt='md'>
+            <ThesisFeedbackOverview
+              type='THESIS'
+              allowEdit={thesis.state === ThesisState.WRITING}
+            />
+            <Group ml='auto'>
+              {thesisFile && access.student && thesis.state === ThesisState.WRITING && (
+                <ThesisAIFeedbackButton type='THESIS' />
+              )}
+              {thesisFile && access.supervisor && thesis.state === ThesisState.WRITING && (
+                <ThesisFeedbackRequestButton type='THESIS' />
+              )}
+            </Group>
             {access.student && thesis.state === ThesisState.WRITING && (
               <ConfirmationButton
                 confirmationTitle='Final Submission'

@@ -70,6 +70,19 @@ services:
       - KEYCLOAK_SERVICE_CLIENT_ID
       - KEYCLOAK_SERVICE_CLIENT_SECRET
       - MAIL_SENDER
+      # Pre-fills schools, departments and study programs on first start (e.g. `tum`); empty for none
+      - REFERENCE_DATA_PRESET
+      # Shared with the client below: gates the AI feedback module. Both services must agree,
+      # otherwise the client shows AI buttons the server answers with 404 (or vice versa).
+      - AI_FEATURES_ENABLED
+      # LLM backend for the AI feedback module. Only consulted when AI_FEATURES_ENABLED=true;
+      # each is optional and falls back to the application.yml default when unset.
+      - OPENAI_API_KEY
+      - OPENAI_BASE_URL
+      - OPENAI_CHAT_MODEL
+      - OPENAI_CHAT_TEMPERATURE
+      - OPENAI_TIMEOUT
+      - AI_REVIEW_INCLUDE_IMAGES
     networks:
       - thesis-management-network
 
@@ -97,8 +110,11 @@ services:
       - PASSKEY_RP_NAME
       - PASSKEY_PROMPT_APPS
       - ALLOW_SUGGESTED_TOPICS
+      # Shared with the server above: must match so AI buttons are only shown when the
+      # server actually serves the /v2/ai-review endpoints.
+      - AI_FEATURES_ENABLED
       - THESIS_TYPES
-      - STUDY_PROGRAMS
+      - THESIS_PORTAL_URL
       - STUDY_DEGREES
       - GENDERS
       - LANGUAGES
@@ -113,7 +129,7 @@ services:
       - thesis-management-network
 
   db:
-    image: "postgres:${POSTGRES_IMAGE_TAG:-18.4-alpine}"
+    image: "postgres:${POSTGRES_IMAGE_TAG:-18.6-alpine}"
     container_name: thesis-management-db
     environment:
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}

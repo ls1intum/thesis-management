@@ -1,7 +1,7 @@
 package de.tum.cit.aet.thesis.interview.dto;
 
 import de.tum.cit.aet.thesis.core.application.constants.ApplicationState;
-import de.tum.cit.aet.thesis.core.user.dto.LightUserDto;
+import de.tum.cit.aet.thesis.core.user.dto.MinimalUserDto;
 import de.tum.cit.aet.thesis.interview.entity.InterviewSlot;
 import de.tum.cit.aet.thesis.interview.entity.Interviewee;
 
@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public record IntervieweeLightWithNextSlotDto(
 	UUID intervieweeId,
-	LightUserDto user,
+	MinimalUserDto user,
 	int score,
 	Instant lastInvited,
 	InterviewSlotDto nextSlot,
@@ -23,7 +23,7 @@ public record IntervieweeLightWithNextSlotDto(
 
 		return new IntervieweeLightWithNextSlotDto(
 				interviewee.getIntervieweeId(),
-				LightUserDto.fromUserEntity(interviewee.getApplication().getUser()),
+				MinimalUserDto.fromUserEntity(interviewee.getApplication().getUser()),
 				score,
 				interviewee.getLastInvited(),
 				nextSlot != null ? InterviewSlotDto.fromInterviewSlot(nextSlot) : null,

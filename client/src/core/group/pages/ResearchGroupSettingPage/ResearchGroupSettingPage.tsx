@@ -15,6 +15,7 @@ import PresentationSettingsCard from '@/core/group/pages/ResearchGroupSettingPag
 import ProposalSettingsCard from '@/core/group/pages/ResearchGroupSettingPage/components/ProposalSettingsCard'
 import EmailSettingsCard from '@/core/group/pages/ResearchGroupSettingPage/components/EmailSettingsCard'
 import ScientificWritingGuideSettingsCard from '@/core/group/pages/ResearchGroupSettingPage/components/ScientificWritingGuideSettingsCard'
+import AIReviewGuidelinesSettingsCard from '@/core/group/pages/ResearchGroupSettingPage/components/AIReviewGuidelinesSettingsCard'
 import ApplicationEmailContentSettingsCard from '@/core/group/pages/ResearchGroupSettingPage/components/ApplicationEmailContentSettingsCard'
 import GradingSchemeSettingsCard from '@/core/group/pages/ResearchGroupSettingPage/components/GradingSchemeSettingsCard'
 
@@ -128,6 +129,7 @@ const ResearchGroupSettingPage = () => {
                     )
                   }
                 />
+                <AIReviewGuidelinesSettingsCard />
                 {!researchGroupSettingsLoading && (
                   <>
                     <ApplicationPhaseSettingsCard
