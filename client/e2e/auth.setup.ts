@@ -132,26 +132,26 @@ for (const user of TEST_USERS) {
     // Wait for redirect back to the app and the dashboard to load
     await expect(page).toHaveURL(/localhost:\d+/, { timeout: 30_000 })
 
-    // Wait for the app to fully initialize with the auth tokens
-    await page.waitForFunction(
-      () => {
-        try {
-          const tokens = localStorage.getItem('authentication_tokens')
-          if (!tokens) return false
-          const parsed = JSON.parse(tokens)
-          return !!parsed.access_token && !!parsed.refresh_token
-        } catch {
-          return false
-        }
-      },
-      { timeout: 15_000 },
-    )
+    // The application session lives in an HttpOnly cookie that scripts cannot read, so wait for it in the
+    // browser context (the app creates it right after the redirect back from Keycloak)
+    await expect
+      .poll(
+        async () =>
+          (await page.context().cookies()).some(
+            (cookie) => cookie.name === 'sid' || cookie.name === '__Host-sid',
+          ),
+        { timeout: 15_000 },
+      )
+      .toBe(true)
+
+    // Authentication tokens must never be stored where scripts can read them
+    expect(await page.evaluate(() => localStorage.getItem('authentication_tokens'))).toBeNull()
 
     await page.evaluate((storageKey) => {
       localStorage.setItem(storageKey, 'true')
     }, DISABLE_PASSKEY_PROMPT_STORAGE_KEY)
 
-    // Save the authenticated state (localStorage + cookies including Keycloak session)
+    // Save the authenticated state (localStorage + cookies: application session and Keycloak session)
     await page.context().storageState({ path: `e2e/.auth/${user.name}.json` })
   })
 }
