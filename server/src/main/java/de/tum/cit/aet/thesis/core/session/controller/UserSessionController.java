@@ -72,7 +72,9 @@ public class UserSessionController {
 	public ResponseEntity<SessionInfoDto> createSession(JwtAuthenticationToken jwt, HttpServletRequest request) {
 		User user = authenticationService.updateAuthenticatedUser(jwt);
 
-		// logging in while the browser still holds a session of this user replaces it
+		// Logging in while the browser still holds a session of this user replaces it, so logging in twice does not
+		// leave an orphaned session. A cookie of a different user (shared computer, no logout) is not touched: it
+		// belongs to that user, is overwritten by this response and ends with that user's idle timeout.
 		cookies.read(request).ifPresent(cookieValue -> sessionService.replaceExisting(cookieValue, user));
 
 		Created created = sessionService.create(user, ClientInfo.from(request));

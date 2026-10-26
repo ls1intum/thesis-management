@@ -295,6 +295,36 @@ class UserSessionServiceIntegrationTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	void preRotationCookie_isRejectedOnceTheReplacementWasEnded() {
+		User user = createUser("svc-reverse-grace");
+		Created created = sessionService.create(user, client(CHROME_MAC_130));
+		sessionService.markForRotation(user.getId());
+		Authenticated rotated = authenticated(authenticate(created));
+
+		// the user logs out with the replacement; a copy of the pre-rotation value must not outlive that
+		at(Duration.ofSeconds(5));
+		sessionService.end(rotated.session(), UserSessionEndReason.LOGOUT);
+
+		at(Duration.ofSeconds(10));
+		assertThat(rejected(authenticate(created)).reason()).isEqualTo(Reason.ENDED);
+	}
+
+	@Test
+	void preRotationCookie_stillWorksInsideGraceAfterTheSessionRotatedTwice() {
+		User user = createUser("svc-double-rotation");
+		Created created = sessionService.create(user, client(CHROME_MAC_130));
+		sessionService.markForRotation(user.getId());
+		Authenticated first = authenticated(authenticate(created));
+
+		at(Duration.ofSeconds(5));
+		sessionService.markForRotation(user.getId());
+		authenticated(sessionService.authenticate(first.newCookieValue().orElseThrow(), client(CHROME_MAC_130)));
+
+		at(Duration.ofSeconds(10));
+		authenticated(authenticate(created));
+	}
+
+	@Test
 	void replaceExisting_endsTheCallersCurrentSessionOnlyForTheSameUser() {
 		User user = createUser("svc-replace");
 		User other = createUser("svc-replace-other");

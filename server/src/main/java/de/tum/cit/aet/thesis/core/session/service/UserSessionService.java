@@ -247,7 +247,10 @@ public class UserSessionService {
 		UUID next = session.getSupersededBy();
 
 		for (int hops = 0; next != null && hops < MAX_ROTATION_HOPS; hops++) {
-			repository.endById(next, now, reason);
+			if (repository.endById(next, now, reason) > 0) {
+				log.info("Session {} of user {} ended with its predecessor: {}", next, session.getUserId(), reason);
+			}
+
 			next = repository.findById(next).map(UserSession::getSupersededBy).orElse(null);
 		}
 	}
@@ -363,10 +366,36 @@ public class UserSessionService {
 			return new Rejected(Reason.SUPERSEDED_EXPIRED);
 		}
 
-		// A parallel request that still carries the cookie value from before a rotation.
+		// A parallel request that still carries the cookie value from before a rotation. It is only accepted
+		// while the session it was rotated into is alive: after a logout the old value must not live on.
+		if (!replacementIsAlive(session.getSupersededBy())) {
+			return new Rejected(Reason.ENDED);
+		}
+
 		return loadUsableUser(session)
 				.<AuthResult>map(user -> new Authenticated(session, user, Optional.empty()))
 				.orElseGet(() -> new Rejected(Reason.USER_GONE));
+	}
+
+	/** Follows a rotation chain (a session may rotate again within the grace window) to its newest session. */
+	private boolean replacementIsAlive(UUID replacementId) {
+		UUID next = replacementId;
+
+		for (int hops = 0; next != null && hops < MAX_ROTATION_HOPS; hops++) {
+			Optional<UserSession> replacement = repository.findById(next);
+
+			if (replacement.isEmpty()) {
+				return false;
+			}
+
+			if (replacement.get().getEndedAt() == null) {
+				return true;
+			}
+
+			next = replacement.get().getEndReason() == UserSessionEndReason.ROTATED ? replacement.get().getSupersededBy() : null;
+		}
+
+		return false;
 	}
 
 	private Optional<User> loadUsableUser(UserSession session) {
