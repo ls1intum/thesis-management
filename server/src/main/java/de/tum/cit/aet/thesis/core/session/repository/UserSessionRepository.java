@@ -24,6 +24,8 @@ public interface UserSessionRepository extends JpaRepository<UserSession, UUID> 
 
 	List<UserSession> findByEndedAtIsNullAndExpiresAtBefore(Instant now);
 
+	List<UserSession> findByEndedAtIsNullAndLastUsedAtBefore(Instant cutoff);
+
 	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Transactional
 	@Query("UPDATE UserSession s SET s.rotationRequired = TRUE WHERE s.userId = :userId AND s.endedAt IS NULL")
@@ -33,6 +35,27 @@ public interface UserSessionRepository extends JpaRepository<UserSession, UUID> 
 	@Transactional
 	@Query("UPDATE UserSession s SET s.endedAt = :endedAt, s.endReason = :reason WHERE s.userId = :userId AND s.endedAt IS NULL")
 	int endAllForUser(@Param("userId") UUID userId, @Param("endedAt") Instant endedAt, @Param("reason") UserSessionEndReason reason);
+
+	/**
+	 * Atomically takes over the pending rotation of a session. Returns 1 for exactly one caller, so
+	 * parallel requests do not each create a replacement session.
+	 */
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Transactional
+	@Query("UPDATE UserSession s SET s.rotationRequired = FALSE WHERE s.id = :id AND s.rotationRequired = TRUE AND s.endedAt IS NULL")
+	int claimRotation(@Param("id") UUID id);
+
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Transactional
+	@Query("UPDATE UserSession s SET s.endedAt = :endedAt, s.endReason = :reason WHERE s.id = :id AND s.endedAt IS NULL")
+	int endById(@Param("id") UUID id, @Param("endedAt") Instant endedAt, @Param("reason") UserSessionEndReason reason);
+
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Transactional
+	@Query("UPDATE UserSession s SET s.endedAt = :endedAt, s.endReason = de.tum.cit.aet.thesis.core.session.entity.UserSessionEndReason.ROTATED, "
+			+ "s.supersededBy = :supersededBy, s.supersededUntil = :supersededUntil WHERE s.id = :id AND s.endedAt IS NULL")
+	int markRotated(@Param("id") UUID id, @Param("endedAt") Instant endedAt, @Param("supersededBy") UUID supersededBy,
+					@Param("supersededUntil") Instant supersededUntil);
 
 	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Transactional

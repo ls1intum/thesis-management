@@ -16,6 +16,7 @@ import de.tum.cit.aet.thesis.core.group.repository.EmailTemplateRepository;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupSettingsRepository;
 import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.session.repository.UserSessionRepository;
 import de.tum.cit.aet.thesis.core.topic.controller.payload.ReplaceTopicPayload;
 import de.tum.cit.aet.thesis.core.topic.repository.TopicRepository;
 import de.tum.cit.aet.thesis.core.topic.repository.TopicRoleRepository;
@@ -136,6 +137,9 @@ public abstract class BaseIntegrationTest {
 	private UserRepository userRepository;
 
 	@Autowired
+	private UserSessionRepository userSessionRepository;
+
+	@Autowired
 	protected MockMvc mockMvc;
 
 	@Autowired
@@ -221,6 +225,7 @@ public abstract class BaseIntegrationTest {
 		jdbcTemplate.execute("UPDATE research_groups SET head_user_id = NULL, created_by = NULL, updated_by = NULL");
 
 		researchGroupSettingsRepository.deleteAll();
+		userSessionRepository.deleteAll();
 		userGroupRepository.deleteAll();
 		researchGroupRepository.deleteAll();
 		userRepository.deleteAll();

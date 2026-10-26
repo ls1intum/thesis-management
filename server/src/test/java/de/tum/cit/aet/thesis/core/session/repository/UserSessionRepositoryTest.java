@@ -129,6 +129,41 @@ class UserSessionRepositoryTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	void claimRotation_succeedsOnlyOnceAndOnlyForFlaggedSessions() {
+		User user = createUser("session-user-7");
+		UserSession flagged = newSession(user.getId(), "identifier-7a");
+		UserSession plain = newSession(user.getId(), "identifier-7b");
+		userSessionRepository.markRotationRequiredForUser(user.getId());
+		plain.setRotationRequired(false);
+		userSessionRepository.save(plain);
+
+		assertThat(userSessionRepository.claimRotation(flagged.getId())).isEqualTo(1);
+		assertThat(userSessionRepository.claimRotation(flagged.getId())).isZero();
+		assertThat(userSessionRepository.claimRotation(plain.getId())).isZero();
+		assertThat(userSessionRepository.findById(flagged.getId()).orElseThrow().isRotationRequired()).isFalse();
+	}
+
+	@Test
+	void findIdleCandidates_returnsActiveSessionsNotUsedSince() {
+		User user = createUser("session-user-8");
+		Instant now = Instant.now();
+		UserSession stale = newSession(user.getId(), "identifier-8a");
+		stale.setLastUsedAt(now.minus(5, ChronoUnit.HOURS));
+		userSessionRepository.save(stale);
+		UserSession fresh = newSession(user.getId(), "identifier-8b");
+		UserSession endedStale = newSession(user.getId(), "identifier-8c");
+		endedStale.setLastUsedAt(now.minus(6, ChronoUnit.HOURS));
+		endedStale.setEndedAt(now);
+		endedStale.setEndReason(UserSessionEndReason.LOGOUT);
+		userSessionRepository.save(endedStale);
+
+		List<UserSession> candidates = userSessionRepository.findByEndedAtIsNullAndLastUsedAtBefore(now.minus(4, ChronoUnit.HOURS));
+
+		assertThat(candidates).extracting(UserSession::getId).containsExactly(stale.getId());
+		assertThat(candidates).doesNotContain(fresh);
+	}
+
+	@Test
 	void deletingUser_cascadesToSessions() {
 		User user = createUser("session-user-6");
 		UserSession session = newSession(user.getId(), "identifier-6");

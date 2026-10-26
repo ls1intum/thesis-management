@@ -4,6 +4,7 @@ import dasniko.testcontainers.keycloak.KeycloakContainer;
 import de.tum.cit.aet.thesis.core.application.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.core.application.repository.ApplicationReviewerRepository;
 import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.session.repository.UserSessionRepository;
 import de.tum.cit.aet.thesis.core.topic.repository.TopicRepository;
 import de.tum.cit.aet.thesis.core.topic.repository.TopicRoleRepository;
 import de.tum.cit.aet.thesis.core.user.repository.UserGroupRepository;
@@ -116,6 +117,9 @@ public abstract class BaseKeycloakIntegrationTest {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private UserSessionRepository userSessionRepository;
+
 	@DynamicPropertySource
 	static void configureProperties(DynamicPropertyRegistry registry) {
 		DB_CONTAINER.start();
@@ -190,6 +194,7 @@ public abstract class BaseKeycloakIntegrationTest {
 		thesisRepository.deleteAll();
 		applicationRepository.deleteAll();
 		topicRepository.deleteAll();
+		userSessionRepository.deleteAll();
 		userGroupRepository.deleteAll();
 
 		userRepository.deleteAll();
