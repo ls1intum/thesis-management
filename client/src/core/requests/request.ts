@@ -1,5 +1,5 @@
 import { GLOBAL_CONFIG } from '@/core/config/global'
-import { keycloak } from '@/core/providers/AuthenticationContext/AuthenticationProvider'
+import { getCsrfToken, recoverSession } from '@/core/auth/session'
 
 export type ApiResponse<T> =
   | { ok: true; status: number; data: T }
@@ -30,21 +30,7 @@ export function doRequest<T>(
 ): Promise<ApiResponse<T>> | (() => void) {
   const controller = options.controller ?? new AbortController()
 
-  const executeRequest = async (): Promise<ApiResponse<T>> => {
-    if (options.requiresAuth && keycloak.isTokenExpired(5)) {
-      const updateSuccess = await keycloak.updateToken(5 * 60)
-
-      if (!updateSuccess) {
-        throw new Error('Failed to refresh access token. Please try to refresh the page')
-      }
-    }
-
-    const jwtToken = keycloak.token
-
-    if (options.requiresAuth && !jwtToken) {
-      throw new Error('User not authenticated')
-    }
-
+  const executeRequest = async (isReplay = false): Promise<ApiResponse<T>> => {
     const params = new URLSearchParams()
 
     if (options.params) {
@@ -57,15 +43,24 @@ export function doRequest<T>(
       throw new Error('Cannot send both data and formData')
     }
 
+    const csrfToken = options.method === 'GET' ? undefined : getCsrfToken()
+
     const result = await fetch(`${GLOBAL_CONFIG.server_host}/api${url}?${params.toString()}`, {
       method: options.method,
+      credentials: 'include',
       headers: {
-        ...(options.requiresAuth ? { Authorization: `Bearer ${jwtToken}` } : {}),
+        ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
         ...(options.data ? { 'Content-Type': 'application/json' } : {}),
       },
       body: options.formData ?? (options.data ? JSON.stringify(options.data) : undefined),
       signal: controller.signal,
     })
+
+    // The session ended (24 hour limit, ended from another device). A 401 means the server rejected
+    // the request before processing it, so replaying it once after a silent re-login is safe.
+    if (result.status === 401 && options.requiresAuth && !isReplay && (await recoverSession())) {
+      return executeRequest(true)
+    }
 
     if (result.status >= 200 && result.status < 300) {
       return {

@@ -1,6 +1,5 @@
 import { use } from 'react'
 import { AuthenticationContext } from '@/core/providers/AuthenticationContext/context'
-import { useLocalStorage } from '@/core/hooks/local-storage'
 
 export function useAuthenticationContext() {
   const context = use(AuthenticationContext)
@@ -29,29 +28,6 @@ export function useLoggedInUser() {
   }
 
   return user
-}
-
-export interface IAuthenticationTokens {
-  access_token: string
-  refresh_token: string
-}
-
-export function useAuthenticationTokens() {
-  return useLocalStorage<IAuthenticationTokens>('authentication_tokens', { usingJson: true })
-}
-
-export function getAuthenticationTokens(): IAuthenticationTokens | undefined {
-  try {
-    const data = localStorage.getItem('authentication_tokens')
-
-    if (data) {
-      return JSON.parse(data)
-    }
-
-    return undefined
-  } catch {
-    return undefined
-  }
 }
 
 export function useHasGroupAccess(...groups: string[]) {
