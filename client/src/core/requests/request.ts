@@ -1,5 +1,5 @@
 import { GLOBAL_CONFIG } from '@/core/config/global'
-import { getCsrfToken, recoverSession } from '@/core/auth/session'
+import { getCsrfToken, recoverSession, refreshCsrfToken } from '@/core/auth/session'
 
 export type ApiResponse<T> =
   | { ok: true; status: number; data: T }
@@ -75,6 +75,16 @@ export function doRequest<T>(
     // the request before processing it, so replaying it once after a silent re-login is safe.
     if (result.status === 401 && options.requiresAuth && !isReplay && (await recoverSession())) {
       return executeRequest(true)
+    }
+
+    // A 403 for a request that carried a CSRF token may mean that another tab replaced the session and with it
+    // the token. Replay once if the token really changed; otherwise it is an ordinary permission error.
+    if (result.status === 403 && csrfToken && !isReplay) {
+      const refreshedToken = await refreshCsrfToken()
+
+      if (refreshedToken && refreshedToken !== csrfToken) {
+        return executeRequest(true)
+      }
     }
 
     if (result.status >= 200 && result.status < 300) {

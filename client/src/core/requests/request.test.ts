@@ -117,6 +117,42 @@ describe('doRequest', () => {
     expect(handler).toHaveBeenCalledTimes(1)
   })
 
+  it('resyncs a stale CSRF token on 403 (session replaced in another tab) and replays once', async () => {
+    setCsrfToken('old-token')
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(403))
+      .mockResolvedValueOnce(jsonResponse(200, { csrfToken: 'new-token', expiresAt: 'x' }))
+      .mockResolvedValueOnce(jsonResponse(200, { done: true }))
+
+    const result = await doRequest('/v2/x', { method: 'POST', requiresAuth: true, data: { a: 1 } })
+
+    expect(result.ok).toBe(true)
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+    expect(fetchMock.mock.calls[0][1].headers['X-CSRF-Token']).toBe('old-token')
+    expect(fetchMock.mock.calls[2][1].headers['X-CSRF-Token']).toBe('new-token')
+  })
+
+  it('returns a 403 unchanged when the CSRF token is still current (a real permission error)', async () => {
+    setCsrfToken('same-token')
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(403))
+      .mockResolvedValueOnce(jsonResponse(200, { csrfToken: 'same-token', expiresAt: 'x' }))
+
+    const result = await doRequest('/v2/x', { method: 'POST', requiresAuth: true, data: { a: 1 } })
+
+    expect(result.status).toBe(403)
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('does not resync on 403 for requests that sent no CSRF token', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(403))
+
+    const result = await doRequest('/v2/x', { method: 'GET', requiresAuth: true })
+
+    expect(result.status).toBe(403)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
   it('does not try to recover public requests that return 401', async () => {
     const handler = vi.fn().mockResolvedValue(true)
     setSessionRecoveryHandler(handler)
