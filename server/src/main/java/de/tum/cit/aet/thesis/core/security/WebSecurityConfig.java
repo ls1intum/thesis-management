@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -60,10 +59,15 @@ public class WebSecurityConfig {
 		converter.setPrincipalClaimName("preferred_username");
 		converter.setJwtGrantedAuthoritiesConverter(jwt -> java.util.List.of());
 
+		RequestMatcher sessionExchange = PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/v2/auth/session");
+
 		http
-				.securityMatcher(PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/v2/auth/session"))
+				.securityMatcher(sessionExchange)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource))
-				.csrf(AbstractHttpConfigurer::disable)
+				// CSRF protection stays on; the one request this chain serves is exempt. It is authenticated only by a
+				// bearer token, which a browser never attaches on its own, so a forged cross-site request cannot carry
+				// it. No cookie authenticates this request (there is no session before it).
+				.csrf(csrf -> csrf.ignoringRequestMatchers(sessionExchange))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
 				.oauth2ResourceServer(server -> server.jwt(jwt -> jwt.jwtAuthenticationConverter(converter)));
