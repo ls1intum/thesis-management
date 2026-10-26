@@ -117,3 +117,16 @@ There is an example script [thesis-management-backup.sh](../supporting_scripts/t
 All further environment variables can be found [here](CONFIGURATION.md) 
 
 If you want to modify the emails, you can read about that [here](MAILS.md) 
+
+## Sessions and Keycloak availability
+
+Keycloak is only needed when a user logs in. After a successful login the application creates its own session (HttpOnly cookie, 4 hours idle / 24 hours absolute timeout, see [Application-owned sessions](DEVELOPMENT.md#application-owned-sessions)), so users who are already logged in keep working while Keycloak is down or being maintained. Logging in, passkey management and the Keycloak user search need a reachable Keycloak. The server also starts and restarts without Keycloak.
+
+What users notice after a long Keycloak outage: if their Keycloak single-sign-on session has idled out in the meantime (30 minutes in the development realm; the production value is up to the Keycloak operator), the next login after the outage asks for TUM Login again. Sessions of Thesis Management itself are not affected by Keycloak's session settings.
+
+Operational notes:
+
+- The session cookie is only sent over https. Keep `CLIENT_HOST` set to the public `https://` URL: the cookie name (`__Host-sid`) and its `Secure` flag are derived from it.
+- The application is served from one host (`APP_HOSTNAME`, API under `/api`), so the `SameSite=Strict` cookie works without extra configuration. Serving the web app and the API from different sites is not supported.
+- Traefik adds `Strict-Transport-Security` (one year, without `includeSubdomains` and `preload`) to both routers; the server trusts `X-Forwarded-*` headers from Traefik (`server.forward-headers-strategy=framework`), so it must not be reachable except through the proxy. Check with `curl -sI https://<APP_HOSTNAME>/`.
+- Backups of the database contain the `user_sessions` table (hashed verifiers, IP addresses, User-Agent strings). Store backups encrypted.

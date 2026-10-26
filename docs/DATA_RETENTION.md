@@ -10,6 +10,7 @@ This document describes the data retention periods used in the Thesis Management
 | **Rejected application data**  | 1 year after rejection                                  | See rationale below.                                                                                              |
 | **Uploaded documents**         | Same as associated thesis or application data           | Documents (CV, examination reports, degree reports, thesis files) follow the retention period of the record they belong to. |
 | **Server log files**           | 90 days                                                 | Sufficient for security monitoring and incident investigation. Standard practice for web server logs.              |
+| **Session data**               | Until the session ends, then 30 days                    | A session stores the user, login and last-use times, the IP address and the User-Agent of the browser. Ended sessions are kept for 30 days as account activity history (users can review and end their own sessions) and then deleted by a scheduled job. Deleting an account ends all its sessions. Configurable via `SESSION_ENDED_RETENTION`. |
 | **User account data**          | Disabled after 1 year of inactivity, deleted after linked data retention periods expire | Accounts inactive for 1+ year are automatically disabled. Profile data is deleted once no linked thesis/application data requires retention. Logging in reactivates a disabled account. |
 
 ## Rationale: 1-Year Retention for Rejected Applications

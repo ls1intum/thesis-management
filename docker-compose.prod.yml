@@ -34,7 +34,10 @@ services:
       - "traefik.http.middlewares.api-ratelimit.ratelimit.average=300"
       - "traefik.http.middlewares.api-ratelimit.ratelimit.burst=100"
       - "traefik.http.middlewares.server-compress.compress=true"
-      - "traefik.http.routers.server.middlewares=api-ratelimit,server-compress"
+      # Tell browsers to use https only for this host (sent on https responses only). Deliberately without
+      # includeSubdomains and preload: the parent domain hosts other services this project does not own.
+      - "traefik.http.middlewares.hsts.headers.stsSeconds=31536000"
+      - "traefik.http.routers.server.middlewares=api-ratelimit,server-compress,hsts"
       - "traefik.http.routers.server.priority=10"
     depends_on:
       db:
@@ -77,7 +80,7 @@ services:
       - "traefik.http.routers.client.entrypoints=websecure"
       - "traefik.http.routers.client.tls.certresolver=letsencrypt"
       - "traefik.http.middlewares.client-compress.compress=true"
-      - "traefik.http.routers.client.middlewares=client-compress"
+      - "traefik.http.routers.client.middlewares=client-compress,hsts"
       - "traefik.http.routers.client.priority=1"
     restart: unless-stopped
     expose:
