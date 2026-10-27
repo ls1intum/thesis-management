@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { useState } from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import AuthenticationProvider from '@/core/providers/AuthenticationContext/AuthenticationProvider'
 import { useAuthenticationContext } from '@/core/hooks/authentication'
@@ -43,8 +44,12 @@ vi.mock('@/core/requests/request', () => ({
 
 vi.mock('@/core/utils/notification', () => ({ showSimpleError: vi.fn() }))
 
+const fakeJwt = (claims: Record<string, unknown>) =>
+  `${btoa(JSON.stringify({ alg: 'none' }))}.${btoa(JSON.stringify(claims))}.signature`
+
 const Probe = () => {
   const auth = useAuthenticationContext()
+  const [credentialsResult, setCredentialsResult] = useState('')
 
   return (
     <div>
@@ -57,6 +62,18 @@ const Probe = () => {
       <button type='button' onClick={() => auth.logout('/')}>
         log out
       </button>
+      <button
+        type='button'
+        onClick={() =>
+          void auth
+            .listCredentials()
+            .then(() => setCredentialsResult('listed'))
+            .catch((error: Error) => setCredentialsResult(error.message))
+        }
+      >
+        list credentials
+      </button>
+      <span data-testid='credentials'>{credentialsResult}</span>
     </div>
   )
 }
@@ -282,5 +299,48 @@ describe('AuthenticationProvider startup', () => {
     )
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(showSimpleError).toHaveBeenCalledTimes(1)
+  })
+
+  it('refuses Keycloak features when the browser is signed in to Keycloak as another user than the application session', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response('[]', { status: 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+    vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
+    vi.mocked(keycloakClient.ensureSsoChecked).mockResolvedValue(true)
+    vi.mocked(keycloakClient.getKeycloak).mockReturnValue({
+      authenticated: true,
+      token: fakeJwt({ preferred_username: 'bob' }),
+      updateToken: vi.fn().mockResolvedValue(true),
+    } as never)
+
+    renderProvider()
+    await waitFor(() => expect(screen.getByTestId('user').textContent).toBe('ab12cde'))
+    fireEvent.click(screen.getByRole('button', { name: 'list credentials' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('credentials').textContent).toMatch(/another account/i),
+    )
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/account/credentials'))).toBe(
+      false,
+    )
+    vi.unstubAllGlobals()
+  })
+
+  it('allows Keycloak features when the Keycloak login is the application session user', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response('[]', { status: 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+    vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
+    vi.mocked(keycloakClient.ensureSsoChecked).mockResolvedValue(true)
+    vi.mocked(keycloakClient.getKeycloak).mockReturnValue({
+      authenticated: true,
+      token: fakeJwt({ preferred_username: 'ab12cde' }),
+      updateToken: vi.fn().mockResolvedValue(true),
+    } as never)
+
+    renderProvider()
+    await waitFor(() => expect(screen.getByTestId('user').textContent).toBe('ab12cde'))
+    fireEvent.click(screen.getByRole('button', { name: 'list credentials' }))
+
+    await waitFor(() => expect(screen.getByTestId('credentials').textContent).toBe('listed'))
+    vi.unstubAllGlobals()
   })
 })

@@ -32,6 +32,16 @@ import {
 
 const LOGIN_UNAVAILABLE_NOTICE_INTERVAL_MS = 15_000
 
+/** The browser's Keycloak login belongs to another account than the application session of this tab. */
+class KeycloakIdentityMismatchError extends Error {
+  constructor() {
+    super(
+      'Your browser is signed in to Keycloak as another account than the one you are using here. Please log out and log in again.',
+    )
+    this.name = 'KeycloakIdentityMismatchError'
+  }
+}
+
 // Keycloak tokens used to be persisted here. Authentication tokens must not live in web storage.
 const LEGACY_TOKEN_STORAGE_KEY = 'authentication_tokens'
 
@@ -198,6 +208,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   const [hasSession, setHasSession] = useState(false)
   const hasSessionRef = useRef(false)
   const loginUnavailableNoticeAt = useRef(0)
+  const universityIdRef = useRef<string | undefined>(undefined)
   const [user, setUser] = useState<IUser>()
 
   useClearAvatarCacheOnSignOut(hasSession)
@@ -209,6 +220,10 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     boolean | undefined
   >(undefined)
   const isPasskeySupported = isPasskeySupportedByBrowser ? isPasskeyExtensionAvailable : false
+
+  useEffect(() => {
+    universityIdRef.current = user?.universityId
+  }, [user])
 
   const updateHasSession = (value: boolean) => {
     hasSessionRef.current = value
@@ -265,6 +280,20 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
     if (!client.token) {
       throw new Error('Keycloak did not return an access token')
+    }
+
+    // The application session and the browser's Keycloak login are independent: Keycloak may have switched to
+    // another account (in another application or tab). Credential operations must act on the account this tab is
+    // logged in as, never on whichever account Keycloak currently knows.
+    let keycloakUsername: unknown
+    try {
+      keycloakUsername = jwtDecode<IDecodedAccessToken>(client.token).preferred_username
+    } catch {
+      keycloakUsername = undefined
+    }
+
+    if (!universityIdRef.current || keycloakUsername !== universityIdRef.current) {
+      throw new KeycloakIdentityMismatchError()
     }
 
     return client.token
@@ -582,6 +611,10 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           try {
             accessToken = await getKeycloakAccessToken(true)
           } catch (error) {
+            if (error instanceof KeycloakIdentityMismatchError) {
+              throw error
+            }
+
             throw new Error(
               await getPasskeyErrorMessage(
                 error,
@@ -671,8 +704,14 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           let accessToken: string
           try {
             accessToken = await getKeycloakAccessToken(false)
-          } catch {
-            throw new Error('Failed to refresh the access token for credential listing')
+          } catch (error) {
+            if (error instanceof KeycloakIdentityMismatchError) {
+              throw error
+            }
+
+            throw new Error('Failed to refresh the access token for credential listing', {
+              cause: error,
+            })
           }
 
           const response = await fetch(getAccountCredentialsEndpoint(), {
@@ -704,8 +743,14 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           let accessToken: string
           try {
             accessToken = await getKeycloakAccessToken(true)
-          } catch {
-            throw new Error('Failed to refresh the access token for credential deletion')
+          } catch (error) {
+            if (error instanceof KeycloakIdentityMismatchError) {
+              throw error
+            }
+
+            throw new Error('Failed to refresh the access token for credential deletion', {
+              cause: error,
+            })
           }
 
           const response = await fetch(getAccountCredentialsEndpoint(credentialId), {
