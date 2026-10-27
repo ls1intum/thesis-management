@@ -168,9 +168,9 @@ test.describe('Authenticated avatar loading', () => {
   test.use({ storageState: authStatePath('supervisor') })
 
   // The student user is a STUDENT on thesis 1 (WRITING/PRIVATE).
-  // The CustomAvatar component must use authenticated fetch (doRequest, which sends the
-  // session cookie) instead of plain <img src> so that avatars of
-  // non-publicly-visible users load correctly.
+  // The CustomAvatar component loads avatars through doRequest (a fetch that sends the session cookie) and
+  // shows them as blob URLs, not as a plain <img src>. This test documents and guards that: avatars of
+  // non-publicly-visible users are only served to an authenticated request.
   const STUDENT_AVATAR_FILENAME = 'avatar_test_student.png'
 
   test('avatar requests carry the session cookie when user is authenticated', async ({
@@ -190,9 +190,10 @@ test.describe('Authenticated avatar loading', () => {
       fs.writeFileSync(avatarPath, png)
     }
 
-    // Track the avatar requests. With the fix (doRequest + blob URLs), avatars are fetched with credentials,
-    // so the browser sends the session cookie. Without the fix (plain <img src>), a cross-origin image
-    // request carries no cookie, causing 404 for non-publicly-visible users on production.
+    // Track the avatar requests. Avatars are fetched through doRequest (fetch + blob URLs) and carry the
+    // session cookie. A plain <img src> would not be a regression of the cookie itself (the cookie is
+    // SameSite=Strict and the app and API are same-site), but it would bypass doRequest, which is what this
+    // test guards.
     // Only finished requests count (a request React cancels before it is sent never carries the cookie), and
     // a response served from the browser cache is not sent at all, so some requests show no cookie.
     const avatarRequests: { url: string; resourceType: string; hasCookie: boolean }[] = []

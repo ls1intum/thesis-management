@@ -147,8 +147,14 @@ for (const user of TEST_USERS) {
       )
       .toBe(true)
 
-    // Authentication tokens must never be stored where scripts can read them
-    expect(await page.evaluate(() => localStorage.getItem('authentication_tokens'))).toBeNull()
+    // Authentication tokens must never be stored where scripts can read them: no web storage value may look
+    // like a JWT (they all start with `eyJ`, the base64 of `{"`)
+    const storedValues = await page.evaluate(() =>
+      [localStorage, sessionStorage].flatMap((storage) =>
+        Object.keys(storage).map((key) => storage.getItem(key) ?? ''),
+      ),
+    )
+    expect(storedValues.filter((value) => value.includes('eyJ'))).toEqual([])
 
     await page.evaluate(
       (storageKeys) => {

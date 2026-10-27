@@ -3,6 +3,7 @@ import {
   KEYCLOAK_ORIGIN,
   SERVER_ORIGIN,
   authStatePath,
+  getSessionCookie,
   loginWithApi,
   logoutWithApi,
   navigateTo,
@@ -39,6 +40,18 @@ test.describe('Keycloak outage', () => {
     expect(
       keycloakRequests.filter((url) => url.includes('/protocol/openid-connect/')),
     ).toStrictEqual([])
+
+    // The block really is in place: a request to Keycloak from the page is intercepted and refused
+    const reachedKeycloak = await page.evaluate(
+      (url) =>
+        fetch(url, { mode: 'no-cors' }).then(
+          () => true,
+          () => false,
+        ),
+      `${KEYCLOAK_ORIGIN}/realms/thesis-management/.well-known/openid-configuration`,
+    )
+    expect(reachedKeycloak).toBe(false)
+    expect(keycloakRequests.length).toBeGreaterThan(0)
 
     await logoutWithApi(context)
     await context.close()
@@ -101,12 +114,20 @@ test.describe('Keycloak outage', () => {
     // Only the application session cookie disappears (in real life: the 24 hour limit, or ended from
     // another device). This browser has no Keycloak login either, so the app cannot sign in silently
     // and shows the login prompt instead of failing with errors.
-    await context.clearCookies({ name: 'sid' })
-    await page.reload()
+    const sessionCookie = await getSessionCookie(context)
+    expect(sessionCookie).toBeDefined()
 
-    await expect(page.locator('header').getByText('Login')).toBeVisible({ timeout: 30_000 })
+    try {
+      await context.clearCookies({ name: sessionCookie!.name })
+      await page.reload()
 
-    await context.close()
+      await expect(page.locator('header').getByText('Login')).toBeVisible({ timeout: 30_000 })
+    } finally {
+      // the session itself still exists on the server: put the cookie back so that it can be ended
+      await context.addCookies([sessionCookie!])
+      await logoutWithApi(context)
+      await context.close()
+    }
   })
 
   test('a lost session cookie is replaced silently through the Keycloak login of the browser', async ({
@@ -115,13 +136,15 @@ test.describe('Keycloak outage', () => {
     // this storage state holds a Keycloak login (single sign-on cookies) next to the application session
     const context = await browser.newContext({ storageState: authStatePath('student4') })
     const page = await context.newPage()
-    await context.clearCookies({ name: 'sid' })
+    const sessionCookie = await getSessionCookie(context)
+    expect(sessionCookie).toBeDefined()
+    await context.clearCookies({ name: sessionCookie!.name })
 
     await navigateTo(page, '/dashboard')
 
     await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 30_000 })
     await expect(page.locator('header').getByText('Login')).toBeHidden()
-    expect((await context.cookies()).some((cookie) => cookie.name === 'sid')).toBe(true)
+    expect(await getSessionCookie(context)).toBeDefined()
 
     await logoutWithApi(context)
     await context.close()

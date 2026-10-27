@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { authStatePath, navigateTo } from '../helpers'
+import { authStatePath, getSessionCookie, navigateTo } from '../helpers'
 
 test.describe('Authentication - Unauthenticated', () => {
   test.use({ storageState: { cookies: [], origins: [] } })
@@ -37,6 +37,19 @@ test.describe('Authentication - Unauthenticated', () => {
 })
 
 test.describe('Authentication - Student', () => {
+  // Guards the setup project: if it logged in with another browser identity (User-Agent) than this project,
+  // the server would end the stored session on first use and the app would silently sign in again, which replaces
+  // the session cookie and would otherwise go unnoticed.
+  test('the stored login session is accepted for the test browser', async ({ page, context }) => {
+    const storedCookie = await getSessionCookie(context)
+    expect(storedCookie).toBeDefined()
+
+    await navigateTo(page, '/dashboard')
+    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 15_000 })
+
+    expect((await getSessionCookie(context))?.value).toBe(storedCookie?.value)
+  })
+
   test('can access dashboard and sees correct nav items', async ({ page }) => {
     await navigateTo(page, '/dashboard')
 

@@ -266,7 +266,8 @@ export function createTestPdfBuffer(): Buffer {
   )
 }
 
-const KEYCLOAK_ORIGIN = process.env.KEYCLOAK_URL ?? 'http://localhost:8181'
+// KEYCLOAK_HOST is the variable the CI workflow exports (server, client build and tests share it)
+const KEYCLOAK_ORIGIN = process.env.KEYCLOAK_HOST ?? 'http://localhost:8181'
 const SERVER_ORIGIN = process.env.SERVER_URL ?? 'http://localhost:8180'
 
 export { KEYCLOAK_ORIGIN, SERVER_ORIGIN }
@@ -302,6 +303,13 @@ export async function loginWithApi(context: BrowserContext, username: string) {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
   expect(sessionResponse.ok()).toBe(true)
+}
+
+/** Finds the application session cookie of a context (`__Host-sid` over https, `sid` over plain http). */
+export async function getSessionCookie(context: BrowserContext) {
+  return (await context.cookies()).find(
+    (cookie) => cookie.name === 'sid' || cookie.name === '__Host-sid',
+  )
 }
 
 /** Ends the context's own session on the server, so tests do not pile up sessions of the seed users. */

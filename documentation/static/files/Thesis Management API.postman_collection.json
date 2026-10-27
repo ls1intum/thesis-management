@@ -80,7 +80,7 @@
 								}
 							]
 						},
-						"description": "Exchanges the Keycloak access token (collection OAuth2 settings) for a session. Returns the CSRF token and sets the session cookie."
+						"description": "Exchanges the Keycloak access token (the OAuth2 settings of this request, not of the collection, whose authorization is No Auth) for a session. Returns the CSRF token and sets the session cookie."
 					},
 					"response": [],
 					"event": [
@@ -3207,7 +3207,7 @@
 							"formdata": [
 								{
 									"key": "data",
-									"value": "{\"firstName\": \"John\", \"lastName\": \"Doe\", \"gender\": null, \"nationality\": null, \"email\": \"john@test.local\", \"studyDegree\": null, \"studyProgram\": null, \"enrolledAt\": null, \"specialSkills\": null, \"interests\": null, \"projects\": null, \"customData\": {}}",
+									"value": "{\"firstName\": \"John\", \"lastName\": \"Doe\", \"gender\": null, \"nationality\": null, \"studyDegree\": null, \"studyProgram\": null, \"enrolledAt\": null, \"specialSkills\": null, \"interests\": null, \"projects\": null, \"customData\": {}}",
 									"type": "text",
 									"contentType": "application/json"
 								},

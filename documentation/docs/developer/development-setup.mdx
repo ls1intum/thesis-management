@@ -100,7 +100,7 @@ The realm JSON is the simplest path. If you need to bootstrap a production realm
    - *Clients → Create client*:
      - Client type: **OpenID Connect**
      - Client ID: `thesis-management-app` (match `KEYCLOAK_CLIENT_ID`)
-   - Capability config: **Standard flow** ✓, **Direct access grants** ✗ (off in production — the SPA uses the Authorization Code flow via the Keycloak login page, not ROPC. The development realm JSON keeps it on because the E2E session setup (`loginWithApi` in `client/e2e/helpers.ts`) signs in with the password grant (ROPC); production realms must keep it off), **Service accounts** ✗, **Client authentication** **off** (= public client).
+   - Capability config: **Standard flow** ✓, **Direct access grants** ✗ (off in production — the SPA uses the Authorization Code flow via the Keycloak login page, not ROPC. The development realm JSON keeps it on because a few E2E tests (`active-sessions` and `keycloak-outage`) use the helper `loginWithApi` in `client/e2e/helpers.ts` to give themselves a session of their own through the password grant (ROPC); the shared E2E login setup (`client/e2e/auth.setup.ts`) signs in through the Keycloak login page. Production realms must keep it off), **Service accounts** ✗, **Client authentication** **off** (= public client).
    - Login settings:
      - Valid redirect URIs: `https://<client-host>/*` (and `http://localhost:3100/*` for local dev).
      - Web origins: `https://<client-host>` (or `+` to mirror redirect URIs).
@@ -357,23 +357,25 @@ Keycloak (with TUM Login behind it) answers one question: *who is this?* Thesis 
 **Flow**
 
 1. The SPA logs the user in with Keycloak (Authorization Code + PKCE) and calls `POST /v2/auth/session` with the access token as `Authorization: Bearer`. This is the only endpoint that accepts a Bearer token.
-2. The server creates or updates the user from the token's claims, assigns the `student` group to new users, creates a row in `user_sessions` and answers with `Set-Cookie` plus `{ csrfToken, expiresAt }`.
+2. The server creates or updates the user from the token's claims, assigns the `student` group to new users, creates a row in `user_sessions` and answers with `Set-Cookie` plus `{ csrfToken, expiresAt, userId }`.
 3. Every later request carries the cookie. `UserSessionAuthenticationFilter` looks the session up, enforces the timeouts and loads the roles from `user_groups`. Requests that change state must also send `X-CSRF-Token`.
-4. On startup the SPA calls `GET /v2/auth/session`. With a valid session it never contacts Keycloak; keycloak-js is only started when there is no session, for logging in, and for Keycloak-native features (passkeys). Keycloak tokens are kept in memory only.
+4. On startup the SPA calls `GET /v2/auth/session`. A valid session needs no Keycloak (the only Keycloak call on load is a probe of the passkey extension's health endpoint, which decides whether passkey buttons are shown). keycloak-js is only started when there is no session, for logging in, for Keycloak-native features (passkeys), and on logout, which ends the application session first and then the Keycloak login if Keycloak is reachable. Keycloak tokens are kept in memory only.
 
 **Security properties** (following the [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html))
 
-- Cookie `__Host-sid` (`sid` over plain http in local development): `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/`, no `Domain`, 24 hours.
+- Cookie `__Host-sid`: `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/`, no `Domain`, lifetime up to the 24 hour absolute timeout. Over plain http in local development the cookie is named `sid` and has no `Secure` attribute (browsers reject `__Host-` and `Secure` there); the choice follows the scheme of `CLIENT_HOST`.
 - The cookie value is `<identifier>.<verifier>`, both random (128 and 256 bits). Only a SHA-256 hash of the verifier is stored, compared in constant time. Nothing session-related is stored in `localStorage` or `sessionStorage`.
 - Idle timeout 4 hours, absolute timeout 24 hours, both enforced on the server on every request (`thesis-management.session.*`).
 - A session is replaced (new cookie value, same CSRF token) on the next request after the user's roles change, with a 30 second grace window for parallel requests.
 - Logout and account deletion end sessions on the server; users can see and end their own sessions in *Settings → Account → Active sessions*. At most 10 sessions per user.
-- A session is ended if the browser family or operating system changes (version changes are ignored). Cookies that are malformed or unknown are cleared and counted per IP; more than 20 per minute from one IP are answered with `429` for requests carrying such cookies.
+- A session is ended if the browser family or operating system changes (version changes are ignored). A cookie that is not valid any more is cleared in the response; cookies that are malformed, unknown or carry a wrong verifier (the signature of guessing) are also counted per IP, and once an IP exceeds 20 of them per minute, further requests from it that carry such a cookie are answered with `429`. Requests with a valid session or without a cookie are never blocked.
 - Session rows record IP address and User-Agent; ended sessions are deleted after 30 days (see [Data Retention](/admin/data-retention)).
+- The client address comes from `X-Forwarded-For` / `X-Forwarded-Proto` (`server.forward-headers-strategy=native`, Tomcat's `RemoteIpValve`, which ignores the RFC 7239 `Forwarded` header and only trusts the proxies in `server.tomcat.remoteip.internal-proxies`). See [Production Setup](/admin/production-setup) for what this requires of the proxy.
+- Known limitation: a rotated cookie is delivered exactly once, in the response of the request that performed the rotation. If that response is lost, the old cookie keeps working for the 30 second grace window; after that the browser signs in again (silently while Keycloak is reachable).
 
 **Working with the API directly (Postman, curl)**
 
-Bearer tokens are rejected everywhere except `POST /v2/auth/session`. First call that endpoint with the Keycloak access token (in Postman, the collection's OAuth2 token) and keep the returned cookie (Postman's cookie jar does this); then send the `csrfToken` from the response as `X-CSRF-Token` on `POST`/`PUT`/`PATCH`/`DELETE` requests. Send the same `User-Agent` for the whole session.
+Bearer tokens are ignored everywhere except `POST /v2/auth/session`. First call that endpoint with the Keycloak access token (in Postman, the *Authentication → Create Session* request has the OAuth2 settings that fetch it; the collection itself uses *No Auth*) and keep the returned cookie (Postman's cookie jar does this); then send the `csrfToken` from the response as `X-CSRF-Token` on `POST`/`PUT`/`PATCH`/`DELETE` requests. Send the same `User-Agent` for the whole session.
 
 **Tests**
 

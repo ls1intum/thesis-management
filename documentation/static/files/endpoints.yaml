@@ -5,13 +5,13 @@ info:
   x-logo:
     url: ''
 servers:
-  - url: http://localhost:8080/api
+  - url: http://localhost:8180/api/v2
     description: ''
     x-last-modified: 1720732781223
-  - url: https://thesis-track.ase.cit.tum.de/api
+  - url: https://thesis-track.ase.cit.tum.de/api/v2
     description: ''
     x-last-modified: 1720732796292
-  - url: https://thesis-track-dev.ase.cit.tum.de/api
+  - url: https://thesis-track-dev.ase.cit.tum.de/api/v2
     description: ''
     x-last-modified: 1720732807668
 paths:
@@ -28,6 +28,9 @@ paths:
       responses:
         '200':
           description: Session created
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/SetSessionCookie'
           content:
             application/json:
               schema:
@@ -48,7 +51,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/SessionInfo'
         '401':
-          description: No valid session
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyInvalidCookies'
     delete:
       tags: []
       summary: End the current session (logout)
@@ -56,6 +61,15 @@ paths:
       responses:
         '204':
           description: Session ended and cookie cleared
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/ClearSessionCookie'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/CsrfForbidden'
+        '429':
+          $ref: '#/components/responses/TooManyInvalidCookies'
   /auth/sessions:
     summary: Active sessions of the authenticated user
     get:
@@ -64,6 +78,16 @@ paths:
       responses:
         '200':
           description: Active sessions, oldest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyInvalidCookies'
     delete:
       tags: []
       summary: End all sessions except the current one
@@ -71,12 +95,20 @@ paths:
       responses:
         '204':
           description: Other sessions ended
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/CsrfForbidden'
+        '429':
+          $ref: '#/components/responses/TooManyInvalidCookies'
   /auth/sessions/{id}:
     summary: One session of the authenticated user
     delete:
       tags: []
       summary: End one of the caller's sessions
-      description: Requires the X-CSRF-Token header.
+      description: |-
+        Requires the X-CSRF-Token header. The id is the row id from the list of sessions. If it is the session that
+        made the request, the cookie is cleared as well.
       parameters:
         - name: id
           schema:
@@ -87,8 +119,17 @@ paths:
       responses:
         '204':
           description: Session ended
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/ClearSessionCookie'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/CsrfForbidden'
         '404':
           description: No such session of the caller
+        '429':
+          $ref: '#/components/responses/TooManyInvalidCookies'
   /dashboard:
     summary: ''
     get:
@@ -1325,7 +1366,9 @@ components:
       in: cookie
       name: __Host-sid
       description: |-
-        Session cookie set by POST /auth/session (named sid over plain http in local development). Requests that
+        Session cookie set by POST /auth/session (that is, POST /api/v2/auth/session; named sid over plain http in
+        local development). It is replaced with a new Set-Cookie on the next request after the user's roles changed;
+        that replacement is delivered once, in the response of the request that performed it. Requests that
         change state must also send the CSRF token from the session response in the X-CSRF-Token header.
         Authorization: Bearer headers are ignored on every endpoint except POST /auth/session.
     KeycloakBearer:
@@ -1345,6 +1388,33 @@ components:
         expiresAt:
           type: string
           format: date-time
+        userId:
+          type: string
+          format: uuid
+    UserSession:
+      type: object
+      description: One active session (device or browser) of the authenticated user.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Row id of the session, used to end it. It cannot be used to authenticate.
+        createdAt:
+          type: string
+          format: date-time
+        lastUsedAt:
+          type: string
+          format: date-time
+          description: Rounded to the write interval (5 minutes)
+        ip:
+          type: string
+          description: Last IP address the session was used from (omitted if unknown)
+        device:
+          type: string
+          description: Readable label such as "Chrome on macOS"
+        current:
+          type: boolean
+          description: Whether this is the session that made the request
     Application:
       type: object
       properties:
@@ -1439,8 +1509,27 @@ components:
           items:
             $ref: '#/components/schemas/User'
       x-last-modified: 1720804590419
-  headers: {}
-  responses: {}
+  headers:
+    SetSessionCookie:
+      description: The session cookie (HttpOnly, SameSite=Strict, Path=/; __Host-sid over https, sid over plain http).
+      schema:
+        type: string
+    ClearSessionCookie:
+      description: Expires the session cookie.
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: No valid session (no cookie, or the session ended, expired or was used by another browser)
+    CsrfForbidden:
+      description: The X-CSRF-Token header is missing or wrong
+    TooManyInvalidCookies:
+      description: Too many invalid session cookies from this IP address; sent only to requests that carry an invalid cookie
+      headers:
+        Retry-After:
+          description: Seconds to wait
+          schema:
+            type: integer
   parameters: {}
 security:
   - SessionCookie: []

@@ -15,7 +15,7 @@ This document describes the data retention periods used in the Thesis Management
 | **Rejected application data**  | 1 year after rejection                                  | See rationale below.                                                                                              |
 | **Uploaded documents**         | Same as associated thesis or application data           | Documents (CV, examination reports, degree reports, thesis files) follow the retention period of the record they belong to. |
 | **Server log files**           | 90 days                                                 | Sufficient for security monitoring and incident investigation. Standard practice for web server logs.              |
-| **Session data**               | Until the session ends, then 30 days                    | A session stores the user, login and last-use times, the IP address and the User-Agent of the browser. Ended sessions are kept for 30 days as account activity history (users can review and end their own sessions) and then deleted by a scheduled job. Deleting an account ends all its sessions. Configurable via `SESSION_ENDED_RETENTION`. |
+| **Session data**               | Until the session ends, then 30 days                    | A session stores the user, login and last-use times, the IP address and the User-Agent of the browser. Ended sessions are kept for 30 days for security investigations by administrators and then deleted by a scheduled job; users only see their active sessions (and can end them), never ended ones. Deleting or deactivating an account ends all its sessions. Configurable via `SESSION_ENDED_RETENTION`. |
 | **User account data**          | Disabled after 1 year of inactivity, deleted after linked data retention periods expire | Accounts inactive for 1+ year are automatically disabled. Profile data is deleted once no linked thesis/application data requires retention. Logging in reactivates a disabled account. |
 
 ## Rationale: 1-Year Retention for Rejected Applications
@@ -72,7 +72,7 @@ When the user has no completed theses (or all thesis retention periods have expi
 1. All uploaded files (CV, degree report, examination report, avatar) are deleted from disk.
 2. Rejected/unassessed applications and data exports are deleted.
 3. Topic roles, thesis roles, and remaining applications are deleted.
-4. The user record is deleted (FK cascades remove notification settings, user groups, and data exports).
+4. The user record is deleted (FK cascades remove notification settings, user groups, data exports, and all session rows including ended ones with their IP addresses and User-Agent strings).
 
 ### Scenario B: Thesis Data Under Retention
 
@@ -81,7 +81,7 @@ When the user has completed theses within the 5-year retention window, the accou
 1. The account is disabled and marked with `deletion_requested_at` and `deletion_scheduled_for`.
 2. Non-essential data is cleared: avatar, projects, interests, special skills, custom data.
 3. **Profile data (name, email, university ID) and thesis-related files (CV, degree report, examination report) are preserved** so that professors can still find and reference thesis records by student name during the retention period.
-4. Notification settings and user groups are deleted.
+4. Notification settings and user groups are deleted. All sessions of the user are ended with the reason `REVOKED`; their rows, including IP address and User-Agent, are deleted after the 30-day session retention (`SESSION_ENDED_RETENTION`), at the latest with the full deletion.
 5. The authentication guard prevents the user from logging back in (SSO sync is blocked).
 
 The **nightly job** (`DataRetentionService`) checks all soft-deleted accounts. Once all retention periods have expired for a user, it performs the full deletion (Scenario A).

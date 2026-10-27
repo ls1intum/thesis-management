@@ -1,5 +1,7 @@
 # Application-Owned Sessions Implementation Plan
 
+> **Historical document.** This records the plan as written before implementation. File names, paths and steps may differ from the final code; the spec, the code and `documentation/**` are authoritative.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** After one Keycloak login, users hold a Thesis Management session (server-side, opaque, cookie-based) so the application keeps working for logged-in users while Keycloak is down.
