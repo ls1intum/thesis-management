@@ -8,7 +8,9 @@ import {
   recoverSession,
   refreshCsrfToken,
   setCsrfToken,
+  setIdentityChangeHandler,
   setSessionRecoveryHandler,
+  setSessionUserId,
 } from '@/core/auth/session'
 
 const jsonResponse = (status: number, body?: unknown) =>
@@ -23,6 +25,7 @@ describe('session', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', fetchMock)
     clearSessionState()
+    setIdentityChangeHandler(undefined)
     setSessionRecoveryHandler(undefined)
   })
 
@@ -158,5 +161,44 @@ describe('session', () => {
 
     expect(tokens).toEqual(['shared', 'shared', 'shared'])
     expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('deleteSession is done when the resync after a 403 shows that the session is already gone', async () => {
+    setCsrfToken('stale')
+    fetchMock
+      .mockResolvedValueOnce(new Response(null, { status: 403 }))
+      .mockResolvedValueOnce(new Response(null, { status: 401 }))
+
+    await expect(deleteSession()).resolves.toBeUndefined()
+
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(getCsrfToken()).toBeUndefined()
+  })
+
+  it('deleteSession reports a network failure of the resync instead of treating it as ended', async () => {
+    setCsrfToken('stale')
+    fetchMock
+      .mockResolvedValueOnce(new Response(null, { status: 403 }))
+      .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+
+    await expect(deleteSession()).rejects.toThrow('Failed to fetch')
+    expect(getCsrfToken()).toBe('stale')
+  })
+
+  it('deleteSession never ends the session of another user that replaced the one it wanted to end', async () => {
+    const identityChanged = vi.fn()
+    setIdentityChangeHandler(identityChanged)
+    setSessionUserId('alice')
+    setCsrfToken('alice-token')
+    fetchMock
+      .mockResolvedValueOnce(new Response(null, { status: 403 }))
+      .mockResolvedValueOnce(
+        jsonResponse(200, { csrfToken: 'bob-token', expiresAt: 'x', userId: 'bob' }),
+      )
+
+    await expect(deleteSession()).rejects.toThrow(/another user/i)
+
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(identityChanged).toHaveBeenCalledTimes(1)
   })
 })

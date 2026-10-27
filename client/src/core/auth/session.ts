@@ -125,9 +125,11 @@ export function refreshCsrfToken(): Promise<string | undefined> {
 
 /**
  * Ends the session on the server. If the server rejects the CSRF token (another tab replaced the session in
- * the meantime) the token is refreshed and the logout is retried once. A session that is already gone counts as
- * ended. Any other failure is reported to the caller, which must not pretend that the user is logged out: the
- * HttpOnly cookie would still sign them in again. The CSRF token is kept so that the logout can be retried.
+ * the meantime) the session is looked up again: if it is gone the logout is done, if it now belongs to another
+ * user nothing is ended (the tab is reset instead, so Alice's logout can never end Bob's session), and otherwise
+ * the logout is retried once with the current token. A failure to reach the server is reported to the caller,
+ * which must not pretend that the user is logged out: the HttpOnly cookie would still sign them in again. The
+ * CSRF token is kept so that the logout can be retried.
  */
 export async function deleteSession(): Promise<void> {
   const send = (token: string | undefined) =>
@@ -138,13 +140,30 @@ export async function deleteSession(): Promise<void> {
     })
 
   const sentToken = csrfToken
+  const userIdAtStart = sessionUserId
   let response = await send(sentToken)
 
   if (response.status === 403) {
-    const refreshedToken = await refreshCsrfToken()
+    const current = await fetchSession()
 
-    if (refreshedToken && refreshedToken !== sentToken) {
-      response = await send(refreshedToken)
+    if (!current) {
+      clearSessionState()
+
+      return
+    }
+
+    if (
+      userIdAtStart !== undefined &&
+      current.userId !== undefined &&
+      current.userId !== userIdAtStart
+    ) {
+      handleIdentityChange()
+
+      throw new Error('The session now belongs to another user and was not ended')
+    }
+
+    if (current.csrfToken !== sentToken) {
+      response = await send(current.csrfToken)
     }
   }
 

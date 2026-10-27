@@ -39,4 +39,16 @@ class InvalidSessionTokenLimiterTest {
 
 		assertThat(limiter.trackedAddresses()).isLessThanOrEqualTo(InvalidSessionTokenLimiter.MAX_TRACKED_ADDRESSES);
 	}
+
+	@Test
+	void aFullMapIsNotScannedAgainForEveryNewAddress() {
+		InvalidSessionTokenLimiter limiter = new InvalidSessionTokenLimiter(properties, Clock.fixed(Instant.parse("2026-03-02T09:00:00Z"), ZoneOffset.UTC));
+
+		for (int i = 0; i < InvalidSessionTokenLimiter.MAX_TRACKED_ADDRESSES + 2000; i++) {
+			limiter.recordGuess("10." + (i / 65536) + "." + ((i / 256) % 256) + "." + (i % 256));
+		}
+
+		// without a minimum interval every one of the 2000 requests beyond the capacity would scan all entries
+		assertThat(limiter.pruneRuns()).isLessThanOrEqualTo(1);
+	}
 }

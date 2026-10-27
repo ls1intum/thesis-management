@@ -10,6 +10,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Detects guessing of session cookies. Every cookie that is malformed, unknown or carries a wrong verifier is
@@ -24,7 +26,12 @@ public class InvalidSessionTokenLimiter {
 
 	private static final Duration WINDOW = Duration.ofMinutes(1);
 
+	/** A full map is scanned at most this often, however many new addresses keep arriving. */
+	private static final Duration MIN_PRUNE_INTERVAL = Duration.ofSeconds(5);
+
 	private final Map<String, Deque<Instant>> guesses = new ConcurrentHashMap<>();
+	private final AtomicReference<Instant> lastPrune = new AtomicReference<>(Instant.EPOCH);
+	private final AtomicInteger pruneRuns = new AtomicInteger();
 	private final UserSessionProperties properties;
 	private final Clock clock;
 
@@ -48,7 +55,12 @@ public class InvalidSessionTokenLimiter {
 		Instant now = clock.instant();
 
 		if (!guesses.containsKey(ip) && guesses.size() >= MAX_TRACKED_ADDRESSES) {
-			prune();
+			Instant last = lastPrune.get();
+
+			// only one request per interval pays for the scan; the others skip it and fail open
+			if (!now.isBefore(last.plus(MIN_PRUNE_INTERVAL)) && lastPrune.compareAndSet(last, now)) {
+				prune();
+			}
 
 			if (guesses.size() >= MAX_TRACKED_ADDRESSES) {
 				return;
@@ -84,6 +96,15 @@ public class InvalidSessionTokenLimiter {
 	}
 
 	/**
+	 * Returns how often the map was scanned for stale addresses.
+	 *
+	 * @return the number of scans
+	 */
+	int pruneRuns() {
+		return pruneRuns.get();
+	}
+
+	/**
 	 * Returns how many addresses are currently tracked.
 	 *
 	 * @return the number of addresses with recorded invalid cookies
@@ -95,6 +116,7 @@ public class InvalidSessionTokenLimiter {
 	/** Forgets addresses without recent invalid cookies, so the map does not grow without bound. */
 	public void prune() {
 		Instant now = clock.instant();
+		pruneRuns.incrementAndGet();
 
 		guesses.entrySet().removeIf(entry -> {
 			synchronized (entry.getValue()) {
