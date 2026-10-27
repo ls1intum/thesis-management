@@ -100,7 +100,7 @@ The realm JSON is the simplest path. If you need to bootstrap a production realm
    - *Clients → Create client*:
      - Client type: **OpenID Connect**
      - Client ID: `thesis-management-app` (match `KEYCLOAK_CLIENT_ID`)
-   - Capability config: **Standard flow** ✓, **Direct access grants** ✗ (off — the realm JSON has this on for historical reasons; the SPA and the E2E tests both use the Authorization Code flow via the Keycloak login page, not ROPC), **Service accounts** ✗, **Client authentication** **off** (= public client).
+   - Capability config: **Standard flow** ✓, **Direct access grants** ✗ (off in production — the SPA uses the Authorization Code flow via the Keycloak login page, not ROPC. The development realm JSON keeps it on because the E2E session setup (`loginWithApi` in `client/e2e/helpers.ts`) signs in with the password grant (ROPC); production realms must keep it off), **Service accounts** ✗, **Client authentication** **off** (= public client).
    - Login settings:
      - Valid redirect URIs: `https://<client-host>/*` (and `http://localhost:3100/*` for local dev).
      - Web origins: `https://<client-host>` (or `+` to mirror redirect URIs).

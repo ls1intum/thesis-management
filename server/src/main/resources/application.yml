@@ -82,6 +82,8 @@ server:
   port: ${SERVER_PORT:8080}
   # The server runs behind Traefik: use the forwarded protocol and client address (for secure redirects and
   # for the per-IP detection of guessed session cookies) instead of the proxy's address.
+  # This trusts the forwarded headers of whichever peer connects, so the server port must only be reachable by the
+  # proxy (production publishes only Traefik's ports and merely exposes 8080 inside the Docker network).
   forward-headers-strategy: framework
   servlet:
     context-path: /api
