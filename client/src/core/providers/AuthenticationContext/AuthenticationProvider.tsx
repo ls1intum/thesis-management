@@ -23,10 +23,12 @@ import {
   isKeycloakReachable,
 } from '@/core/auth/keycloakClient'
 import {
-  clearSessionState,
+  SessionExchangeError,
   createSession,
   deleteSession,
   fetchSession,
+  forgetSession,
+  isLoggingOut,
   setSessionRecoveryHandler,
 } from '@/core/auth/session'
 
@@ -208,6 +210,9 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   const [hasSession, setHasSession] = useState(false)
   const hasSessionRef = useRef(false)
   const loginUnavailableNoticeAt = useRef(0)
+  // Set when Keycloak knows the user but the server refused to turn that login into a session. Calling login()
+  // again would only bounce between the web app and Keycloak (which answers at once), so it reports instead.
+  const sessionExchangeFailed = useRef(false)
   const universityIdRef = useRef<string | undefined>(undefined)
   const [user, setUser] = useState<IUser>()
 
@@ -246,13 +251,29 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     const authenticated = await initKeycloak({ checkSso: true })
     const keycloakToken = getKeycloak()?.token
 
-    if (!authenticated || !keycloakToken) {
+    // A logout that began while Keycloak was being asked must not be undone by a session created now.
+    if (!authenticated || !keycloakToken || isLoggingOut()) {
       return false
     }
 
-    await createSession(keycloakToken)
+    try {
+      await createSession(keycloakToken)
+    } catch (error) {
+      sessionExchangeFailed.current = true
+
+      throw error
+    }
 
     return true
+  }
+
+  const showLoginUnavailableNotice = (message: string) => {
+    // Some pages ask for a login repeatedly (the interview booking page every second): tell the user once
+    // in a while, not with every call.
+    if (Date.now() - loginUnavailableNoticeAt.current > LOGIN_UNAVAILABLE_NOTICE_INTERVAL_MS) {
+      loginUnavailableNoticeAt.current = Date.now()
+      showSimpleError(message)
+    }
   }
 
   /**
@@ -310,7 +331,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       return true
     }
 
-    clearSessionState()
+    forgetSession()
 
     try {
       if (await establishSessionFromKeycloak()) {
@@ -372,6 +393,14 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         if (existingSession) {
           updateHasSession(true)
 
+          // Back from a Keycloak login that a passkey action started: keycloak-js has to process the one-time
+          // code in the address now, otherwise the next Keycloak call would try to use it after it expired.
+          if (/[?#&]code=/.test(`${window.location.search}${window.location.hash}`)) {
+            void ensureSsoChecked().catch((error) => {
+              console.error('Failed to complete the Keycloak login', error)
+            })
+          }
+
           return
         }
 
@@ -380,7 +409,11 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         }
       } catch (error) {
         console.error('Authentication error', error)
-        showSimpleError('Authentication service is unavailable. Please try again.')
+        showSimpleError(
+          error instanceof SessionExchangeError && error.serverMessage
+            ? error.serverMessage
+            : 'Authentication service is unavailable. Please try again.',
+        )
       }
     }
 
@@ -519,19 +552,19 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             return
           }
 
+          if (sessionExchangeFailed.current) {
+            showLoginUnavailableNotice(
+              'Signing in failed: the server did not accept your login. Please reload the page to try again.',
+            )
+
+            return
+          }
+
           // Logging in is the one thing that needs Keycloak: say so instead of sending the user to a dead page.
           if (!(await isKeycloakReachable())) {
-            // Some pages ask for a login repeatedly (the interview booking page every second): tell the user once
-            // in a while, not with every call.
-            if (
-              Date.now() - loginUnavailableNoticeAt.current >
-              LOGIN_UNAVAILABLE_NOTICE_INTERVAL_MS
-            ) {
-              loginUnavailableNoticeAt.current = Date.now()
-              showSimpleError(
-                'The login service is currently unavailable. Please try again in a few minutes.',
-              )
-            }
+            showLoginUnavailableNotice(
+              'The login service is currently unavailable. Please try again in a few minutes.',
+            )
 
             return
           }
@@ -791,9 +824,10 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         // would silently sign the user in again.
         try {
           if (await isKeycloakReachable()) {
-            // The silent check yields the id token that lets Keycloak end the login without asking
-            // for a confirmation; without a Keycloak login there is nothing to end.
-            await ensureSsoChecked()
+            // The silent check yields the id token that lets Keycloak end the login without asking for a
+            // confirmation; without a Keycloak login there is nothing to end. It is made afresh: an earlier
+            // result of this page load may predate a login that another tab has made since.
+            await initKeycloak({ checkSso: true })
             const client = getKeycloak()
 
             if (client?.authenticated) {

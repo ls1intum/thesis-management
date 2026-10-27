@@ -190,7 +190,7 @@ describe('AuthenticationProvider startup', () => {
     vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
     vi.mocked(session.deleteSession).mockResolvedValue(undefined)
     vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(true)
-    vi.mocked(keycloakClient.ensureSsoChecked).mockResolvedValue(true)
+    vi.mocked(keycloakClient.initKeycloak).mockResolvedValue(true)
     vi.mocked(keycloakClient.getKeycloak).mockReturnValue({ authenticated: true, logout } as never)
 
     renderProvider()
@@ -200,6 +200,9 @@ describe('AuthenticationProvider startup', () => {
     await waitFor(() =>
       expect(logout).toHaveBeenCalledWith({ redirectUri: `${window.location.origin}/` }),
     )
+    // a fresh check, not the cached result of this page load (a login made in another tab since would be missed)
+    expect(keycloakClient.initKeycloak).toHaveBeenCalledWith({ checkSso: true })
+    expect(keycloakClient.ensureSsoChecked).not.toHaveBeenCalled()
     expect(session.deleteSession).toHaveBeenCalled()
     expect(screen.getByTestId('authenticated').textContent).toBe('false')
   })
@@ -214,8 +217,46 @@ describe('AuthenticationProvider startup', () => {
     fireEvent.click(screen.getByRole('button', { name: 'log out' }))
 
     await waitFor(() => expect(session.deleteSession).toHaveBeenCalled())
-    expect(keycloakClient.ensureSsoChecked).not.toHaveBeenCalled()
+    expect(keycloakClient.initKeycloak).not.toHaveBeenCalled()
     expect(screen.getByTestId('authenticated').textContent).toBe('false')
+  })
+
+  it('does not bounce between the web app and Keycloak when the server refuses the login', async () => {
+    const keycloakLogin = vi.fn().mockResolvedValue(undefined)
+    vi.mocked(session.fetchSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.initKeycloak).mockResolvedValue(true)
+    vi.mocked(keycloakClient.getKeycloak).mockReturnValue({
+      authenticated: true,
+      token: 'kc-token',
+    } as never)
+    vi.mocked(session.createSession).mockRejectedValue(
+      new session.SessionExchangeError(403, 'This account has been deleted'),
+    )
+    vi.mocked(keycloakClient.ensureKeycloak).mockResolvedValue({ login: keycloakLogin } as never)
+
+    renderProvider()
+    await waitFor(() => expect(screen.getByTestId('ready').textContent).toBe('true'))
+    expect(showSimpleError).toHaveBeenCalledWith('This account has been deleted')
+
+    fireEvent.click(screen.getByRole('button', { name: 'log in' }))
+
+    await waitFor(() => expect(showSimpleError).toHaveBeenCalledTimes(2))
+    expect(keycloakLogin).not.toHaveBeenCalled()
+  })
+
+  it('processes the Keycloak callback in the address when it returns to a page that already has a session', async () => {
+    window.history.replaceState(null, '', '/settings#state=abc&code=def&session_state=ghi')
+    vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
+    vi.mocked(keycloakClient.ensureSsoChecked).mockResolvedValue(true)
+
+    try {
+      renderProvider()
+
+      await waitFor(() => expect(keycloakClient.ensureSsoChecked).toHaveBeenCalled())
+      expect(screen.getByTestId('authenticated').textContent).toBe('true')
+    } finally {
+      window.history.replaceState(null, '', '/')
+    }
   })
 
   it('finishes loading without waiting for Keycloak when it is unreachable and there is no session', async () => {

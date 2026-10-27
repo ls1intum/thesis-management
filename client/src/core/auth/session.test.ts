@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  SessionExchangeError,
   clearSessionState,
   createSession,
   deleteSession,
@@ -7,6 +8,7 @@ import {
   getCsrfToken,
   recoverSession,
   refreshCsrfToken,
+  sessionBelongsToOtherUser,
   setCsrfToken,
   setIdentityChangeHandler,
   setSessionRecoveryHandler,
@@ -200,5 +202,82 @@ describe('session', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(2)
     expect(identityChanged).toHaveBeenCalledTimes(1)
+  })
+
+  it('createSession reports the message of the server when the exchange is refused', async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(403, { message: 'This account has been deleted' }))
+
+    const failure = await createSession('kc-token').catch((error: unknown) => error)
+
+    expect(failure).toBeInstanceOf(SessionExchangeError)
+    expect((failure as SessionExchangeError).status).toBe(403)
+    expect((failure as SessionExchangeError).serverMessage).toBe('This account has been deleted')
+  })
+
+  it('remembers who the tab shows while the session is unknown (a 401), and treats an unknown user as another one', async () => {
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(200, { csrfToken: 'a', expiresAt: 'x', userId: 'alice' }),
+    )
+    await fetchSession()
+    expect(sessionBelongsToOtherUser()).toBe(false)
+
+    fetchMock.mockResolvedValueOnce(jsonResponse(401))
+    await fetchSession()
+
+    // no session at the moment: Alice's tab must not accept just any session that appears next
+    expect(sessionBelongsToOtherUser()).toBe(true)
+
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(200, { csrfToken: 'b', expiresAt: 'x', userId: 'alice' }),
+    )
+    await fetchSession()
+    expect(sessionBelongsToOtherUser()).toBe(false)
+
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(200, { csrfToken: 'c', expiresAt: 'x', userId: 'bob' }),
+    )
+    await fetchSession()
+    expect(sessionBelongsToOtherUser()).toBe(true)
+  })
+
+  it('refuses silent re-logins from the moment a logout begins and lets a running one finish first', async () => {
+    let finishRecovery: (value: boolean) => void = () => undefined
+    const handler = vi.fn(
+      () =>
+        new Promise<boolean>((resolve) => {
+          finishRecovery = resolve
+        }),
+    )
+    setSessionRecoveryHandler(handler)
+    setCsrfToken('csrf-old')
+
+    const running = recoverSession()
+    const logout = deleteSession()
+
+    // a request that gets a 401 now must not start another re-login
+    expect(await recoverSession()).toBe(false)
+    expect(fetchMock).not.toHaveBeenCalled()
+
+    // the running re-login creates a session; the logout then ends that one, with its token
+    setCsrfToken('csrf-new')
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }))
+    finishRecovery(true)
+    await running
+    await logout
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock.mock.calls[0][1].headers['X-CSRF-Token']).toBe('csrf-new')
+    expect(await recoverSession()).toBe(false)
+    expect(handler).toHaveBeenCalledTimes(1)
+  })
+
+  it('allows silent re-logins again when the logout failed and the user stays logged in', async () => {
+    const handler = vi.fn().mockResolvedValue(true)
+    setSessionRecoveryHandler(handler)
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 500 }))
+
+    await expect(deleteSession()).rejects.toThrow(/500/)
+
+    expect(await recoverSession()).toBe(true)
   })
 })

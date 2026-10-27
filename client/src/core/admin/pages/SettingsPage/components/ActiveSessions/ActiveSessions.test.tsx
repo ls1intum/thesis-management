@@ -41,7 +41,7 @@ describe('ActiveSessions', () => {
     expect(await screen.findByText('Chrome on macOS')).toBeInTheDocument()
     expect(screen.getByText('Safari on iOS')).toBeInTheDocument()
     expect(screen.getByText('This device')).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: 'End session' })).toHaveLength(1)
+    expect(screen.getAllByRole('button', { name: /^End session/ })).toHaveLength(1)
   })
 
   test('ends another session and reloads the list', async () => {
@@ -52,7 +52,7 @@ describe('ActiveSessions', () => {
       .mockResolvedValueOnce(sessionsResponse([current]) as never)
 
     renderWithProviders(<ActiveSessions />)
-    await user.click(await screen.findByRole('button', { name: 'End session' }))
+    await user.click(await screen.findByRole('button', { name: /^End session/ }))
 
     await waitFor(() => expect(screen.queryByText('Safari on iOS')).not.toBeInTheDocument())
     expect(doRequest).toHaveBeenCalledWith(
@@ -88,5 +88,18 @@ describe('ActiveSessions', () => {
     renderWithProviders(<ActiveSessions />)
 
     expect(await screen.findByText('Unknown device')).toBeInTheDocument()
+  })
+
+  test('says that the list could not be loaded instead of claiming there are no sessions', async () => {
+    vi.mocked(doRequest).mockResolvedValue({
+      ok: false,
+      status: 500,
+      data: undefined,
+    } as never)
+
+    renderWithProviders(<ActiveSessions />)
+
+    expect(await screen.findByText(/could not be loaded/)).toBeInTheDocument()
+    expect(screen.queryByText('No active sessions found.')).not.toBeInTheDocument()
   })
 })

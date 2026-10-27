@@ -18,6 +18,7 @@ const formatDate = (value?: string) => (value ? new Date(value).toLocaleString()
 const ActiveSessions = () => {
   const [sessions, setSessions] = useState<IUserSession[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
   const [endingSessionId, setEndingSessionId] = useState<string>()
   const [isEndingOthers, setIsEndingOthers] = useState(false)
 
@@ -29,7 +30,9 @@ const ActiveSessions = () => {
 
     if (response.ok) {
       setSessions(response.data)
+      setLoadFailed(false)
     } else {
+      setLoadFailed(true)
       showSimpleError(getApiResponseErrorMessage(response))
     }
   }, [])
@@ -88,7 +91,12 @@ const ActiveSessions = () => {
         session if you do not recognise it or after using a shared computer.
       </Text>
       {isLoading && <Loader size='sm' />}
-      {!isLoading && sessions.length === 0 && (
+      {!isLoading && loadFailed && sessions.length === 0 && (
+        <Text size='sm' c='red'>
+          The active sessions could not be loaded. Please try again later.
+        </Text>
+      )}
+      {!isLoading && !loadFailed && sessions.length === 0 && (
         <Text size='sm' c='dimmed'>
           No active sessions found.
         </Text>
@@ -112,6 +120,7 @@ const ActiveSessions = () => {
                 variant='light'
                 onClick={() => void endSession(session.id)}
                 loading={endingSessionId === session.id}
+                aria-label={`End session on ${session.device ?? 'unknown device'}`}
               >
                 End session
               </Button>

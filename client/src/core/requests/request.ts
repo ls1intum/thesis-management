@@ -1,10 +1,11 @@
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import {
   getCsrfToken,
-  getSessionUserId,
   handleIdentityChange,
+  isIdentityChangePending,
   recoverSession,
   refreshCsrfToken,
+  sessionBelongsToOtherUser,
 } from '@/core/auth/session'
 
 export type ApiResponse<T> =
@@ -52,13 +53,15 @@ export function doRequest<T>(
   const controller = options.controller ?? new AbortController()
 
   const executeRequest = async (isReplay = false): Promise<ApiResponse<T>> => {
-    // Who the tab was showing when the request was made. A request is only replayed under a replaced session if it
-    // still belongs to that user: replaying Alice's request under Bob's session would execute it as Bob.
-    const userIdAtStart = getSessionUserId()
-    const sessionBelongsToOtherUser = () => {
-      const userId = getSessionUserId()
-
-      return userIdAtStart !== undefined && userId !== undefined && userId !== userIdAtStart
+    // Once the tab found out that it shows another user than the session, nothing may be sent until the page has
+    // been reloaded: the request would be carried out as the other user.
+    if (isIdentityChangePending()) {
+      return {
+        ok: false,
+        status: 401,
+        data: undefined,
+        error: new Error('The signed-in user changed. The page is being reloaded.'),
+      }
     }
 
     const params = new URLSearchParams()
@@ -87,7 +90,8 @@ export function doRequest<T>(
     })
 
     // The session ended (24 hour limit, ended from another device). A 401 means the server rejected
-    // the request before processing it, so replaying it once after a silent re-login is safe.
+    // the request before processing it, so replaying it once after a silent re-login is safe, unless the re-login
+    // produced the session of another user than the one this tab shows: then the request would run as that user.
     if (result.status === 401 && options.requiresAuth && !isReplay && (await recoverSession())) {
       if (!sessionBelongsToOtherUser()) {
         return executeRequest(true)

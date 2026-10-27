@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { doRequest } from '@/core/requests/request'
 import {
   clearSessionState,
+  forgetSession,
   setCsrfToken,
   setIdentityChangeHandler,
   setSessionRecoveryHandler,
@@ -258,5 +259,55 @@ describe('doRequest', () => {
 
     expect(result.ok).toBe(true)
     expect(identityChanged).not.toHaveBeenCalled()
+  })
+
+  it('does not replay a request that started while the tab did not know its session, under the session of another user', async () => {
+    // the re-login clears what is known about the session; Alice's DELETE is sent and rejected during that time
+    const identityChanged = vi.fn()
+    setIdentityChangeHandler(identityChanged)
+    setSessionUserId('alice')
+    setSessionRecoveryHandler(() => {
+      forgetSession()
+      setSessionUserId('bob')
+      return Promise.resolve(true)
+    })
+    fetchMock.mockResolvedValue(jsonResponse(401))
+
+    const result = await doRequest('/v2/account', { method: 'DELETE', requiresAuth: true })
+
+    expect(result.status).toBe(401)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(identityChanged).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not replay when the re-login leaves the session user unknown', async () => {
+    setIdentityChangeHandler(vi.fn())
+    setSessionUserId('alice')
+    setSessionRecoveryHandler(() => {
+      forgetSession()
+      return Promise.resolve(true)
+    })
+    fetchMock.mockResolvedValue(jsonResponse(401))
+
+    await doRequest('/v2/x', { method: 'POST', requiresAuth: true, data: { a: 1 } })
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('sends nothing once the tab has found out that it shows another user than the session', async () => {
+    setIdentityChangeHandler(vi.fn())
+    setSessionUserId('alice')
+    setSessionRecoveryHandler(() => {
+      setSessionUserId('bob')
+      return Promise.resolve(true)
+    })
+    fetchMock.mockResolvedValue(jsonResponse(401))
+    await doRequest('/v2/first', { method: 'GET', requiresAuth: true })
+    fetchMock.mockClear()
+
+    const result = await doRequest('/v2/second', { method: 'POST', requiresAuth: true, data: {} })
+
+    expect(result.ok).toBe(false)
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })

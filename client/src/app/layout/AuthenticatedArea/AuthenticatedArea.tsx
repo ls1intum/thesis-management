@@ -1,10 +1,11 @@
 import type { ComponentType, PropsWithChildren } from 'react'
-import { Suspense, useEffect, useRef } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import type { MantineSize } from '@mantine/core'
 import {
   ActionIcon,
   AppShell,
   Box,
+  Button,
   Center,
   Container,
   Divider,
@@ -162,6 +163,12 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const isPasskeySupported = auth.isPasskeySupported
   const login = auth.login
   const hasTriggeredFallbackLogin = useRef(false)
+  // The fallback login only returns without leaving the page when no login was possible (Keycloak is down, or the
+  // server refused the login): say so instead of showing a loader that never ends.
+  const [loginFailed, setLoginFailed] = useState(false)
+  const loginFailedTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+
+  useEffect(() => () => clearTimeout(loginFailedTimer.current), [])
 
   const baseHeaderHeight = 50
   const HEADER_HEIGHT =
@@ -196,10 +203,16 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     }
 
     hasTriggeredFallbackLogin.current = true
-    void login(`${location.pathname}${location.search}${location.hash}`).catch((error) => {
-      console.error('Fallback login failed', error)
-      hasTriggeredFallbackLogin.current = false
-    })
+    void login(`${location.pathname}${location.search}${location.hash}`)
+      // a redirect to the login page unloads the page; only when it did not, the user needs an explanation
+      .then(() => {
+        loginFailedTimer.current = setTimeout(() => setLoginFailed(true), 3000)
+      })
+      .catch((error) => {
+        console.error('Fallback login failed', error)
+        hasTriggeredFallbackLogin.current = false
+        setLoginFailed(true)
+      })
   }, [
     isAuthenticated,
     isPasskeySupported,
@@ -378,6 +391,15 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                       </Center>
                     )}
                   </Suspense>
+                ) : loginFailed && !isAuthenticated ? (
+                  <Center className={classes.fullHeight}>
+                    <Stack align='center' gap='sm'>
+                      <Text>
+                        You could not be signed in right now. Please try again in a moment.
+                      </Text>
+                      <Button onClick={() => window.location.reload()}>Try again</Button>
+                    </Stack>
+                  </Center>
                 ) : (
                   <PageLoader />
                 )}

@@ -13,10 +13,37 @@ export interface ISessionInfo {
 }
 
 let csrfToken: string | undefined
+// The user of the latest session this tab saw, and the user this tab has been showing since it adopted its first
+// session. The second one is never cleared while the page lives, not even while a re-login is under way, so that a
+// request is never replayed under another user's session just because the current user is momentarily unknown.
 let sessionUserId: string | undefined
+let tabUserId: string | undefined
+let identityChanged = false
 let identityChangeHandler: (() => void) | undefined
 let recoveryHandler: (() => Promise<boolean>) | undefined
 let recoveryInFlight: Promise<boolean> | undefined
+// Set once a logout has begun: from then on no silent re-login may create a new session.
+let loggingOut = false
+let recoveryBlockedUntil = 0
+
+const LOGOUT_BROADCAST_CHANNEL = 'thesis-management-session-logout'
+// Other tabs of the browser must not sign in again silently in the moment between ending the session and ending
+// the Keycloak login (which they would find still alive).
+const RECOVERY_BLOCK_AFTER_LOGOUT_MS = 30_000
+
+const logoutChannel = (() => {
+  try {
+    return typeof BroadcastChannel === 'undefined'
+      ? undefined
+      : new BroadcastChannel(LOGOUT_BROADCAST_CHANNEL)
+  } catch {
+    return undefined
+  }
+})()
+
+logoutChannel?.addEventListener('message', () => {
+  recoveryBlockedUntil = Date.now() + RECOVERY_BLOCK_AFTER_LOGOUT_MS
+})
 
 const sessionUrl = () => `${GLOBAL_CONFIG.server_host}/api/v2/auth/session`
 
@@ -30,12 +57,36 @@ export const getSessionUserId = () => sessionUserId
 
 export const setSessionUserId = (userId: string | undefined) => {
   sessionUserId = userId
+  tabUserId ??= userId
 }
 
-export const clearSessionState = () => {
+/** Forgets the current session (it ended) but not who this tab has been showing. */
+export const forgetSession = () => {
   csrfToken = undefined
   sessionUserId = undefined
 }
+
+/** Forgets everything, including who this tab has been showing: after a logout, and between tests. */
+export const clearSessionState = () => {
+  forgetSession()
+  tabUserId = undefined
+  identityChanged = false
+  loggingOut = false
+  recoveryBlockedUntil = 0
+}
+
+/**
+ * Whether the session now in place belongs to another user than the one this tab has been showing. It fails
+ * closed: a session whose user is unknown does not count as the same user.
+ */
+export const sessionBelongsToOtherUser = () =>
+  tabUserId !== undefined && sessionUserId !== tabUserId
+
+/** True once the tab found out that it shows another user than the session; it then sends no request. */
+export const isIdentityChangePending = () => identityChanged
+
+/** True from the moment a logout begins (it may still fail, which is reported to the caller). */
+export const isLoggingOut = () => loggingOut
 
 /**
  * Registers what happens when the session turns out to belong to a different user than the one this tab was
@@ -47,6 +98,8 @@ export const setIdentityChangeHandler = (handler: (() => void) | undefined) => {
 }
 
 export function handleIdentityChange() {
+  identityChanged = true
+
   if (identityChangeHandler) {
     identityChangeHandler()
   } else {
@@ -59,6 +112,7 @@ const readSessionInfo = async (response: Response): Promise<ISessionInfo> => {
 
   setCsrfToken(info.csrfToken)
   sessionUserId = info.userId
+  tabUserId ??= info.userId
 
   return info
 }
@@ -75,7 +129,7 @@ export async function fetchSession(): Promise<ISessionInfo | undefined> {
   })
 
   if (response.status === 401) {
-    clearSessionState()
+    forgetSession()
     return undefined
   }
 
@@ -98,10 +152,25 @@ export async function createSession(keycloakToken: string): Promise<ISessionInfo
   })
 
   if (!response.ok) {
-    throw new Error(`Failed to create a session (${response.status})`)
+    const body = (await response.json().catch(() => undefined)) as { message?: string } | undefined
+
+    throw new SessionExchangeError(response.status, body?.message)
   }
 
   return readSessionInfo(response)
+}
+
+/** The server refused to turn the Keycloak login into a session (for example for a deleted account). */
+export class SessionExchangeError extends Error {
+  readonly status: number
+  readonly serverMessage: string | undefined
+
+  constructor(status: number, serverMessage?: string) {
+    super(`Failed to create a session (${status})${serverMessage ? `: ${serverMessage}` : ''}`)
+    this.name = 'SessionExchangeError'
+    this.status = status
+    this.serverMessage = serverMessage
+  }
 }
 
 let csrfRefreshInFlight: Promise<string | undefined> | undefined
@@ -132,6 +201,12 @@ export function refreshCsrfToken(): Promise<string | undefined> {
  * CSRF token is kept so that the logout can be retried.
  */
 export async function deleteSession(): Promise<void> {
+  // the session is gone: forget it and who this tab showed, but keep refusing silent re-logins until the page leaves
+  const endLocally = () => {
+    forgetSession()
+    tabUserId = undefined
+  }
+
   const send = (token: string | undefined) =>
     fetch(sessionUrl(), {
       method: 'DELETE',
@@ -139,39 +214,47 @@ export async function deleteSession(): Promise<void> {
       headers: token ? { 'X-CSRF-Token': token } : {},
     })
 
-  const sentToken = csrfToken
-  const userIdAtStart = sessionUserId
-  let response = await send(sentToken)
+  // From here on no silent re-login may create a session behind the back of the logout: tell the other tabs and let
+  // a re-login that is already running finish, so that the DELETE below ends the session it created.
+  loggingOut = true
+  logoutChannel?.postMessage('logout')
+  await recoveryInFlight
 
-  if (response.status === 403) {
-    const current = await fetchSession()
+  try {
+    const sentToken = csrfToken
+    let response = await send(sentToken)
 
-    if (!current) {
-      clearSessionState()
+    if (response.status === 403) {
+      const current = await fetchSession()
 
-      return
+      if (!current) {
+        endLocally()
+
+        return
+      }
+
+      if (tabUserId !== undefined && current.userId !== tabUserId) {
+        handleIdentityChange()
+
+        throw new Error('The session now belongs to another user and was not ended')
+      }
+
+      if (current.csrfToken !== sentToken) {
+        response = await send(current.csrfToken)
+      }
     }
 
-    if (
-      userIdAtStart !== undefined &&
-      current.userId !== undefined &&
-      current.userId !== userIdAtStart
-    ) {
-      handleIdentityChange()
-
-      throw new Error('The session now belongs to another user and was not ended')
+    if (!response.ok && response.status !== 401) {
+      throw new Error(`The server did not end the session (${response.status})`)
     }
+  } catch (error) {
+    // the session is still there and the user stays logged in
+    loggingOut = false
 
-    if (current.csrfToken !== sentToken) {
-      response = await send(current.csrfToken)
-    }
+    throw error
   }
 
-  if (!response.ok && response.status !== 401) {
-    throw new Error(`The server did not end the session (${response.status})`)
-  }
-
-  clearSessionState()
+  endLocally()
 }
 
 /** Registers how the web app silently re-establishes a session (Keycloak check-sso + exchange). */
@@ -184,7 +267,7 @@ export const setSessionRecoveryHandler = (handler: (() => Promise<boolean>) | un
  * attempt; a failed attempt resolves to `false` and is never retried automatically.
  */
 export function recoverSession(): Promise<boolean> {
-  if (!recoveryHandler) {
+  if (!recoveryHandler || loggingOut || Date.now() < recoveryBlockedUntil) {
     return Promise.resolve(false)
   }
 
