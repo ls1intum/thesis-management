@@ -40,7 +40,10 @@ class UserSessionRepositoryTest extends BaseIntegrationTest {
 	}
 
 	private UserSession newSession(UUID userId, String identifier) {
-		Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+		return newSession(userId, identifier, Instant.now().truncatedTo(ChronoUnit.MILLIS));
+	}
+
+	private UserSession newSession(UUID userId, String identifier, Instant now) {
 		UserSession session = new UserSession();
 		session.setTokenIdentifier(identifier);
 		session.setVerifierHash(new byte[] {1, 2, 3, 4});
@@ -92,9 +95,8 @@ class UserSessionRepositoryTest extends BaseIntegrationTest {
 	@Test
 	void findActiveByUser_returnsOldestFirstAndSkipsEnded() {
 		User user = createUser("session-user-4");
-		UserSession older = newSession(user.getId(), "identifier-4a");
-		older.setCreatedAt(older.getCreatedAt().minus(1, ChronoUnit.HOURS));
-		userSessionRepository.save(older);
+		// created_at is not updatable, so the earlier creation time has to be there from the first save
+		UserSession older = newSession(user.getId(), "identifier-4a", Instant.now().truncatedTo(ChronoUnit.MILLIS).minus(1, ChronoUnit.HOURS));
 		UserSession newer = newSession(user.getId(), "identifier-4b");
 		UserSession ended = newSession(user.getId(), "identifier-4c");
 		ended.setEndedAt(Instant.now());

@@ -82,9 +82,13 @@ server:
   port: ${SERVER_PORT:8080}
   # The server runs behind Traefik: use the forwarded protocol and client address (for secure redirects and
   # for the per-IP detection of guessed session cookies) instead of the proxy's address.
-  # This trusts the forwarded headers of whichever peer connects, so the server port must only be reachable by the
-  # proxy (production publishes only Traefik's ports and merely exposes 8080 inside the Docker network).
-  forward-headers-strategy: framework
+  # "native" (Tomcat's RemoteIpValve) reads only X-Forwarded-For / X-Forwarded-Proto, and only from a peer in
+  # server.tomcat.remoteip.internal-proxies (by default the private and Docker network ranges). "framework"
+  # would also honour the RFC 7239 "Forwarded" header, which Traefik passes through from the client unchanged,
+  # so a client could choose the address the server sees. The server port must only be reachable by the proxy
+  # (production publishes only Traefik's ports and merely exposes 8080 inside the Docker network), and a proxy
+  # in front of Traefik has to overwrite, not append to, X-Forwarded-For.
+  forward-headers-strategy: native
   servlet:
     context-path: /api
 

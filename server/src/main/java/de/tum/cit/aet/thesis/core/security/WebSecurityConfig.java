@@ -26,6 +26,8 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import jakarta.servlet.DispatcherType;
+
 import java.time.Clock;
 import java.util.Set;
 
@@ -104,6 +106,11 @@ public class WebSecurityConfig {
 				.addFilterBefore(sessionFilter, CsrfFilter.class)
 				.exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
 				.authorizeHttpRequests(auth -> auth
+						// Tomcat re-dispatches a request to /error after sendError() or an unhandled exception (a denied
+						// @PreAuthorize, a CSRF rejection, the 429 of the limiter, a 500). That dispatch is evaluated
+						// again, and without this rule it would be refused as unauthenticated and the real status
+						// replaced by a 401, which the web app answers by signing in again and replaying the request.
+						.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
 						.requestMatchers(HttpMethod.GET, "/v2/topics/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/v2/published-theses/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/v2/published-presentations/**").permitAll()
@@ -112,11 +119,6 @@ public class WebSecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/v2/avatars/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/info").permitAll()
 						.requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
-						// A native WebSocket handshake cannot carry an Authorization header, so this
-						// endpoint is intentionally unauthenticated at the HTTP layer; each STOMP
-						// session is authenticated from its CONNECT frame instead, by
-						// StompAuthChannelInterceptor.
-						.requestMatchers("/ws/**").permitAll()
 						.anyRequest().authenticated()
 				);
 

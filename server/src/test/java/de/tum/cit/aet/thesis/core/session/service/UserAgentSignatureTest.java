@@ -45,6 +45,20 @@ class UserAgentSignatureTest {
 	}
 
 	@Test
+	void requestingTheDesktopSiteDoesNotCountAsAnotherDevice() {
+		assertThat(UserAgentSignature.sameDevice("chrome|android", "chrome|linux")).isTrue();
+		assertThat(UserAgentSignature.sameDevice("safari|ios", "safari|macos")).isTrue();
+		assertThat(UserAgentSignature.sameDevice("chrome|macos", "chrome|macos")).isTrue();
+	}
+
+	@Test
+	void aDifferentBrowserOrSystemCountsAsAnotherDevice() {
+		assertThat(UserAgentSignature.sameDevice("chrome|android", "firefox|linux")).isFalse();
+		assertThat(UserAgentSignature.sameDevice("chrome|windows", "chrome|linux")).isFalse();
+		assertThat(UserAgentSignature.sameDevice("safari|ios", "chrome|macos")).isFalse();
+	}
+
+	@Test
 	void unknownAndMissingUserAgentsMapToOther() {
 		assertThat(UserAgentSignature.of(null)).isEqualTo("other|other");
 		assertThat(UserAgentSignature.of("")).isEqualTo("other|other");

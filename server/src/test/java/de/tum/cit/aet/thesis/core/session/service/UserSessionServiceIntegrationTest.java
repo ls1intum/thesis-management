@@ -325,6 +325,63 @@ class UserSessionServiceIntegrationTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	void preRotationCookie_isRejectedInsideGraceWhenItComesFromAnotherBrowser() {
+		User user = createUser("svc-grace-binding");
+		Created created = sessionService.create(user, client(CHROME_MAC_130));
+		sessionService.markForRotation(user.getId());
+		Authenticated rotated = authenticated(authenticate(created));
+
+		at(Duration.ofSeconds(5));
+
+		assertThat(rejected(sessionService.authenticate(created.cookieValue(), client(FIREFOX_MAC))).reason())
+				.isEqualTo(Reason.USER_AGENT_MISMATCH);
+		// the real browser is unaffected, with the old and with the new cookie value
+		authenticated(authenticate(created));
+		authenticated(sessionService.authenticate(rotated.newCookieValue().orElseThrow(), client(CHROME_MAC_130)));
+	}
+
+	@Test
+	void graceWindow_doesNotOutliveTheAbsoluteTimeoutOfTheRotatedSession() {
+		User user = createUser("svc-grace-absolute");
+		Created created = sessionService.create(user, client(CHROME_MAC_130));
+
+		// keep the session busy so that only the absolute timeout is left
+		for (int hours = 3; hours <= 21; hours += 3) {
+			at(Duration.ofHours(hours));
+			authenticated(authenticate(created));
+		}
+
+		at(Duration.ofHours(24).minusSeconds(10));
+		sessionService.markForRotation(user.getId());
+		authenticated(authenticate(created));
+
+		// 20 s of the 30 s grace window are left, but the session itself is past its absolute timeout
+		at(Duration.ofHours(24).plusSeconds(5));
+		assertThat(rejected(authenticate(created)).reason()).isEqualTo(Reason.SUPERSEDED_EXPIRED);
+	}
+
+	@Test
+	void create_doesNotEvictALiveSessionForOneThatIsPastItsIdleTimeoutButNotSweptYet() {
+		User user = createUser("svc-evict-dead");
+		Created live = sessionService.create(user, client(CHROME_MAC_130));
+		Created stale = sessionService.create(user, client(CHROME_MAC_130));
+
+		// the oldest session stays in use, the second one is abandoned and passes its idle timeout
+		at(Duration.ofHours(3));
+		authenticated(authenticate(live));
+		at(Duration.ofHours(4).plusMinutes(30));
+
+		for (int i = 0; i < 9; i++) {
+			sessionService.create(user, client(CHROME_MAC_130));
+		}
+
+		assertThat(sessionRepository.findById(stale.session().getId()).orElseThrow().getEndReason())
+				.isEqualTo(UserSessionEndReason.EXPIRED);
+		authenticated(authenticate(live));
+		assertThat(sessionService.listActive(user.getId())).hasSize(10);
+	}
+
+	@Test
 	void replaceExisting_endsTheCallersCurrentSessionOnlyForTheSameUser() {
 		User user = createUser("svc-replace");
 		User other = createUser("svc-replace-other");

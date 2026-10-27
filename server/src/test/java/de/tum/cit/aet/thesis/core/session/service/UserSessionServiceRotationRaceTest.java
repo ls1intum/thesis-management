@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.core.session.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -81,6 +82,41 @@ class UserSessionServiceRotationRaceTest {
 		verify(repository).save(replacement.capture());
 		verify(repository).endById(eq(replacement.getValue().getId()), any(), eq(UserSessionEndReason.REVOKED));
 		verify(repository, never()).touchLastUsed(any(), any(), any());
+	}
+
+	@Test
+	void aRotationThatFailsWithADatabaseErrorIsRetriedOnTheNextRequest() {
+		UserSessionRepository repository = mock(UserSessionRepository.class);
+		UserRepository userRepository = mock(UserRepository.class);
+		UserSessionProperties properties = new UserSessionProperties(Duration.ofHours(4), Duration.ofHours(24), 10,
+				Duration.ofMinutes(5), Duration.ofSeconds(30), Duration.ofDays(30), 20, UserAgentMismatchAction.END);
+		UserSessionService service = new UserSessionService(repository, userRepository, properties, Clock.fixed(NOW, ZoneOffset.UTC));
+
+		UserSessionTokens.Issued issued = UserSessionTokens.generate();
+		User user = new User();
+		user.setId(UUID.randomUUID());
+		user.setUniversityId("ga12abc");
+		UserSession old = new UserSession();
+		old.setId(UUID.randomUUID());
+		old.setTokenIdentifier(issued.identifier());
+		old.setVerifierHash(UserSessionTokens.hashVerifier(issued.verifier()));
+		old.setUserId(user.getId());
+		old.setCreatedAt(NOW.minusSeconds(60));
+		old.setLastUsedAt(NOW.minusSeconds(60));
+		old.setExpiresAt(NOW.plus(Duration.ofHours(23)));
+		old.setCsrfToken("csrf");
+		old.setUserAgentSignature(UserAgentSignature.of(CLIENT.userAgent()));
+		old.setRotationRequired(true);
+
+		when(repository.findByTokenIdentifier(issued.identifier())).thenReturn(Optional.of(old));
+		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+		when(repository.claimRotation(old.getId())).thenReturn(1);
+		when(repository.save(any(UserSession.class))).thenThrow(new IllegalStateException("database unavailable"));
+
+		// claimRotation already cleared the flag, so without restoring it the role change would never take effect
+		assertThatThrownBy(() -> service.authenticate(issued.cookieValue(), CLIENT)).isInstanceOf(IllegalStateException.class);
+
+		verify(repository).markRotationRequiredForUser(user.getId());
 	}
 
 	@Test

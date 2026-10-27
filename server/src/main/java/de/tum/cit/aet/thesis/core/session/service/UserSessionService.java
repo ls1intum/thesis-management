@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -197,7 +198,7 @@ public class UserSessionService {
 		Instant now = clock.instant();
 
 		if (session.getEndedAt() != null) {
-			return authenticateEnded(session, now);
+			return authenticateEnded(session, client, now);
 		}
 
 		if (!now.isBefore(session.getExpiresAt())) {
@@ -223,7 +224,7 @@ public class UserSessionService {
 		}
 
 		if (session.isRotationRequired() && repository.claimRotation(session.getId()) == 1) {
-			Optional<Created> rotated = rotate(session, client, now);
+			Optional<Created> rotated = rotateOrRestoreFlag(session, client, now);
 
 			if (rotated.isEmpty()) {
 				return new Rejected(Reason.ENDED);
@@ -399,13 +400,20 @@ public class UserSessionService {
 		return repository.deleteEndedBefore(now.minus(properties.endedRetention()));
 	}
 
-	private AuthResult authenticateEnded(UserSession session, Instant now) {
+	private AuthResult authenticateEnded(UserSession session, ClientInfo client, Instant now) {
 		if (session.getEndReason() != UserSessionEndReason.ROTATED || session.getSupersededUntil() == null) {
 			return new Rejected(Reason.ENDED);
 		}
 
-		if (!now.isBefore(session.getSupersededUntil())) {
+		// The grace window must not outlive the absolute timeout of the session it was rotated from.
+		if (!now.isBefore(session.getSupersededUntil()) || !now.isBefore(session.getExpiresAt())) {
 			return new Rejected(Reason.SUPERSEDED_EXPIRED);
+		}
+
+		// The same browser binding as for a live session: a pre-rotation cookie copied to another browser must not
+		// work during the grace window. Nothing is ended here, the live replacement belongs to the real browser.
+		if (!userAgentMatches(session, client)) {
+			return new Rejected(Reason.USER_AGENT_MISMATCH);
 		}
 
 		// A parallel request that still carries the cookie value from before a rotation. It is only accepted
@@ -449,7 +457,7 @@ public class UserSessionService {
 		String stored = session.getUserAgentSignature();
 		String current = UserAgentSignature.of(client.userAgent());
 
-		if (stored == null || stored.equals(current)) {
+		if (stored == null || UserAgentSignature.sameDevice(stored, current)) {
 			return true;
 		}
 
@@ -474,6 +482,19 @@ public class UserSessionService {
 		repository.touchLastUsed(session.getId(), now, ip);
 		session.setLastUsedAt(now);
 		session.setLastIp(ip);
+	}
+
+	/**
+	 * Rotates a session; if that fails (for example a database error) the rotation flag, which {@code claimRotation}
+	 * already cleared, is set again so that the next request retries instead of the role change being forgotten.
+	 */
+	private Optional<Created> rotateOrRestoreFlag(UserSession old, ClientInfo client, Instant now) {
+		try {
+			return rotate(old, client, now);
+		} catch (RuntimeException exception) {
+			repository.markRotationRequiredForUser(old.getUserId());
+			throw exception;
+		}
 	}
 
 	/**
@@ -513,12 +534,28 @@ public class UserSessionService {
 	}
 
 	private void evictOldestSessions(UUID userId) {
-		List<UserSession> active = repository.findByUserIdAndEndedAtIsNullOrderByCreatedAtAsc(userId);
-		int excess = active.size() - properties.maxPerUser();
+		Instant now = clock.instant();
+		List<UserSession> live = new ArrayList<>();
+
+		// A session past one of its timeouts is dead but may not have been swept yet: it must neither count against
+		// the limit nor be kept while a live session is evicted instead.
+		for (UserSession session : repository.findByUserIdAndEndedAtIsNullOrderByCreatedAtAsc(userId)) {
+			if (isPastTimeout(session, now)) {
+				end(session, UserSessionEndReason.EXPIRED);
+			} else {
+				live.add(session);
+			}
+		}
+
+		int excess = live.size() - properties.maxPerUser();
 
 		for (int i = 0; i < excess; i++) {
-			end(active.get(i), UserSessionEndReason.EVICTED);
+			end(live.get(i), UserSessionEndReason.EVICTED);
 		}
+	}
+
+	private boolean isPastTimeout(UserSession session, Instant now) {
+		return !now.isBefore(session.getExpiresAt()) || !now.isBefore(session.getLastUsedAt().plus(properties.idleTimeout()));
 	}
 
 	private void applyClient(UserSession session, ClientInfo client, boolean initial) {

@@ -13,10 +13,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * {@code feedback.progress}) to the client while an AI review is running. There is no SockJS
  * fallback — this is an internal tool used from modern browsers only.
  *
- * <p>The handshake itself is unauthenticated (a native {@code WebSocket} cannot carry an
- * {@code Authorization} header); {@link StompAuthChannelInterceptor} authenticates each session
- * from its STOMP {@code CONNECT} frame instead. {@code WebSecurityConfig} permits the handshake
- * request itself so it is not rejected before reaching that interceptor.
+ * <p>The handshake is an ordinary HTTP request authenticated by the session cookie, like every other
+ * request; {@link StompAuthChannelInterceptor} additionally refuses frames of sessions without an
+ * authenticated user and restricts the destinations a session may subscribe to and send to.
  */
 @Configuration
 @EnableWebSocketMessageBroker
@@ -28,7 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	 * Creates the configuration.
 	 *
 	 * @param clientHost                  the single allowed origin for the STOMP endpoint handshake
-	 * @param stompAuthChannelInterceptor authenticates each session from its CONNECT frame
+	 * @param stompAuthChannelInterceptor refuses unauthenticated sessions and restricts their destinations
 	 */
 	public WebSocketConfig(@Value("${thesis-management.client.host}") String clientHost,
 			StompAuthChannelInterceptor stompAuthChannelInterceptor) {

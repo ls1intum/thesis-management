@@ -28,6 +28,23 @@ public final class UserAgentSignature {
 	}
 
 	/**
+	 * Tells whether two signatures can come from the same browser. They are equal, or differ only because the
+	 * browser switched to its desktop site: Chrome and Firefox on Android then present as Linux, and Safari on
+	 * iOS and iPadOS as macOS. Without this, using "Request desktop site" would end the session.
+	 *
+	 * @param first a value produced by {@link #of(String)}
+	 * @param second a value produced by {@link #of(String)}
+	 * @return whether the two may belong to the same browser
+	 */
+	public static boolean sameDevice(String first, String second) {
+		return first.equals(second) || desktopEquivalent(first).equals(desktopEquivalent(second));
+	}
+
+	private static String desktopEquivalent(String signature) {
+		return signature.replace("|ios", "|macos").replace("|android", "|linux");
+	}
+
+	/**
 	 * Turns a signature into a short label for the active sessions list.
 	 *
 	 * @param signature a value produced by {@link #of(String)}, may be null
