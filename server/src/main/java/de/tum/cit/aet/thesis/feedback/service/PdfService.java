@@ -67,7 +67,42 @@ public class PdfService {
 		PagePdfDocumentReader reader = new PagePdfDocumentReader(new ByteArrayResource(bytes), config);
 
 		List<Document> docs = reader.read();
-		return docs.stream().map(Document::getText).toList();
+		return docs.stream().map(Document::getText).map(PdfService::replaceUnpairedSurrogates).toList();
+	}
+
+	/**
+	 * Replaces every UTF-16 surrogate that is not part of a valid pair with U+FFFD. Fonts with a
+	 * broken ToUnicode map make PDFBox emit lone surrogates, which end up in the LLM request body;
+	 * an OpenAI-compatible gateway (e.g. a Python one) then fails to re-encode the prompt as UTF-8
+	 * ("surrogates not allowed") and rejects the whole review.
+	 *
+	 * @param text extracted page text, may be {@code null}
+	 * @return the text with only well-formed code points
+	 */
+	static String replaceUnpairedSurrogates(String text) {
+		if (text == null) {
+			return null;
+		}
+		StringBuilder result = null;
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			boolean paired = Character.isHighSurrogate(c) && i + 1 < text.length()
+					&& Character.isLowSurrogate(text.charAt(i + 1));
+			if (paired) {
+				if (result != null) {
+					result.append(c).append(text.charAt(i + 1));
+				}
+				i++;
+			} else if (Character.isSurrogate(c)) {
+				if (result == null) {
+					result = new StringBuilder(text.length()).append(text, 0, i);
+				}
+				result.append('\uFFFD');
+			} else if (result != null) {
+				result.append(c);
+			}
+		}
+		return result == null ? text : result.toString();
 	}
 
 	/**
