@@ -63,7 +63,7 @@
     "@tiptap/react": "3.31.4",
     "@tiptap/starter-kit": "3.31.4",
     "dayjs": "1.11.23",
-    "dompurify": "3.4.16",
+    "dompurify": "3.4.17",
     "embla-carousel": "8.6.0",
     "embla-carousel-react": "8.6.0",
     "i18n-iso-countries": "7.14.0",
