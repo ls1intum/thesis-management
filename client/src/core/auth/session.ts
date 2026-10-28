@@ -26,23 +26,48 @@ let recoveryInFlight: Promise<boolean> | undefined
 let loggingOut = false
 let recoveryBlockedUntil = 0
 
-const LOGOUT_BROADCAST_CHANNEL = 'thesis-management-session-logout'
+const SESSION_BROADCAST_CHANNEL = 'thesis-management-session'
 // Other tabs of the browser must not sign in again silently in the moment between ending the session and ending
 // the Keycloak login (which they would find still alive).
 const RECOVERY_BLOCK_AFTER_LOGOUT_MS = 30_000
 
-const logoutChannel = (() => {
+// What the tabs of one browser tell each other: they share the session cookie, so a logout or a login in one of
+// them concerns all.
+type SessionBroadcast =
+  { type: 'logout' } | { type: 'logout-failed' } | { type: 'login'; userId?: string }
+
+const sessionChannel = (() => {
   try {
     return typeof BroadcastChannel === 'undefined'
       ? undefined
-      : new BroadcastChannel(LOGOUT_BROADCAST_CHANNEL)
+      : new BroadcastChannel(SESSION_BROADCAST_CHANNEL)
   } catch {
     return undefined
   }
 })()
 
-logoutChannel?.addEventListener('message', () => {
-  recoveryBlockedUntil = Date.now() + RECOVERY_BLOCK_AFTER_LOGOUT_MS
+const broadcast = (message: SessionBroadcast) => {
+  try {
+    sessionChannel?.postMessage(message)
+  } catch {
+    // tabs that cannot be told still find out with their next rejected request
+  }
+}
+
+sessionChannel?.addEventListener('message', (event: MessageEvent<SessionBroadcast>) => {
+  const message = event.data
+
+  if (message?.type === 'logout') {
+    recoveryBlockedUntil = Date.now() + RECOVERY_BLOCK_AFTER_LOGOUT_MS
+  } else if (message?.type === 'logout-failed') {
+    recoveryBlockedUntil = 0
+  } else if (message?.type === 'login') {
+    // Someone logged in, in another tab. If that is not the user this tab shows, its requests would now be
+    // answered with that other user's data, so the tab starts over (a safe request is never rejected for this).
+    if (message.userId !== undefined && tabUserId !== undefined && message.userId !== tabUserId) {
+      handleIdentityChange()
+    }
+  }
 })
 
 const sessionUrl = () => `${GLOBAL_CONFIG.server_host}/api/v2/auth/session`
@@ -87,6 +112,9 @@ export const isIdentityChangePending = () => identityChanged
 
 /** True from the moment a logout begins (it may still fail, which is reported to the caller). */
 export const isLoggingOut = () => loggingOut
+
+/** Whether no silent re-login may create a session now: a logout is under way here or was begun in another tab. */
+export const isRecoveryBlocked = () => loggingOut || Date.now() < recoveryBlockedUntil
 
 /**
  * Registers what happens when the session turns out to belong to a different user than the one this tab was
@@ -157,7 +185,30 @@ export async function createSession(keycloakToken: string): Promise<ISessionInfo
     throw new SessionExchangeError(response.status, body?.message)
   }
 
-  return readSessionInfo(response)
+  const info = await readSessionInfo(response)
+  broadcast({ type: 'login', userId: info.userId })
+
+  return info
+}
+
+/**
+ * Ends a session that was created at a moment when it must not exist any more (a logout began in the meantime).
+ * Best effort: the session cannot be used for anything else, and it ends by timeout at the latest.
+ */
+export async function abandonSession(): Promise<void> {
+  const token = csrfToken
+
+  forgetSession()
+
+  try {
+    await fetch(sessionUrl(), {
+      method: 'DELETE',
+      credentials: 'include',
+      headers: token ? { 'X-CSRF-Token': token } : {},
+    })
+  } catch {
+    // the logout that made this necessary is also trying to end the session
+  }
 }
 
 /** The server refused to turn the Keycloak login into a session (for example for a deleted account). */
@@ -217,7 +268,7 @@ export async function deleteSession(): Promise<void> {
   // From here on no silent re-login may create a session behind the back of the logout: tell the other tabs and let
   // a re-login that is already running finish, so that the DELETE below ends the session it created.
   loggingOut = true
-  logoutChannel?.postMessage('logout')
+  broadcast({ type: 'logout' })
   await recoveryInFlight
 
   try {
@@ -250,6 +301,7 @@ export async function deleteSession(): Promise<void> {
   } catch (error) {
     // the session is still there and the user stays logged in
     loggingOut = false
+    broadcast({ type: 'logout-failed' })
 
     throw error
   }
@@ -267,7 +319,7 @@ export const setSessionRecoveryHandler = (handler: (() => Promise<boolean>) | un
  * attempt; a failed attempt resolves to `false` and is never retried automatically.
  */
 export function recoverSession(): Promise<boolean> {
-  if (!recoveryHandler || loggingOut || Date.now() < recoveryBlockedUntil) {
+  if (!recoveryHandler || isRecoveryBlocked()) {
     return Promise.resolve(false)
   }
 

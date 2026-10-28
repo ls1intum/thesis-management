@@ -24,11 +24,13 @@ import {
 } from '@/core/auth/keycloakClient'
 import {
   SessionExchangeError,
+  abandonSession,
   createSession,
   deleteSession,
   fetchSession,
   forgetSession,
   isLoggingOut,
+  isRecoveryBlocked,
   setSessionRecoveryHandler,
 } from '@/core/auth/session'
 
@@ -237,9 +239,12 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
   /**
    * Asks Keycloak whether the browser is logged in (this also completes the redirect back from the
-   * login page) and, if so, exchanges that login for an application session.
+   * login page) and, if so, exchanges that login for an application session. A silent attempt (nobody asked for
+   * it) must also give way to a logout that another tab began; an explicit login only to one of this tab.
    */
-  const establishSessionFromKeycloak = async (): Promise<boolean> => {
+  const establishSessionFromKeycloak = async (silent: boolean): Promise<boolean> => {
+    const mayCreateSession = () => !(silent ? isRecoveryBlocked() : isLoggingOut())
+
     // The silent check waits for Keycloak and would hang if it is down, so look first. Not when the browser has
     // just come back from the Keycloak login: its one-time code must be exchanged now, and Keycloak just answered.
     const returningFromLogin = /[?#&]code=/.test(`${window.location.search}${window.location.hash}`)
@@ -252,7 +257,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     const keycloakToken = getKeycloak()?.token
 
     // A logout that began while Keycloak was being asked must not be undone by a session created now.
-    if (!authenticated || !keycloakToken || isLoggingOut()) {
+    if (!authenticated || !keycloakToken || !mayCreateSession()) {
       return false
     }
 
@@ -262,6 +267,15 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       sessionExchangeFailed.current = true
 
       throw error
+    }
+
+    sessionExchangeFailed.current = false
+
+    // The logout may have begun while the exchange was under way, after it ended the session this one replaced.
+    if (!mayCreateSession()) {
+      await abandonSession()
+
+      return false
     }
 
     return true
@@ -334,7 +348,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     forgetSession()
 
     try {
-      if (await establishSessionFromKeycloak()) {
+      if (await establishSessionFromKeycloak(true)) {
         updateHasSession(true)
 
         return true
@@ -404,7 +418,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           return
         }
 
-        if (await establishSessionFromKeycloak()) {
+        if (await establishSessionFromKeycloak(true)) {
           updateHasSession(true)
         }
       } catch (error) {
@@ -554,7 +568,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
           if (sessionExchangeFailed.current) {
             showLoginUnavailableNotice(
-              'Signing in failed: the server did not accept your login. Please reload the page to try again.',
+              'Signing in failed: the server could not turn your login into a session. Please reload the page to try again.',
             )
 
             return
@@ -624,7 +638,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             throw new Error(await getPasskeyErrorMessage(response, undefined, 'login'))
           }
 
-          if (!(await establishSessionFromKeycloak())) {
+          if (!(await establishSessionFromKeycloak(false))) {
             throw new Error('No active Keycloak session detected after passkey authentication')
           }
 

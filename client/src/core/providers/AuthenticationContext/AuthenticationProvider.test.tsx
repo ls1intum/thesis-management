@@ -21,6 +21,8 @@ vi.mock('@/core/auth/session', async (importOriginal) => ({
   fetchSession: vi.fn(),
   createSession: vi.fn(),
   deleteSession: vi.fn(),
+  abandonSession: vi.fn(),
+  isRecoveryBlocked: vi.fn(() => false),
 }))
 
 vi.mock('@/core/requests/request', () => ({
@@ -120,6 +122,41 @@ describe('AuthenticationProvider startup', () => {
     await waitFor(() => expect(screen.getByTestId('authenticated').textContent).toBe('true'))
     expect(keycloakClient.initKeycloak).toHaveBeenCalledWith({ checkSso: true })
     expect(session.createSession).toHaveBeenCalledWith('kc-token')
+  })
+
+  it('does not sign in silently while a logout that another tab began is under way', async () => {
+    vi.mocked(session.fetchSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.initKeycloak).mockResolvedValue(true)
+    vi.mocked(keycloakClient.getKeycloak).mockReturnValue({
+      authenticated: true,
+      token: 'kc-token',
+    } as never)
+    vi.mocked(session.isRecoveryBlocked).mockReturnValue(true)
+
+    renderProvider()
+
+    await waitFor(() => expect(screen.getByTestId('ready').textContent).toBe('true'))
+    expect(session.createSession).not.toHaveBeenCalled()
+    expect(screen.getByTestId('authenticated').textContent).toBe('false')
+    vi.mocked(session.isRecoveryBlocked).mockReturnValue(false)
+  })
+
+  it('ends the session it just created when a logout began while the exchange was under way', async () => {
+    vi.mocked(session.fetchSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.initKeycloak).mockResolvedValue(true)
+    vi.mocked(keycloakClient.getKeycloak).mockReturnValue({
+      authenticated: true,
+      token: 'kc-token',
+    } as never)
+    vi.mocked(session.createSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
+    vi.mocked(session.isRecoveryBlocked).mockReturnValueOnce(false).mockReturnValue(true)
+
+    renderProvider()
+
+    await waitFor(() => expect(session.abandonSession).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(screen.getByTestId('ready').textContent).toBe('true'))
+    expect(screen.getByTestId('authenticated').textContent).toBe('false')
+    vi.mocked(session.isRecoveryBlocked).mockReturnValue(false)
   })
 
   it('stays anonymous and reports the problem when Keycloak is unavailable and there is no session', async () => {

@@ -154,7 +154,6 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: thesis-management-postgres
           KEYCLOAK_HOST: http://localhost:8181
           KEYCLOAK_REALM_NAME: thesis-management
-          KEYCLOAK_CLIENT_ID: thesis-management-app
           KEYCLOAK_SERVICE_CLIENT_ID: thesis-management-service-client
           KEYCLOAK_SERVICE_CLIENT_SECRET: "**********"
           CLIENT_HOST: http://localhost:3100

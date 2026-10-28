@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
+import java.util.Set;
 
 /**
  * Refuses STOMP sessions whose WebSocket handshake was not authenticated.
@@ -32,6 +33,12 @@ import java.security.Principal;
 public class StompAuthChannelInterceptor implements ChannelInterceptor {
 	private static final String USER_PROGRESS_DESTINATION_PREFIX = "/user/queue/ai-review-progress/";
 	private static final String APPLICATION_DESTINATION_PREFIX = "/app/";
+	// The frames a STOMP client may send. MESSAGE, CONNECTED, RECEIPT and ERROR are for the server to send; the
+	// simple broker routes a MESSAGE frame by its destination, so one from a client would sidestep the SEND rule below.
+	private static final Set<StompCommand> CLIENT_COMMANDS = Set.of(
+			StompCommand.CONNECT, StompCommand.STOMP, StompCommand.SUBSCRIBE, StompCommand.UNSUBSCRIBE, StompCommand.SEND,
+			StompCommand.DISCONNECT, StompCommand.ACK, StompCommand.NACK, StompCommand.BEGIN, StompCommand.COMMIT,
+			StompCommand.ABORT);
 
 	@Override
 	public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
@@ -42,6 +49,11 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
 		}
 
 		StompCommand command = accessor.getCommand();
+
+		// heart beats have no command
+		if (command != null && !CLIENT_COMMANDS.contains(command)) {
+			throw new AccessDeniedException("Clients may not send " + command + " frames");
+		}
 
 		// STOMP is the 1.2 spelling of CONNECT and opens a session just the same.
 		if ((StompCommand.CONNECT.equals(command) || StompCommand.STOMP.equals(command)) && !isAuthenticated(accessor.getUser())) {

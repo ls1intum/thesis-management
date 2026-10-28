@@ -114,10 +114,33 @@ class StompAuthChannelInterceptorTest {
 	}
 
 	@Test
-	void otherFramesAreLeftAlone() {
-		Message<?> message = frame(StompCommand.UNSUBSCRIBE, null, null);
+	void otherFramesOfAClientAreLeftAlone() {
+		for (StompCommand command : new StompCommand[] {StompCommand.UNSUBSCRIBE, StompCommand.DISCONNECT, StompCommand.ACK}) {
+			Message<?> message = frame(command, null, null);
 
-		assertThat(interceptor.preSend(message, null)).isSameAs(message);
+			assertThat(interceptor.preSend(message, null)).as("%s", command).isSameAs(message);
+		}
+	}
+
+	@Test
+	void framesOnlyTheServerSendsAreRefusedFromAClient() {
+		// the simple broker routes a MESSAGE frame by destination, so this would sidestep the rule for SEND
+		for (StompCommand command : new StompCommand[] {StompCommand.MESSAGE, StompCommand.CONNECTED, StompCommand.RECEIPT, StompCommand.ERROR}) {
+			Message<?> message = frame(command, "/topic/x", null);
+
+			assertThatThrownBy(() -> interceptor.preSend(message, null))
+					.as("%s frame", command)
+					.isInstanceOf(AccessDeniedException.class);
+		}
+	}
+
+	@Test
+	void aHeartBeatHasNoCommandAndPasses() {
+		StompHeaderAccessor accessor = StompHeaderAccessor.createForHeartbeat();
+		accessor.setLeaveMutable(true);
+		Message<?> heartBeat = MessageBuilder.createMessage(new byte[0], accessor.getMessageHeaders());
+
+		assertThat(interceptor.preSend(heartBeat, null)).isSameAs(heartBeat);
 	}
 
 	private static Message<?> frame(StompCommand command, String destination, Principal user) {
