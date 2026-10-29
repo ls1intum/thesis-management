@@ -7,9 +7,9 @@ plugins {
 	id "com.gorylenko.gradle-git-properties" version "4.0.1"
 	id "org.springframework.boot" version "4.1.1"
 	id "io.spring.dependency-management" version "1.1.7"
-	id "io.github.ben-manes.versions" version "0.65.0"
+	id "io.github.ben-manes.versions" version "0.66.0"
 	id "com.diffplug.spotless" version "8.10.4"
-	id "org.cyclonedx.bom" version "3.5.0"
+	id "org.cyclonedx.bom" version "3.5.1"
 }
 
 group = "de.tum.cit.aet.thesis"
@@ -98,7 +98,7 @@ dependencies {
 	implementation "org.mnode.ical4j:ical4j:4.4.0"
 	implementation "com.itextpdf:itext-core:9.8.0"
 	implementation "com.itextpdf:html2pdf:6.3.4"
-	implementation "com.auth0:java-jwt:4.6.1"
+	implementation "com.auth0:java-jwt:4.6.2"
 
 	// Use the latest version of commons-lang3 to avoid security issues
 	implementation "org.apache.commons:commons-lang3:${commons_lang3_version}"
@@ -133,7 +133,7 @@ dependencies {
 
 	testImplementation "com.github.dasniko:testcontainers-keycloak:4.4.0"
 
-	testImplementation "com.icegreen:greenmail-junit5:2.1.14"
+	testImplementation "com.icegreen:greenmail-junit5:2.1.15"
 	testImplementation "org.wiremock:wiremock-standalone:3.13.2"
 
 	testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"
