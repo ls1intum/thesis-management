@@ -79,7 +79,7 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-actuator"
 	implementation "org.springframework.boot:spring-boot-starter-websocket"
 
-	implementation platform("org.springframework.ai:spring-ai-bom:2.0.1")
+	implementation platform("org.springframework.ai:spring-ai-bom:2.0.2")
 	implementation "org.springframework.ai:spring-ai-pdf-document-reader"
 	implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 
