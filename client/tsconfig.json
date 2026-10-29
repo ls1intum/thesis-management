@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
     "module": "ESNext",
     "target": "ESNext",
     "jsx": "react-jsx",
@@ -15,9 +14,8 @@
     "noEmit": true,
     "skipLibCheck": true,
     "lib": ["dom", "dom.iterable", "esnext"],
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
     "plugins": [
       { "name": "typescript-plugin-css-modules" }
