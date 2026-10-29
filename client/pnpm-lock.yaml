@@ -280,8 +280,8 @@ importers:
         specifier: 4.0.0
         version: 4.0.0
       keycloak-js:
-        specifier: 26.2.4
-        version: 26.2.4
+        specifier: 26.2.5
+        version: 26.2.5
       mantine-datatable:
         specifier: 9.4.0
         version: 9.4.0(@mantine/core@9.6.3(@mantine/hooks@9.6.3(react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@mantine/hooks@9.6.3(react@19.3.0))(clsx@2.1.1)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -2982,8 +2982,8 @@ packages:
     resolution: {integrity: sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==}
     engines: {node: '>=18'}
 
-  keycloak-js@26.2.4:
-    resolution: {integrity: sha512-PnXpR3ubETGOt0B/Qt2lxmPbkZr5bc3vlQsOqDoTPPQsZRp7JjhTKxlJ187uWh8qJhvBab6Gsjb06a8ayOPfuw==}
+  keycloak-js@26.2.5:
+    resolution: {integrity: sha512-iTR3hmYXlGZbBTskgr2PrGIfIzLrts8nwja2+D1gW6Q/S83C487rhM+WvPV9dxqXv81N0QwNG9BJAM60eDQ1Yw==}
 
   keyv@5.6.0:
     resolution: {integrity: sha512-CYDD3SOtsHtyXeEORYRx2qBtpDJFjRTGXUtmNEMGyzYOKj1TE3tycdlho7kA1Ufx9OYWZzg52QFBGALTirzDSw==}
@@ -7441,7 +7441,7 @@ snapshots:
 
   jwt-decode@4.0.0: {}
 
-  keycloak-js@26.2.4: {}
+  keycloak-js@26.2.5: {}
 
   keyv@5.6.0:
     dependencies:
