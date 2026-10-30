@@ -83,11 +83,11 @@ The realm defines **two** OIDC clients with very different roles. Understanding 
 Concretely:
 
 1. A user signs in via the SPA. The SPA performs OIDC Authorization Code + PKCE against `thesis-management-app` and receives a user JWT.
-2. The SPA attaches that JWT to every server call. The Spring Boot server's Spring Security resource server validates it via the realm's `jwk-set-uri` (configured in `application.yml`).
+2. The SPA sends that token **once**, to `POST /v2/auth/session`. The Spring Boot server validates it via the realm's `jwk-set-uri` (configured in `application.yml`; this resource server only guards that one endpoint), syncs the profile from the token's claims and creates a Thesis Management session. All other calls are authenticated by the session cookie, so Keycloak is not involved in them and the application keeps working for logged-in users while Keycloak is unavailable (see [Application-owned sessions](#application-owned-sessions)).
 3. When the Spring Boot server needs to query Keycloak as an admin (e.g. "search users by name to add to a research group"), it does **not** reuse the user's token. Instead, `AccessManagementService.getAuthenticationHeaders` performs a Client Credentials grant against `thesis-management-service-client` using its secret (`KEYCLOAK_SERVICE_CLIENT_SECRET`), caches the resulting access token, and uses it as a Bearer credential against `/admin/realms/{realm}/...`.
 4. The service client must have the `view-users` / `query-users` role on the `realm-management` client to perform these lookups (already configured in the imported realm).
 
-> **Authorization, not authentication.** Neither client is the source of truth for application roles. Spring Security authorities are loaded from the `user_groups` database table on every request (`JwtAuthConverter`). The Keycloak realm roles (`admin`, `advisor`, `group-admin`, `supervisor`, `student`) are only meaningful for the local dev seed and the imported realm JSON — production deployments may use a completely different role schema in Keycloak. See the [Authorization Architecture](#authorization-architecture-db-as-single-source-of-truth) section below.
+> **Authorization, not authentication.** Neither client is the source of truth for application roles. Spring Security authorities are loaded from the `user_groups` database table on every request (`UserAuthorities`, called by `UserSessionAuthenticationFilter`). The Keycloak realm roles (`admin`, `advisor`, `group-admin`, `supervisor`, `student`) are only meaningful for the local dev seed and the imported realm JSON — production deployments may use a completely different role schema in Keycloak. See the [Authorization Architecture](#authorization-architecture-db-as-single-source-of-truth) section below.
 
 ### Setting up the realm manually (without importing the JSON)
 
@@ -100,7 +100,7 @@ The realm JSON is the simplest path. If you need to bootstrap a production realm
    - *Clients → Create client*:
      - Client type: **OpenID Connect**
      - Client ID: `thesis-management-app` (match `KEYCLOAK_CLIENT_ID`)
-   - Capability config: **Standard flow** ✓, **Direct access grants** ✗ (off — the realm JSON has this on for historical reasons; the SPA and the E2E tests both use the Authorization Code flow via the Keycloak login page, not ROPC), **Service accounts** ✗, **Client authentication** **off** (= public client).
+   - Capability config: **Standard flow** ✓, **Direct access grants** ✗ (off in production — the SPA uses the Authorization Code flow via the Keycloak login page, not ROPC. The development realm JSON keeps it on because a few E2E tests (`active-sessions` and `keycloak-outage`) use the helper `loginWithApi` in `client/e2e/helpers.ts` to give themselves a session of their own through the password grant (ROPC); the shared E2E login setup (`client/e2e/auth.setup.ts`) signs in through the Keycloak login page. Production realms must keep it off), **Service accounts** ✗, **Client authentication** **off** (= public client).
    - Login settings:
      - Valid redirect URIs: `https://<client-host>/*` (and `http://localhost:3100/*` for local dev).
      - Web origins: `https://<client-host>` (or `+` to mirror redirect URIs).
@@ -337,11 +337,11 @@ In OAuth2 applications where roles change frequently at runtime (e.g. a student 
 
 **How it works:**
 
-Spring Security authorities are loaded from the `user_groups` table on every request via `JwtAuthConverter`, not from JWT `resource_access` claims. All role mutations (`addStudentGroup`, `assignSupervisorRole`, `assignAdvisorRole`, `assignGroupAdminRole`, etc.) write directly to the `user_groups` table through `UserGroupRepository` without calling the Keycloak Admin API. The `updateAuthenticatedUser()` method syncs profile data (name, email, matriculation number) from the JWT but does not touch groups. New users with no groups automatically receive the `student` group. `@PreAuthorize` annotations (e.g. `hasRole('admin')`) check authorities derived from `user_groups`, not from JWT claims.
+Spring Security authorities are loaded from the `user_groups` table on every request via `UserAuthorities` (called by `UserSessionAuthenticationFilter`), not from JWT `resource_access` claims. All role mutations (`addStudentGroup`, `assignSupervisorRole`, `assignAdvisorRole`, `assignGroupAdminRole`, etc.) write directly to the `user_groups` table through `UserGroupRepository` without calling the Keycloak Admin API. The `updateAuthenticatedUser()` method syncs profile data (name, email, matriculation number) from the JWT but does not touch groups. New users with no groups automatically receive the `student` group. `@PreAuthorize` annotations (e.g. `hasRole('admin')`) check authorities derived from `user_groups`, not from JWT claims.
 
 **What still uses Keycloak:**
 
-Keycloak issues JWT tokens for user login, and Spring Security validates them. The `AccessManagementService.getUserByUsername()` and `getAllUsers()` methods query the Keycloak Admin API to search users by name (used in the admin UI for adding users to research groups). This is a read-only lookup, not role management.
+Keycloak issues the access token that proves a user's identity when they log in. Spring Security validates it at `POST /v2/auth/session`, where it is exchanged for a Thesis Management session. The `AccessManagementService.getUserByUsername()` and `getAllUsers()` methods query the Keycloak Admin API to search users by name (used in the admin UI for adding users to research groups). This is a read-only lookup, not role management.
 
 **Key rules for developers:**
 
@@ -349,6 +349,40 @@ Keycloak issues JWT tokens for user login, and Spring Security validates them. T
 2. Never write roles or groups to Keycloak. Always use `UserGroupRepository` or `AccessManagementService` methods.
 3. When adding a new role check, use `@PreAuthorize("hasRole('...')")`. The authorities come from the DB automatically.
 4. Keycloak groups in the realm JSON (`keycloak/thesis-management-realm.json`) are only relevant for local dev seed data and do not affect production authorization.
+
+#### Application-owned sessions
+
+Keycloak (with TUM Login behind it) answers one question: *who is this?* Thesis Management owns everything after that. After a successful login the SPA exchanges the Keycloak access token once for a Thesis Management session, so a Keycloak outage or maintenance window does not stop users who are already logged in.
+
+**Flow**
+
+1. The SPA logs the user in with Keycloak (Authorization Code + PKCE) and calls `POST /v2/auth/session` with the access token as `Authorization: Bearer`. This is the only endpoint that accepts a Bearer token.
+2. The server creates or updates the user from the token's claims, assigns the `student` group to new users, creates a row in `user_sessions` and answers with `Set-Cookie` plus `{ csrfToken, expiresAt, userId }`.
+3. Every later request carries the cookie. `UserSessionAuthenticationFilter` looks the session up, enforces the timeouts and loads the roles from `user_groups`. Requests that change state must also send `X-CSRF-Token`.
+4. On startup the SPA calls `GET /v2/auth/session`. A valid session needs no Keycloak (the only Keycloak call on load is a probe of the passkey extension's health endpoint, which decides whether passkey buttons are shown). keycloak-js is only started when there is no session, for logging in, for Keycloak-native features (passkeys), and on logout, which ends the application session first and then the Keycloak login if Keycloak is reachable. Keycloak tokens are kept in memory only.
+
+**Security properties** (following the [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html))
+
+- Cookie `__Host-sid`: `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/`, no `Domain`, lifetime up to the 24 hour absolute timeout. Over plain http in local development the cookie is named `sid` and has no `Secure` attribute (browsers reject `__Host-` and `Secure` there); the choice follows the scheme of `CLIENT_HOST`.
+- The cookie value is `<identifier>.<verifier>`, both random (128 and 256 bits). Only a SHA-256 hash of the verifier is stored, compared in constant time. Nothing session-related is stored in `localStorage` or `sessionStorage`.
+- Idle timeout 4 hours, absolute timeout 24 hours, both enforced on the server on every request (`thesis-management.session.*`).
+- A session is replaced (new cookie value, same CSRF token) on the next request after the user's roles change, with a 30 second grace window for parallel requests.
+- Logout and account deletion end sessions on the server; users can see and end their own sessions in *Settings → Account → Active sessions*. At most 10 sessions per user.
+- Ending a session from the active-sessions list invalidates that application credential, including its rotated replacements. It does not end the remote browser's Keycloak single-sign-on session: while that login is valid, the browser can silently create a new application session. On shared computers, use Logout on the device itself; it also ends the Keycloak login when Keycloak is reachable. Successful logout clears the signed-in user in the other open tabs of that browser; failed logout leaves them signed in.
+- A session is ended if the browser family or operating system changes (version changes are ignored, and so is a mobile browser's switch to its desktop site: Android counts as Linux, iOS as macOS); `thesis-management.session.user-agent-mismatch-action=LOG` only logs it instead. A cookie that is not valid any more is cleared in the response, except a cookie from before a rotation whose grace window has passed (a delayed request must not remove the replacement cookie); cookies that are malformed, unknown or carry a wrong verifier (the signature of guessing) are also counted per IP, and once an IP exceeds 20 of them per minute, further requests from it that carry such a cookie are answered with `429`. Requests with a valid session or without a cookie are never blocked.
+- Session rows record IP address and User-Agent; ended sessions are deleted after 30 days (see [Data Retention](/admin/data-retention)).
+- The client address comes from `X-Forwarded-For` / `X-Forwarded-Proto` (`server.forward-headers-strategy=native`, Tomcat's `RemoteIpValve`, which ignores the RFC 7239 `Forwarded` header and only trusts the proxies in `server.tomcat.remoteip.internal-proxies`). See [Production Setup](/admin/production-setup) for what this requires of the proxy.
+- Known limitation: a rotated cookie is delivered exactly once, in the response of the request that performed the rotation. If that response is lost, the old cookie keeps working for the 30 second grace window; after that the browser signs in again (silently while Keycloak is reachable).
+
+**Working with the API directly (Postman, curl)**
+
+Bearer tokens are ignored everywhere except `POST /v2/auth/session`. First call that endpoint with the Keycloak access token (in Postman, the *Authentication → Create Session* request has the OAuth2 settings that fetch it; the collection itself uses *No Auth*) and keep the returned cookie (Postman's cookie jar does this); then send the `csrfToken` from the response as `X-CSRF-Token` on `POST`/`PUT`/`PATCH`/`DELETE` requests. Send the same `User-Agent` for the whole session.
+
+**Tests**
+
+- `UserSessionControllerTest`, `UserSessionLifecycleTest` run the production security chains against PostgreSQL with a test token decoder (profile `session-test`, base class `BaseSessionIntegrationTest`).
+- `KeycloakSecurityIntegrationTest` uses a real Keycloak container, including a test that pauses Keycloak and checks that an existing session keeps working.
+- End-to-end: `client/e2e/user/keycloak-outage.spec.ts` blocks all requests to Keycloak and checks that a logged-in user keeps working.
 
 #### DTOs
 

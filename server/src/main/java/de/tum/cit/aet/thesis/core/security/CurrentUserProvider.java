@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.core.security;
 
 import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.core.session.security.UserSessionAuthentication;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.user.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,8 @@ private User cachedUser;
 public User getUser() {
 	if (cachedUser == null) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication instanceof JwtAuthenticationToken jwt) {
-			cachedUser = authenticationService.getAuthenticatedUserWithResearchGroup(jwt);
+		if (authentication instanceof UserSessionAuthentication || authentication instanceof JwtAuthenticationToken) {
+			cachedUser = authenticationService.getAuthenticatedUserWithResearchGroup(authentication);
 		} else {
 			throw new AccessDeniedException("Please login first.");
 		}

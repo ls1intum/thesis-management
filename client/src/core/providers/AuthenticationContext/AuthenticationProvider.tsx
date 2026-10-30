@@ -1,16 +1,12 @@
 import type { PropsWithChildren } from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type {
   IAuthenticationContext,
   IDecodedAccessToken,
-  IDecodedRefreshToken,
 } from '@/core/providers/AuthenticationContext/context'
 import { AuthenticationContext } from '@/core/providers/AuthenticationContext/context'
-import Keycloak from 'keycloak-js'
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import { jwtDecode } from 'jwt-decode'
-import type { IAuthenticationTokens } from '@/core/hooks/authentication'
-import { getAuthenticationTokens, useAuthenticationTokens } from '@/core/hooks/authentication'
 import { useSignal } from '@/core/hooks/utility'
 import { useClearAvatarCacheOnSignOut } from '@/core/components/CustomAvatar/useClearAvatarCacheOnSignOut'
 import type { IUser } from '@/core/user/requests/responses/user'
@@ -19,15 +15,49 @@ import { showSimpleError } from '@/core/utils/notification'
 import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
 import type { ILightResearchGroup } from '@/core/group/requests/responses/researchGroup'
 import { getDeviceName, getPasskeyErrorMessage } from '@/core/utils/passkey'
+import {
+  ensureKeycloak,
+  ensureSsoChecked,
+  getKeycloak,
+  initKeycloak,
+  isKeycloakReachable,
+} from '@/core/auth/keycloakClient'
+import {
+  SessionExchangeError,
+  abandonSession,
+  createSession,
+  deleteSession,
+  fetchSession,
+  forgetSession,
+  isLoggingOut,
+  isRecoveryBlocked,
+  setSessionEndedHandler,
+  announceSessionLogin,
+  setSessionRecoveryHandler,
+} from '@/core/auth/session'
 
-const createKeycloakClient = () =>
-  new Keycloak({
-    realm: GLOBAL_CONFIG.keycloak.realm,
-    url: GLOBAL_CONFIG.keycloak.host,
-    clientId: GLOBAL_CONFIG.keycloak.client_id,
-  })
+const LOGIN_UNAVAILABLE_NOTICE_INTERVAL_MS = 15_000
 
-export let keycloak = createKeycloakClient()
+/** The browser's Keycloak login belongs to another account than the application session of this tab. */
+class KeycloakIdentityMismatchError extends Error {
+  constructor() {
+    super(
+      'Your browser is signed in to Keycloak as another account than the one you are using here. Please log out and log in again.',
+    )
+    this.name = 'KeycloakIdentityMismatchError'
+  }
+}
+
+// Keycloak tokens used to be persisted here. Authentication tokens must not live in web storage.
+const LEGACY_TOKEN_STORAGE_KEY = 'authentication_tokens'
+
+const removeLegacyTokens = () => {
+  try {
+    localStorage.removeItem(LEGACY_TOKEN_STORAGE_KEY)
+  } catch {
+    // storage may be unavailable (private mode, blocked site data); nothing to clean up then
+  }
+}
 
 const isPasskeySupportedInBrowser = () =>
   typeof window !== 'undefined' &&
@@ -166,16 +196,6 @@ const parseAccountCredentialsResponse = (
   return credentials
 }
 
-const getKeycloakInitOptions = (tokens?: IAuthenticationTokens, shouldCheckSso = false) => ({
-  ...(shouldCheckSso ? { onLoad: 'check-sso' as const } : {}),
-  pkceMethod: 'S256' as const,
-  silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
-  silentCheckSsoFallback: false,
-  checkLoginIframe: false,
-  token: tokens?.access_token,
-  refreshToken: tokens?.refresh_token,
-})
-
 const getLoginRedirectUri = (redirectUri?: string) => {
   if (!redirectUri) {
     return undefined
@@ -191,11 +211,17 @@ const getLoginRedirectUri = (redirectUri?: string) => {
 const AuthenticationProvider = (props: PropsWithChildren) => {
   const { children } = props
 
-  const [universityId, setUniversityId] = useState<string>()
+  const [hasSession, setHasSession] = useState(false)
+  const hasSessionRef = useRef(false)
+  const sessionEndVersionRef = useRef(0)
+  const loginUnavailableNoticeAt = useRef(0)
+  // Set when Keycloak knows the user but the server refused to turn that login into a session. Calling login()
+  // again would only bounce between the web app and Keycloak (which answers at once), so it reports instead.
+  const sessionExchangeFailed = useRef(false)
+  const universityIdRef = useRef<string | undefined>(undefined)
   const [user, setUser] = useState<IUser>()
-  const [authenticationTokens, setAuthenticationTokens] = useAuthenticationTokens()
 
-  useClearAvatarCacheOnSignOut(Boolean(authenticationTokens?.access_token))
+  useClearAvatarCacheOnSignOut(hasSession)
   const { signal: readySignal, triggerSignal: triggerReadySignal, ref: readyRef } = useSignal()
   const isReady = readyRef.isTriggerred
   const [researchGroups, setResearchGroups] = useState<ILightResearchGroup[]>([])
@@ -205,87 +231,153 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   >(undefined)
   const isPasskeySupported = isPasskeySupportedByBrowser ? isPasskeyExtensionAvailable : false
 
-  const refreshAccessToken = (activeKeycloak = keycloak) =>
-    activeKeycloak
-      .updateToken(60 * 5)
-      .then((isSuccess) => {
-        if (!isSuccess) {
-          setAuthenticationTokens(undefined)
-        }
-      })
-      .catch((error) => {
-        console.error('Failed to refresh access token', error)
-        setAuthenticationTokens(undefined)
-      })
+  useEffect(() => {
+    universityIdRef.current = user?.universityId
+  }, [user])
 
-  const storeTokens = async (activeKeycloak = keycloak) => {
-    const refreshToken = activeKeycloak.refreshToken
-    const accessToken = activeKeycloak.token
+  const updateHasSession = (value: boolean) => {
+    hasSessionRef.current = value
+    setHasSession(value)
+  }
 
-    let decodedAccessToken: IDecodedAccessToken | undefined
-    let decodedRefreshToken: IDecodedRefreshToken | undefined
+  /**
+   * Asks Keycloak whether the browser is logged in (this also completes the redirect back from the
+   * login page) and, if so, exchanges that login for an application session. A silent attempt (nobody asked for
+   * it) must also give way to a logout that another tab began; an explicit login only to one of this tab.
+   */
+  const establishSessionFromKeycloak = async (silent: boolean): Promise<boolean> => {
+    const sessionEndVersion = sessionEndVersionRef.current
+    const mayCreateSession = () =>
+      silent
+        ? !isRecoveryBlocked() && sessionEndVersion === sessionEndVersionRef.current
+        : !isLoggingOut()
+
+    // The silent check waits for Keycloak and would hang if it is down, so look first. Not when the browser has
+    // just come back from the Keycloak login: its one-time code must be exchanged now, and Keycloak just answered.
+    const returningFromLogin = /[?#&]code=/.test(`${window.location.search}${window.location.hash}`)
+
+    if (!returningFromLogin && !(await isKeycloakReachable())) {
+      throw new Error('Keycloak is unreachable')
+    }
+
+    const authenticated = await initKeycloak({ checkSso: true })
+    const keycloakToken = getKeycloak()?.token
+
+    // A logout that began while Keycloak was being asked must not be undone by a session created now.
+    if (!authenticated || !keycloakToken || !mayCreateSession()) {
+      return false
+    }
 
     try {
-      decodedAccessToken = accessToken ? jwtDecode<IDecodedAccessToken>(accessToken) : undefined
-      decodedRefreshToken = refreshToken ? jwtDecode<IDecodedRefreshToken>(refreshToken) : undefined
+      await createSession(keycloakToken)
     } catch (error) {
-      console.error('Failed to decode authentication tokens', error)
-      activeKeycloak.clearToken()
-      setAuthenticationTokens(undefined)
-      return
+      sessionExchangeFailed.current = true
+
+      throw error
     }
 
-    // refresh if already expired
-    if (decodedRefreshToken?.exp && decodedRefreshToken.exp <= Date.now() / 1000) {
-      activeKeycloak.clearToken()
-      return setAuthenticationTokens(undefined)
-    } else if (decodedAccessToken?.exp && decodedAccessToken.exp <= Date.now() / 1000) {
-      return refreshAccessToken(activeKeycloak)
+    sessionExchangeFailed.current = false
+
+    // The logout may have begun while the exchange was under way, after it ended the session this one replaced.
+    if (!mayCreateSession()) {
+      await abandonSession()
+
+      return false
     }
 
-    if (accessToken && refreshToken) {
-      setAuthenticationTokens({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      })
-    } else {
-      setAuthenticationTokens(undefined)
+    announceSessionLogin()
+
+    return true
+  }
+
+  const showLoginUnavailableNotice = (message: string) => {
+    // Some pages ask for a login repeatedly (the interview booking page every second): tell the user once
+    // in a while, not with every call.
+    if (Date.now() - loginUnavailableNoticeAt.current > LOGIN_UNAVAILABLE_NOTICE_INTERVAL_MS) {
+      loginUnavailableNoticeAt.current = Date.now()
+      showSimpleError(message)
     }
   }
 
-  const unsetKeycloakListeners = (activeKeycloak = keycloak) => {
-    activeKeycloak.onAuthRefreshSuccess = undefined
-    activeKeycloak.onAuthRefreshError = undefined
-    activeKeycloak.onAuthLogout = undefined
+  /**
+   * Returns a valid Keycloak access token for Keycloak-native features. When the browser has no
+   * Keycloak session, `allowLoginRedirect` decides whether to send the user to the login page
+   * (explicit actions) or to fail (passive reads such as listing passkeys).
+   */
+  const getKeycloakAccessToken = async (allowLoginRedirect: boolean): Promise<string> => {
+    let client = getKeycloak()
+
+    if (!client?.authenticated) {
+      await ensureSsoChecked()
+      client = getKeycloak()
+    }
+
+    if (!client?.authenticated) {
+      if (allowLoginRedirect) {
+        await client?.login({ redirectUri: window.location.href })
+      }
+
+      throw new Error('Please sign in again to continue')
+    }
+
+    await client.updateToken(60)
+
+    if (!client.token) {
+      throw new Error('Keycloak did not return an access token')
+    }
+
+    // The application session and the browser's Keycloak login are independent: Keycloak may have switched to
+    // another account (in another application or tab). Credential operations must act on the account this tab is
+    // logged in as, never on whichever account Keycloak currently knows.
+    let keycloakUsername: unknown
+    try {
+      keycloakUsername = jwtDecode<IDecodedAccessToken>(client.token).preferred_username
+    } catch {
+      keycloakUsername = undefined
+    }
+
+    if (!universityIdRef.current || keycloakUsername !== universityIdRef.current) {
+      throw new KeycloakIdentityMismatchError()
+    }
+
+    return client.token
   }
 
-  const setKeycloakListeners = (activeKeycloak = keycloak) => {
-    activeKeycloak.onAuthRefreshSuccess = () => void storeTokens(activeKeycloak)
-    activeKeycloak.onAuthRefreshError = () => {
-      activeKeycloak.clearToken()
-      setAuthenticationTokens(undefined)
+  const recoverSessionSilently = async (): Promise<boolean> => {
+    // Another tab may have signed in again already: the session cookie is shared, so adopt that session
+    // instead of logging in a second time (which would replace it and desynchronise the other tabs).
+    const sessionEndVersion = sessionEndVersionRef.current
+    const existingSession = await fetchSession().catch(() => undefined)
+
+    // A logout may have completed in another tab while this check was in flight. Its response must not restore
+    // the authenticated UI that the logout just cleared.
+    if (sessionEndVersion !== sessionEndVersionRef.current) {
+      forgetSession()
+      return false
     }
-    activeKeycloak.onAuthLogout = () => {
-      activeKeycloak.clearToken()
-      setAuthenticationTokens(undefined)
+
+    if (existingSession) {
+      updateHasSession(true)
+
+      return true
     }
-  }
 
-  const initializeKeycloakSession = async (
-    tokens?: IAuthenticationTokens,
-    options?: { checkSso?: boolean },
-  ) => {
-    unsetKeycloakListeners()
+    forgetSession()
 
-    keycloak = createKeycloakClient()
-    setKeycloakListeners(keycloak)
+    try {
+      if (await establishSessionFromKeycloak(true)) {
+        updateHasSession(true)
 
-    const authenticated = await keycloak.init(
-      getKeycloakInitOptions(tokens, options?.checkSso ?? false),
-    )
-    await storeTokens(keycloak)
+        return true
+      }
+    } catch (error) {
+      console.error('Silent login after the session ended failed', error)
+    }
 
-    return authenticated
+    updateHasSession(false)
+    setUser(undefined)
+
+    return false
   }
 
   const requestPasskeyChallenge = async () => {
@@ -316,51 +408,69 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     'Your device saved the passkey, but the server rejected it. Please contact support to clean it up.'
 
   useEffect(() => {
+    removeLegacyTokens()
     setUser(undefined)
+    setSessionRecoveryHandler(recoverSessionSilently)
+    setSessionEndedHandler(() => {
+      sessionEndVersionRef.current += 1
+      updateHasSession(false)
+      setUser(undefined)
+      setResearchGroups([])
+    })
 
-    const storedTokens = getAuthenticationTokens()
-
-    void initializeKeycloakSession(storedTokens, { checkSso: true })
-      .then(() => {
-        triggerReadySignal()
-      })
-      .catch((error) => {
-        console.error('Keycloak init error', error)
-        showSimpleError('Authentication service is unavailable. Please try again.')
-      })
-      .finally(() => {
-        if (!readyRef.isTriggerred) {
-          triggerReadySignal()
-        }
-      })
-
-    const refreshTokenFrequency = 60 * 1000
-    const refreshTokenInterval = setInterval(() => {
-      const refreshToken = keycloak.refreshToken
-      let decodedRefreshToken: IDecodedRefreshToken | undefined
-
+    const bootstrap = async () => {
       try {
-        decodedRefreshToken = refreshToken
-          ? jwtDecode<IDecodedRefreshToken>(refreshToken)
-          : undefined
-      } catch (error) {
-        console.error('Failed to decode refresh token in expiry check', error)
-        keycloak.clearToken()
-        setAuthenticationTokens(undefined)
-        return
-      }
+        // A valid session needs no Keycloak at all, which keeps the application usable while Keycloak is down.
+        const sessionEndVersion = sessionEndVersionRef.current
+        const existingSession = await fetchSession().catch((error) => {
+          console.error('Failed to check the session', error)
 
-      if (decodedRefreshToken?.exp && decodedRefreshToken.exp <= Date.now() / 1000) {
-        keycloak.clearToken()
-        setAuthenticationTokens(undefined)
+          return undefined
+        })
+
+        if (sessionEndVersion !== sessionEndVersionRef.current) {
+          forgetSession()
+          return
+        }
+
+        if (existingSession) {
+          updateHasSession(true)
+
+          // Back from a Keycloak login that a passkey action started: keycloak-js has to process the one-time
+          // code in the address now, otherwise the next Keycloak call would try to use it after it expired.
+          if (/[?#&]code=/.test(`${window.location.search}${window.location.hash}`)) {
+            void ensureSsoChecked().catch((error) => {
+              console.error('Failed to complete the Keycloak login', error)
+            })
+          }
+
+          return
+        }
+
+        if (await establishSessionFromKeycloak(true)) {
+          updateHasSession(true)
+        }
+      } catch (error) {
+        console.error('Authentication error', error)
+        showSimpleError(
+          error instanceof SessionExchangeError && error.serverMessage
+            ? error.serverMessage
+            : 'Authentication service is unavailable. Please try again.',
+        )
       }
-    }, refreshTokenFrequency)
+    }
+
+    void bootstrap().finally(() => {
+      if (!readyRef.isTriggerred) {
+        triggerReadySignal()
+      }
+    })
 
     return () => {
-      clearInterval(refreshTokenInterval)
-      unsetKeycloakListeners()
+      setSessionRecoveryHandler(undefined)
+      setSessionEndedHandler(undefined)
     }
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only keycloak setup: setAuthenticationTokens/triggerReadySignal are stable refs intentionally captured once
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only session bootstrap: the setters and helpers it calls only touch refs and stable state setters
   }, [])
 
   useEffect(() => {
@@ -398,32 +508,9 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   }, [isPasskeySupportedByBrowser])
 
   useEffect(() => {
-    if (!isReady) {
-      return
-    }
-
-    if (authenticationTokens?.access_token) {
-      let decodedAccessToken: IDecodedAccessToken
-
-      try {
-        decodedAccessToken = jwtDecode<IDecodedAccessToken>(authenticationTokens.access_token)
-      } catch {
-        keycloak.clearToken()
-        setAuthenticationTokens(undefined)
-        setUniversityId(undefined)
-        return
-      }
-
-      setUniversityId(decodedAccessToken['preferred_username'] || undefined)
-    } else {
-      setUniversityId(undefined)
-    }
-  }, [authenticationTokens?.access_token, isReady, setAuthenticationTokens])
-
-  useEffect(() => {
     setUser(undefined)
 
-    if (isReady && universityId) {
+    if (isReady && hasSession) {
       return doRequest<IUser>(
         '/v2/user-info',
         {
@@ -439,10 +526,10 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         },
       )
     }
-  }, [universityId, isReady])
+  }, [hasSession, isReady])
 
   useEffect(() => {
-    if (!isReady || !universityId) {
+    if (!isReady || !hasSession) {
       return
     }
 
@@ -461,13 +548,13 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         }
       },
     )
-  }, [isReady, universityId])
+  }, [isReady, hasSession])
 
   const contextValue = useMemo<IAuthenticationContext>(() => {
     return {
       isReady,
-      isAuthenticated: Boolean(authenticationTokens?.access_token),
-      user: authenticationTokens?.access_token ? user : undefined,
+      isAuthenticated: hasSession,
+      user: hasSession ? user : undefined,
       groups: [],
       updateUser: setUser,
       updateInformation: async (data, avatar, examinationReport, cv, degreeReport) => {
@@ -504,16 +591,47 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         }
       },
       login: (redirectUri?: string) =>
-        readySignal.then(() => {
-          const tokens = getAuthenticationTokens()
-
-          if (!tokens?.access_token) {
-            const keycloakRedirectUri = getLoginRedirectUri(redirectUri)
-
-            return keycloak.login(
-              keycloakRedirectUri ? { redirectUri: keycloakRedirectUri } : undefined,
-            )
+        readySignal.then(async () => {
+          const sessionEndVersion = sessionEndVersionRef.current
+          if (hasSessionRef.current) {
+            return
           }
+
+          // Protected pages may call login automatically after the cross-tab logout clears their user. Give
+          // the originating tab time to end the Keycloak login before another tab can start one again.
+          if (isRecoveryBlocked()) {
+            showLoginUnavailableNotice(
+              'You are signing out in another tab. Please try again in a moment.',
+            )
+            return
+          }
+
+          if (sessionExchangeFailed.current) {
+            showLoginUnavailableNotice(
+              'Signing in failed: the server could not turn your login into a session. Please reload the page to try again.',
+            )
+
+            return
+          }
+
+          // Logging in is the one thing that needs Keycloak: say so instead of sending the user to a dead page.
+          if (!(await isKeycloakReachable())) {
+            showLoginUnavailableNotice(
+              'The login service is currently unavailable. Please try again in a few minutes.',
+            )
+
+            return
+          }
+
+          const client = await ensureKeycloak()
+          if (isRecoveryBlocked() || sessionEndVersion !== sessionEndVersionRef.current) {
+            return
+          }
+          const keycloakRedirectUri = getLoginRedirectUri(redirectUri)
+
+          return client.login(
+            keycloakRedirectUri ? { redirectUri: keycloakRedirectUri } : undefined,
+          )
         }),
       loginWithPasskey: () =>
         readySignal.then(async () => {
@@ -563,12 +681,11 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             throw new Error(await getPasskeyErrorMessage(response, undefined, 'login'))
           }
 
-          const authenticated = await initializeKeycloakSession(undefined, {
-            checkSso: true,
-          })
-          if (!authenticated) {
+          if (!(await establishSessionFromKeycloak(false))) {
             throw new Error('No active Keycloak session detected after passkey authentication')
           }
+
+          updateHasSession(true)
         }),
       registerPasskey: () =>
         readySignal.then(async () => {
@@ -576,26 +693,27 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             throw new Error('Passkeys are not available in this environment')
           }
 
-          const storedTokens = getAuthenticationTokens()
-          if (!storedTokens?.access_token) {
+          if (!hasSessionRef.current) {
             throw new Error('You must be logged in to register a passkey')
           }
 
-          if (keycloak.authenticated && keycloak.isTokenExpired(5)) {
-            try {
-              await keycloak.updateToken(5 * 60)
-            } catch (error) {
-              throw new Error(
-                await getPasskeyErrorMessage(
-                  error,
-                  'Failed to refresh the access token for passkey registration',
-                ),
-                { cause: error },
-              )
+          let accessToken: string
+          try {
+            accessToken = await getKeycloakAccessToken(true)
+          } catch (error) {
+            if (error instanceof KeycloakIdentityMismatchError) {
+              throw error
             }
+
+            throw new Error(
+              await getPasskeyErrorMessage(
+                error,
+                'Failed to refresh the access token for passkey registration',
+              ),
+              { cause: error },
+            )
           }
 
-          const accessToken = keycloak.token ?? storedTokens.access_token
           const challenge = await requestPasskeyChallenge()
 
           let decodedToken: IDecodedAccessToken | undefined
@@ -669,20 +787,23 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         }),
       listCredentials: () =>
         readySignal.then(async () => {
-          const storedTokens = getAuthenticationTokens()
-          if (!storedTokens?.access_token) {
+          if (!hasSessionRef.current) {
             throw new Error('You must be logged in to list credentials')
           }
 
-          if (keycloak.authenticated && keycloak.isTokenExpired(5)) {
-            try {
-              await keycloak.updateToken(5 * 60)
-            } catch {
-              throw new Error('Failed to refresh the access token for credential listing')
+          let accessToken: string
+          try {
+            accessToken = await getKeycloakAccessToken(false)
+          } catch (error) {
+            if (error instanceof KeycloakIdentityMismatchError) {
+              throw error
             }
+
+            throw new Error('Failed to refresh the access token for credential listing', {
+              cause: error,
+            })
           }
 
-          const accessToken = keycloak.token ?? storedTokens.access_token
           const response = await fetch(getAccountCredentialsEndpoint(), {
             method: 'GET',
             credentials: 'include',
@@ -705,20 +826,23 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             throw new Error('Credential id is required')
           }
 
-          const storedTokens = getAuthenticationTokens()
-          if (!storedTokens?.access_token) {
+          if (!hasSessionRef.current) {
             throw new Error('You must be logged in to delete credentials')
           }
 
-          if (keycloak.authenticated && keycloak.isTokenExpired(5)) {
-            try {
-              await keycloak.updateToken(5 * 60)
-            } catch {
-              throw new Error('Failed to refresh the access token for credential deletion')
+          let accessToken: string
+          try {
+            accessToken = await getKeycloakAccessToken(true)
+          } catch (error) {
+            if (error instanceof KeycloakIdentityMismatchError) {
+              throw error
             }
+
+            throw new Error('Failed to refresh the access token for credential deletion', {
+              cause: error,
+            })
           }
 
-          const accessToken = keycloak.token ?? storedTokens.access_token
           const response = await fetch(getAccountCredentialsEndpoint(credentialId), {
             method: 'DELETE',
             credentials: 'include',
@@ -732,35 +856,55 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             throw new Error(await getPasskeyErrorMessage(response))
           }
         }),
-      logout: (redirectUri: string) => {
-        setAuthenticationTokens(undefined)
+      logout: async (redirectUri: string) => {
+        await readySignal
 
-        const timeout = setTimeout(() => {
-          window.location.href = `${window.location.origin}${redirectUri}`
-        }, 2000)
+        // End the application session first (it works without Keycloak). If that fails the HttpOnly cookie still
+        // signs the user in, so do not act as if they were logged out: say so and stay logged in.
+        try {
+          await deleteSession()
+        } catch (error) {
+          console.error('Failed to end the session', error)
+          showSimpleError(
+            'Logging out failed: the server could not end your session. You are still logged in, please try again.',
+          )
 
-        void readySignal.then(() => {
-          if (keycloak.authenticated) {
-            clearTimeout(timeout)
+          return false
+        }
 
-            void keycloak.logout({
-              redirectUri: `${window.location.origin}${redirectUri}`,
-            })
+        updateHasSession(false)
+        setUser(undefined)
+
+        const target = `${window.location.origin}${redirectUri}`
+
+        // Then end the Keycloak single-sign-on session if Keycloak is reachable. Otherwise the next page load
+        // would silently sign the user in again.
+        try {
+          if (await isKeycloakReachable()) {
+            // The silent check yields the id token that lets Keycloak end the login without asking for a
+            // confirmation; without a Keycloak login there is nothing to end. It is made afresh: an earlier
+            // result of this page load may predate a login that another tab has made since.
+            await initKeycloak({ checkSso: true })
+            const client = getKeycloak()
+
+            if (client?.authenticated) {
+              await client.logout({ redirectUri: target })
+
+              return true
+            }
           }
-        })
+        } catch (error) {
+          console.error('Failed to end the Keycloak session', error)
+        }
+
+        window.location.href = target
+
+        return true
       },
       researchGroups: researchGroups,
       isPasskeySupported,
     }
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- `setAuthenticationTokens` is intentionally omitted because React guarantees state setters are stable; keeping the dependency list scoped avoids unnecessary context value churn and consumer re-renders
-  }, [
-    isReady,
-    user,
-    authenticationTokens?.access_token,
-    readySignal,
-    researchGroups,
-    isPasskeySupported,
-  ])
+  }, [isReady, user, hasSession, readySignal, researchGroups, isPasskeySupported])
 
   return <AuthenticationContext value={contextValue}>{children}</AuthenticationContext>
 }

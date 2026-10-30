@@ -28,7 +28,10 @@ labels:
   - "traefik.http.routers.server.tls.certresolver=letsencrypt"
   - "traefik.http.middlewares.api-ratelimit.ratelimit.average=300"
   - "traefik.http.middlewares.api-ratelimit.ratelimit.burst=100"
-  - "traefik.http.routers.server.middlewares=api-ratelimit"
+  # Tell browsers to use https only for this host. Each container defines its own middleware: a router that
+  # references a missing middleware is disabled, so the two routers must not share one.
+  - "traefik.http.middlewares.server-hsts.headers.stsSeconds=31536000"
+  - "traefik.http.routers.server.middlewares=api-ratelimit,server-hsts"
   - "traefik.http.routers.server.priority=10"
 volumes:
   - ./thesis_uploads:/uploads
@@ -50,7 +53,6 @@ environment:
   - CLIENT_HOST=
   - KEYCLOAK_HOST=
   - KEYCLOAK_REALM_NAME=
-  - KEYCLOAK_CLIENT_ID=
 ```
 
 ## Running Client
@@ -64,7 +66,8 @@ labels:
   - "traefik.http.routers.client.entrypoints=websecure"
   - "traefik.http.routers.client.tls.certresolver=letsencrypt"
   - "traefik.http.middlewares.client-compress.compress=true"
-  - "traefik.http.routers.client.middlewares=client-compress"
+  - "traefik.http.middlewares.client-hsts.headers.stsSeconds=31536000"
+  - "traefik.http.routers.client.middlewares=client-compress,client-hsts"
   - "traefik.http.routers.client.priority=1"
 expose:
   - "80"
@@ -122,3 +125,19 @@ There is an example script [thesis-management-backup.sh](https://github.com/ls1i
 All further environment variables can be found [here](/admin/configuration) 
 
 If you want to modify the emails, you can read about that [here](/developer/mails) 
+
+## Sessions and Keycloak availability
+
+Keycloak is only needed when a user logs in. After a successful login the application creates its own session (HttpOnly cookie, 4 hours idle / 24 hours absolute timeout, see [Application-owned sessions](/developer/development-setup#application-owned-sessions)), so users who are already logged in keep working while Keycloak is down or being maintained. Logging in, passkey management and the Keycloak user search need a reachable Keycloak. The server also starts and restarts without Keycloak.
+
+What users notice after a long Keycloak outage: if their Keycloak single-sign-on session has idled out in the meantime (30 minutes in the development realm; the production value is up to the Keycloak operator), the next login after the outage asks for TUM Login again. Sessions of Thesis Management itself are not affected by Keycloak's session settings.
+
+Operational notes:
+
+- The session cookie is only sent over https. Keep `CLIENT_HOST` set to the public `https://` URL: the cookie name (`__Host-sid`) and its `Secure` flag are derived from it.
+- The application is served from one host (`APP_HOSTNAME`, API under `/api`), so the `SameSite=Strict` cookie works without extra configuration. Serving the web app and the API from different sites is not supported.
+- Traefik adds `Strict-Transport-Security` (one year, without `includeSubdomains` and `preload`) to both routers. Check with `curl -sI https://<APP_HOSTNAME>/`.
+- The server reads the client address and protocol from the `X-Forwarded-For` and `X-Forwarded-Proto` headers (`server.forward-headers-strategy=native`, handled by Tomcat's `RemoteIpValve`). It ignores the RFC 7239 `Forwarded` header, which Traefik passes through unchanged and a client could otherwise use to fake its address. The per-IP detection of guessed session cookies and the addresses shown in the active sessions list depend on this. Tomcat only honours the headers of peers listed in `server.tomcat.remoteip.internal-proxies`; the default covers the private and Docker network ranges, so Traefik in the same Docker network works without configuration.
+- Traefik must be the only peer that can reach the server port: production only `expose`s 8080 inside the Docker network and publishes nothing else, so do not add a `ports:` entry for the server. If a different proxy or load balancer is placed in front of the server, add its address to `server.tomcat.remoteip.internal-proxies` (environment variable `SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES`, a regular expression; the server container only receives the variables listed in the `environment:` section of `docker-compose.prod.yml`, so add `- SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES` there and provide the value to the deployment) and make sure it overwrites, not appends to, any `X-Forwarded-For` header sent by the client. Otherwise all requests appear to come from that proxy.
+- A rotated session cookie (after a role change) is delivered exactly once, in the response of the request that performed the rotation. If that response is lost or aborted, the previous cookie keeps working for the 30 second grace window; after that the browser has to sign in again, which happens silently while Keycloak is reachable.
+- Backups of the database contain the `user_sessions` table (hashed verifiers, IP addresses, User-Agent strings). The hashes cannot be used to log in, but the rest is personal data like everything else in the dump. `thesis-management-backup.sh` writes plain zip files without encrypting them, so encrypt the disk or the backup directory (and restrict access to it) on the host; encrypting the backups themselves is not implemented.

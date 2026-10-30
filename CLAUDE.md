@@ -24,7 +24,7 @@ The client uses **pnpm** (pinned via `packageManager` in `client/package.json`).
 
 ## Architecture
 
-- **Server**: Spring Boot 3, Java 25, PostgreSQL, Keycloak for auth, Liquibase for migrations
+- **Server**: Spring Boot 4, Java 25, PostgreSQL, Keycloak for auth, Liquibase for migrations
 - **Client**: React 19, TypeScript, Mantine UI, Webpack
 - **Deployment**: Docker multi-platform images (amd64/arm64), deployed via GitHub Actions
 
@@ -59,11 +59,12 @@ Do **not** use `@Transactional` on service methods. It causes performance issues
 
 **Keycloak handles authentication only (identity verification via JWT). The `user_groups` database table is the single source of truth for authorization (roles/permissions).** This follows the OAuth2 best practice of separating authentication from authorization in applications where roles change frequently at runtime (see [Separation of Roles](https://www.oauth.com/oauth2-servers/differences-between-oauth-1-2/separation-of-roles/)). Storing authorization in the database ensures role changes take effect immediately (rather than waiting for a new JWT), avoids coupling to the identity provider's role schema, and keeps the application functional when the identity provider's Admin API is unreachable.
 
-- Spring Security authorities are loaded from `user_groups` via `JwtAuthConverter` on every request, not from JWT `resource_access` claims.
+- Spring Security authorities are loaded from `user_groups` via `UserAuthorities` (called by `UserSessionAuthenticationFilter`) on every request, not from JWT `resource_access` claims.
 - All role changes (`addStudentGroup`, `assignSupervisorRole`, etc.) write directly to the `user_groups` table via `UserGroupRepository` without calling the Keycloak Admin API.
-- `updateAuthenticatedUser()` syncs profile data (name, email, matriculation number) from the JWT but does not overwrite groups. New users with no groups automatically receive the `student` group.
+- `updateAuthenticatedUser()` syncs profile data (name, email, matriculation number) from the JWT but does not overwrite groups. New users with no groups automatically receive the `student` group. It runs when a session is created (`POST /v2/auth/session`), the only moment Keycloak's claims are available; `GET /v2/user-info` is a plain read.
 - The Keycloak Admin API (`AccessManagementService.getUserByUsername`, `getAllUsers`) is still used for user lookup (searching users by name) but never for role assignment or retrieval.
 - `@PreAuthorize` annotations (e.g. `hasRole('admin')`) check authorities derived from `user_groups`, not from JWT claims.
+- **Keycloak is consulted only to create a session.** `POST /v2/auth/session` is the one endpoint that accepts a Keycloak access token (`Authorization: Bearer`). It creates a database-backed session (`user_sessions`, opaque split token in an HttpOnly `__Host-sid` cookie over https, named `sid` without `Secure` over plain-http local dev; 4 h idle / 24 h absolute timeout) and every other request is authenticated by that cookie plus an `X-CSRF-Token` header on state-changing requests. Bearer tokens are ignored everywhere else, so an existing session keeps working while Keycloak is down. Never store session credentials or Keycloak tokens in `localStorage`/`sessionStorage`. Details: `documentation/docs/developer/development-setup.mdx`, "Application-owned sessions".
 
 ### Role Terminology
 

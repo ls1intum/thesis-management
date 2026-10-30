@@ -198,11 +198,9 @@ const InterviewBookingPage = () => {
   }
 
   useEffect(() => {
-    // `isAuthenticated` flips true as soon as the stored refresh token is
-    // hydrated from localStorage, but Keycloak's async `init()` may not have
-    // populated `keycloak.token` yet. Gating on `isReady` too avoids racing
-    // the authenticated fetches against Keycloak — otherwise they throw
-    // "User not authenticated" and surface as a red toast in the corner.
+    // The authenticated fetches need the application session, which the authentication provider establishes
+    // during its startup; `isReady` marks the end of that startup, so wait for it (and for `isAuthenticated`)
+    // instead of racing the requests against it, which would surface as a red toast in the corner.
     if (processId && auth.isReady && auth.isAuthenticated) {
       fetchMyBooking()
       fetchTopicInformation()

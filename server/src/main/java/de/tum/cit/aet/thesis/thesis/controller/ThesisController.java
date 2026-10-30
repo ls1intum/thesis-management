@@ -490,7 +490,7 @@ public class ThesisController {
 
 		return ResponseEntity.ok()
 				.contentType(MediaType.APPLICATION_PDF)
-				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic())
+				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePrivate())
 				.header(HttpHeaders.CONTENT_DISPOSITION, String.format("inline; filename=proposal_%s.pdf", thesisId))
 				.body(thesisService.getProposalFile(proposal));
 	}
@@ -646,7 +646,7 @@ public class ThesisController {
 
 		return ResponseEntity.ok()
 				.contentType(MediaType.APPLICATION_OCTET_STREAM)
-				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic())
+				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePrivate())
 				.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFilename() + "\"")
 				.body(thesisService.getThesisFile(file));
 	}
@@ -929,7 +929,7 @@ public class ThesisController {
 
 		return ResponseEntity.ok()
 				.contentType(MediaType.APPLICATION_OCTET_STREAM)
-				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePublic())
+				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePrivate())
 				.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + comment.getFilename() + "\"")
 				.body(thesisCommentService.getCommentFile(comment));
 	}

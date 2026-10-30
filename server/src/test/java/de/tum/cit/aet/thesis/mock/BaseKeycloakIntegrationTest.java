@@ -4,6 +4,7 @@ import dasniko.testcontainers.keycloak.KeycloakContainer;
 import de.tum.cit.aet.thesis.core.application.repository.ApplicationRepository;
 import de.tum.cit.aet.thesis.core.application.repository.ApplicationReviewerRepository;
 import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.session.repository.UserSessionRepository;
 import de.tum.cit.aet.thesis.core.topic.repository.TopicRepository;
 import de.tum.cit.aet.thesis.core.topic.repository.TopicRoleRepository;
 import de.tum.cit.aet.thesis.core.user.repository.UserGroupRepository;
@@ -50,7 +51,7 @@ public abstract class BaseKeycloakIntegrationTest {
 
 	static final PostgreSQLContainer DB_CONTAINER = new PostgreSQLContainer(TestContainerImages.POSTGRES);
 
-	static final KeycloakContainer KEYCLOAK_CONTAINER = new KeycloakContainer("quay.io/keycloak/keycloak:26.5")
+	protected static final KeycloakContainer KEYCLOAK_CONTAINER = new KeycloakContainer("quay.io/keycloak/keycloak:26.5")
 			.withRealmImportFile("thesis-management-realm.json");
 
 	private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
@@ -115,6 +116,9 @@ public abstract class BaseKeycloakIntegrationTest {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private UserSessionRepository userSessionRepository;
 
 	@DynamicPropertySource
 	static void configureProperties(DynamicPropertyRegistry registry) {
@@ -190,6 +194,7 @@ public abstract class BaseKeycloakIntegrationTest {
 		thesisRepository.deleteAll();
 		applicationRepository.deleteAll();
 		topicRepository.deleteAll();
+		userSessionRepository.deleteAll();
 		userGroupRepository.deleteAll();
 
 		userRepository.deleteAll();
@@ -234,15 +239,42 @@ public abstract class BaseKeycloakIntegrationTest {
 		return "Bearer " + obtainAccessToken(username, username);
 	}
 
+	/** A logged-in browser: the session cookie value and the CSRF token the server handed out. */
+	protected record KeycloakSession(String cookieValue, String csrfToken) {
+	}
+
+	/** Logs in through the session exchange with a real Keycloak access token. */
+	protected KeycloakSession sessionFor(String username) throws Exception {
+		org.springframework.test.web.servlet.MvcResult result = mockMvc.perform(
+						org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/v2/auth/session")
+								.header("Authorization", authHeaderFor(username)))
+				.andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk())
+				.andReturn();
+
+		String setCookie = result.getResponse().getHeader("Set-Cookie");
+		String cookieValue = setCookie.substring(setCookie.indexOf('=') + 1, setCookie.indexOf(';'));
+		String csrfToken = objectMapper.readTree(result.getResponse().getContentAsString()).get("csrfToken").asString();
+
+		return new KeycloakSession(cookieValue, csrfToken);
+	}
+
+	/** Adds the session cookie and, for state-changing requests, the CSRF token. */
+	protected org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder withSession(
+			KeycloakSession session,
+			org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder request
+	) {
+		return request.cookie(new jakarta.servlet.http.Cookie("sid", session.cookieValue()))
+				.header("X-CSRF-Token", session.csrfToken());
+	}
+
 	/**
-	 * Creates a local user via /v2/user-info and seeds the given groups in user_groups.
-	 * Since updateAuthenticatedUser no longer syncs groups from JWT, tests must seed groups explicitly.
+	 * Creates the local user through the session exchange (the only place that creates users from Keycloak
+	 * claims) and seeds the given groups in user_groups. Since updateAuthenticatedUser no longer syncs groups
+	 * from the token, tests must seed groups explicitly.
 	 */
 	protected de.tum.cit.aet.thesis.core.user.entity.User createLocalUserWithGroups(String username, String... groups)
 			throws Exception {
-		mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/v2/user-info")
-						.header("Authorization", authHeaderFor(username)))
-				.andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+		sessionFor(username);
 
 		de.tum.cit.aet.thesis.core.user.entity.User user = userRepository.findByUniversityId(username).orElseThrow();
 

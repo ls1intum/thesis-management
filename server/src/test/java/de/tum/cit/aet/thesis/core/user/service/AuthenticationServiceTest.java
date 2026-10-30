@@ -82,7 +82,6 @@ class AuthenticationServiceTest {
 				"User",
 				"Male",
 				"German",
-				"updated@test.com",
 				"Bachelor",
 				studyProgram,
 				Instant.now(),
@@ -301,7 +300,7 @@ class AuthenticationServiceTest {
 		when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
 		User result = authenticationService.updateUserInformation(
-				testUser, "A", "B", null, null, "a@example.com", null, null, null, null, null, null, new HashMap<>(),
+				testUser, "A", "B", null, null, null, null, null, null, null, null, new HashMap<>(),
 				null, null, null, null);
 
 		assertEquals(dismissedAt, result.getAvatarPromptDismissedAt());

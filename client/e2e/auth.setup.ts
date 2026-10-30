@@ -57,7 +57,9 @@ const openPasswordLogin = async (page: Page) => {
       return
     }
 
-    await headerLoginButton.click()
+    // The app may redirect to Keycloak by itself right after the entry point was checked, which removes the
+    // button: do not wait for a click that can no longer happen, look at the Keycloak form instead.
+    await headerLoginButton.click({ timeout: 5_000 }).catch(() => undefined)
 
     if (await isKeycloakPasswordLoginVisible(page, 10_000)) {
       return
@@ -133,20 +135,26 @@ for (const user of TEST_USERS) {
     // Wait for redirect back to the app and the dashboard to load
     await expect(page).toHaveURL(/localhost:\d+/, { timeout: 30_000 })
 
-    // Wait for the app to fully initialize with the auth tokens
-    await page.waitForFunction(
-      () => {
-        try {
-          const tokens = localStorage.getItem('authentication_tokens')
-          if (!tokens) return false
-          const parsed = JSON.parse(tokens)
-          return !!parsed.access_token && !!parsed.refresh_token
-        } catch {
-          return false
-        }
-      },
-      { timeout: 15_000 },
+    // The application session lives in an HttpOnly cookie that scripts cannot read, so wait for it in the
+    // browser context (the app creates it right after the redirect back from Keycloak)
+    await expect
+      .poll(
+        async () =>
+          (await page.context().cookies()).some(
+            (cookie) => cookie.name === 'sid' || cookie.name === '__Host-sid',
+          ),
+        { timeout: 15_000 },
+      )
+      .toBe(true)
+
+    // Authentication tokens must never be stored where scripts can read them: no web storage value may look
+    // like a JWT (they all start with `eyJ`, the base64 of `{"`)
+    const storedValues = await page.evaluate(() =>
+      [localStorage, sessionStorage].flatMap((storage) =>
+        Object.keys(storage).map((key) => storage.getItem(key) ?? ''),
+      ),
     )
+    expect(storedValues.filter((value) => value.includes('eyJ'))).toEqual([])
 
     await page.evaluate(
       (storageKeys) => {
@@ -155,7 +163,7 @@ for (const user of TEST_USERS) {
       [DISABLE_PASSKEY_PROMPT_STORAGE_KEY, DISABLE_PROFILE_PICTURE_PROMPT_STORAGE_KEY],
     )
 
-    // Save the authenticated state (localStorage + cookies including Keycloak session)
+    // Save the authenticated state (localStorage + cookies: application session and Keycloak session)
     await page.context().storageState({ path: `e2e/.auth/${user.name}.json` })
   })
 }

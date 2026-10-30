@@ -5,16 +5,136 @@ info:
   x-logo:
     url: ''
 servers:
-  - url: http://localhost:8080/api
+  - url: http://localhost:8180/api/v2
     description: ''
     x-last-modified: 1720732781223
-  - url: https://thesis-track.ase.cit.tum.de/api
+  - url: https://thesis-track.ase.cit.tum.de/api/v2
     description: ''
     x-last-modified: 1720732796292
-  - url: https://thesis-track-dev.ase.cit.tum.de/api
+  - url: https://thesis-track-dev.ase.cit.tum.de/api/v2
     description: ''
     x-last-modified: 1720732807668
 paths:
+  /auth/session:
+    summary: Application-owned session
+    post:
+      tags: []
+      summary: Exchange a Keycloak access token for a session
+      description: |-
+        The only endpoint that accepts a Keycloak access token (Authorization: Bearer). Creates or updates the user from the token's claims and
+        creates a session. The session cookie is returned in Set-Cookie (HttpOnly, SameSite=Strict); the CSRF token in the body.
+      security:
+        - KeycloakBearer: []
+      responses:
+        '200':
+          description: Session created
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/SetSessionCookie'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionInfo'
+        '401':
+          description: Missing or invalid Keycloak token
+        '403':
+          description: The account was deleted
+    get:
+      tags: []
+      summary: Current session
+      description: Returns the CSRF token of the current session. 401 if the browser has no valid session.
+      responses:
+        '200':
+          description: Valid session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyInvalidCookies'
+    delete:
+      parameters:
+        - $ref: '#/components/parameters/CsrfToken'
+      tags: []
+      summary: End the current session (logout)
+      description: Requires the X-CSRF-Token header.
+      responses:
+        '204':
+          description: Session ended and cookie cleared
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/ClearSessionCookie'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/CsrfForbidden'
+        '429':
+          $ref: '#/components/responses/TooManyInvalidCookies'
+  /auth/sessions:
+    summary: Active sessions of the authenticated user
+    get:
+      tags: []
+      summary: List the caller's active sessions
+      responses:
+        '200':
+          description: Active sessions, oldest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSession'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyInvalidCookies'
+    delete:
+      parameters:
+        - $ref: '#/components/parameters/CsrfToken'
+      tags: []
+      summary: End all sessions except the current one
+      description: Requires the X-CSRF-Token header.
+      responses:
+        '204':
+          description: Other sessions ended
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/CsrfForbidden'
+        '429':
+          $ref: '#/components/responses/TooManyInvalidCookies'
+  /auth/sessions/{id}:
+    summary: One session of the authenticated user
+    delete:
+      tags: []
+      summary: End one of the caller's sessions
+      description: |-
+        Requires the X-CSRF-Token header. The id is the row id from the list of sessions. If it is the session that
+        made the request, the cookie is cleared as well.
+      parameters:
+        - $ref: '#/components/parameters/CsrfToken'
+        - name: id
+          schema:
+            format: uuid
+            type: string
+          in: path
+          required: true
+      responses:
+        '204':
+          description: Session ended
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/ClearSessionCookie'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/CsrfForbidden'
+        '404':
+          description: No such session of the caller
+        '429':
+          $ref: '#/components/responses/TooManyInvalidCookies'
   /dashboard:
     summary: ''
     get:
@@ -27,6 +147,8 @@ paths:
       tags: []
       summary: Get information about authenticated user
     put:
+      parameters:
+        - $ref: '#/components/parameters/CsrfToken'
       requestBody:
         description: ''
         content:
@@ -228,6 +350,8 @@ paths:
           x-last-modified: 1720785524129
       summary: Gets all applications visible to authenticated user
     post:
+      parameters:
+        - $ref: '#/components/parameters/CsrfToken'
       requestBody:
         description: ''
         content:
@@ -289,6 +413,7 @@ paths:
     put:
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: application_id
           schema:
@@ -303,6 +428,7 @@ paths:
     put:
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: application_id
           schema:
@@ -420,6 +546,8 @@ paths:
           x-last-modified: 1720785524129
       summary: Get all topics
     post:
+      parameters:
+        - $ref: '#/components/parameters/CsrfToken'
       requestBody:
         content:
           application/json:
@@ -514,6 +642,7 @@ paths:
         required: true
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: topic_id
           schema:
@@ -526,6 +655,7 @@ paths:
     delete:
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: topic_id
           schema:
@@ -614,6 +744,8 @@ paths:
           x-last-modified: 1720785524129
       summary: Get all theses that you are allowed to see
     post:
+      parameters:
+        - $ref: '#/components/parameters/CsrfToken'
       requestBody:
         content:
           application/json:
@@ -738,6 +870,7 @@ paths:
         required: true
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -749,6 +882,7 @@ paths:
     delete:
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -820,6 +954,7 @@ paths:
         required: true
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -908,6 +1043,7 @@ paths:
         required: true
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -934,6 +1070,7 @@ paths:
     post:
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -948,6 +1085,7 @@ paths:
     delete:
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -1002,6 +1140,7 @@ paths:
         required: true
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -1079,6 +1218,7 @@ paths:
         required: true
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -1093,6 +1233,7 @@ paths:
     post:
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -1126,6 +1267,7 @@ paths:
         required: true
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -1168,6 +1310,7 @@ paths:
         required: true
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -1206,6 +1349,7 @@ paths:
         required: true
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -1220,6 +1364,7 @@ paths:
     post:
       tags: []
       parameters:
+        - $ref: '#/components/parameters/CsrfToken'
         - deprecated: false
           name: thesis_id
           schema:
@@ -1246,15 +1391,67 @@ paths:
     x-last-modified: 1720738336407
 components:
   securitySchemes:
-    JWTAuth:
+    SessionCookie:
+      type: apiKey
+      in: cookie
+      name: __Host-sid
+      description: |-
+        Session cookie set by POST /auth/session (that is, POST /api/v2/auth/session) over https. It is replaced with a
+        new Set-Cookie on the next request after the user's roles changed; that replacement is delivered once, in the
+        response of the request that performed it. Requests that change state must also send the CSRF token from the
+        session response in the X-CSRF-Token header.
+        Authorization: Bearer headers are ignored on every endpoint except POST /auth/session.
+    SessionCookieOverHttp:
+      type: apiKey
+      in: cookie
+      name: sid
+      description: |-
+        The same session cookie as SessionCookie, under the name the server gives it over plain http (local
+        development, http://localhost:8180). Send exactly one of the two, whichever the server set.
+    KeycloakBearer:
       scheme: bearer
       bearerFormat: JWT
       type: http
       description: |-
+        Keycloak access token, accepted only by POST /auth/session.
         Example: 
         > Authorization: Bearer <token>
-      x-last-modified: 1720729705844
   schemas:
+    SessionInfo:
+      type: object
+      properties:
+        csrfToken:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+        userId:
+          type: string
+          format: uuid
+    UserSession:
+      type: object
+      description: One active session (device or browser) of the authenticated user.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Row id of the session, used to end it. It cannot be used to authenticate.
+        createdAt:
+          type: string
+          format: date-time
+        lastUsedAt:
+          type: string
+          format: date-time
+          description: Rounded to the write interval (5 minutes)
+        ip:
+          type: string
+          description: Last IP address the session was used from (omitted if unknown)
+        device:
+          type: string
+          description: Readable label such as "Chrome on macOS"
+        current:
+          type: boolean
+          description: Whether this is the session that made the request
     Application:
       type: object
       properties:
@@ -1349,9 +1546,36 @@ components:
           items:
             $ref: '#/components/schemas/User'
       x-last-modified: 1720804590419
-  headers: {}
-  responses: {}
-  parameters: {}
+  headers:
+    SetSessionCookie:
+      description: The session cookie (HttpOnly, SameSite=Strict, Path=/; __Host-sid over https, sid over plain http).
+      schema:
+        type: string
+    ClearSessionCookie:
+      description: Expires the session cookie.
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: No valid session (no cookie, or the session ended, expired or was used by another browser)
+    CsrfForbidden:
+      description: The X-CSRF-Token header is missing or wrong
+    TooManyInvalidCookies:
+      description: Too many invalid session cookies from this IP address; sent only to requests that carry an invalid cookie
+      headers:
+        Retry-After:
+          description: Seconds to wait
+          schema:
+            type: integer
+  parameters:
+    CsrfToken:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      description: The CSRF token from the session response (POST or GET /auth/session). Required on every request that changes state, except POST /auth/session.
+      schema:
+        type: string
 security:
-  - JWTAuth: []
+  - SessionCookie: []
+  - SessionCookieOverHttp: []
 tags: []

@@ -16,6 +16,7 @@ import de.tum.cit.aet.thesis.core.group.repository.EmailTemplateRepository;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupSettingsRepository;
 import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.session.repository.UserSessionRepository;
 import de.tum.cit.aet.thesis.core.topic.controller.payload.ReplaceTopicPayload;
 import de.tum.cit.aet.thesis.core.topic.repository.TopicRepository;
 import de.tum.cit.aet.thesis.core.topic.repository.TopicRoleRepository;
@@ -47,6 +48,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import tools.jackson.databind.ObjectMapper;
 
@@ -136,6 +138,9 @@ public abstract class BaseIntegrationTest {
 	private UserRepository userRepository;
 
 	@Autowired
+	private UserSessionRepository userSessionRepository;
+
+	@Autowired
 	protected MockMvc mockMvc;
 
 	@Autowired
@@ -221,11 +226,16 @@ public abstract class BaseIntegrationTest {
 		jdbcTemplate.execute("UPDATE research_groups SET head_user_id = NULL, created_by = NULL, updated_by = NULL");
 
 		researchGroupSettingsRepository.deleteAll();
+		userSessionRepository.deleteAll();
 		userGroupRepository.deleteAll();
 		researchGroupRepository.deleteAll();
 		userRepository.deleteAll();
 
 		clearEmails();
+	}
+
+	protected int jdbcTemplateUpdate(String sql, Object... args) {
+		return jdbcTemplate.update(sql, args);
 	}
 
 	protected MimeMessage[] getReceivedEmails() {
@@ -268,15 +278,15 @@ public abstract class BaseIntegrationTest {
 
 	public record TestUser(UUID userId, String universityId) {}
 	protected TestUser createTestUser(String universityId, List<String> roles) throws Exception {
-		String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
-						.header("Authorization", generateTestAuthenticationHeader(universityId, roles))
-				)
-				.andReturn()
-				.getResponse()
-				.getContentAsString();
+		// The user is created by the session exchange, the only place that syncs profile data from the token.
+		mockMvc.perform(MockMvcRequestBuilders.post("/v2/auth/session")
+						.header("Authorization", generateTestAuthenticationHeader(universityId, roles)))
+				.andExpect(MockMvcResultMatchers.status().isOk());
 
-		UUID userId = UUID.fromString(JsonPath.parse(response).read("$.userId", String.class));
-		String actualUniversityId = JsonPath.parse(response).read("$.universityId", String.class);
+		String userIdText = jdbcTemplate.queryForObject(
+				"SELECT user_id::text FROM users WHERE university_id = ?", String.class, universityId);
+		UUID userId = UUID.fromString(userIdText);
+		String actualUniversityId = universityId;
 
 		// Clear auto-assigned groups (e.g., student from updateAuthenticatedUser)
 		// so only the explicitly requested groups are present

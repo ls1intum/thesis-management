@@ -45,7 +45,3 @@ export interface IDecodedAccessToken extends JwtPayload {
   resource_access: Partial<Record<string, { roles: string[] }>>
   [key: string]: unknown
 }
-
-export interface IDecodedRefreshToken extends JwtPayload {
-  [key: string]: unknown
-}

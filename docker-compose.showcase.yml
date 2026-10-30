@@ -109,7 +109,6 @@ services:
       # In-container URL for Admin API calls (AccessManagementService).
       KEYCLOAK_HOST: http://keycloak:8080
       KEYCLOAK_REALM_NAME: thesis-management
-      KEYCLOAK_CLIENT_ID: thesis-management-app
       KEYCLOAK_SERVICE_CLIENT_ID: thesis-management-service-client
       # The realm JSON imports the service client with secret "**********",
       # which is also the default in application.yml. Kept here for clarity.

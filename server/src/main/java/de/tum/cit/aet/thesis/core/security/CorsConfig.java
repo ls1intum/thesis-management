@@ -23,6 +23,7 @@ public class CorsConfig {
 		configuration.addAllowedHeader("Content-Type");
 		configuration.addAllowedHeader("Accept");
 		configuration.addAllowedHeader("X-Requested-With");
+		configuration.addAllowedHeader("X-CSRF-Token");
 		configuration.setAllowCredentials(true);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

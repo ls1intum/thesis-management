@@ -29,15 +29,6 @@ spring:
       max-request-size: 25MB
   security:
     oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: ${KEYCLOAK_CLIENT_ID:thesis-management-app}
-            scope: openid
-        provider:
-          keycloak:
-            issuer-uri: ${KEYCLOAK_HOST:http://localhost:8181}/realms/${KEYCLOAK_REALM_NAME:thesis-management}
-            user-name-attribute: preferred_username
       resourceserver:
         jwt:
           jwk-set-uri: ${KEYCLOAK_HOST:http://localhost:8181}/realms/${KEYCLOAK_REALM_NAME:thesis-management}/protocol/openid-connect/certs
@@ -89,6 +80,15 @@ management:
 
 server:
   port: ${SERVER_PORT:8080}
+  # The server runs behind Traefik: use the forwarded protocol and client address (for secure redirects and
+  # for the per-IP detection of guessed session cookies) instead of the proxy's address.
+  # "native" (Tomcat's RemoteIpValve) reads only X-Forwarded-For / X-Forwarded-Proto, and only from a peer in
+  # server.tomcat.remoteip.internal-proxies (by default the private and Docker network ranges). "framework"
+  # would also honour the RFC 7239 "Forwarded" header, which Traefik passes through from the client unchanged,
+  # so a client could choose the address the server sees. The server port must only be reachable by the proxy
+  # (production publishes only Traefik's ports and merely exposes 8080 inside the Docker network), and a proxy
+  # in front of Traefik has to overwrite, not append to, X-Forwarded-For.
+  forward-headers-strategy: native
   servlet:
     context-path: /api
 
@@ -109,6 +109,11 @@ thesis-management:
       secret: ${KEYCLOAK_SERVICE_CLIENT_SECRET:**********}
   client:
     host: ${CLIENT_HOST:http://localhost:3100}
+  session:
+    idle-timeout: ${SESSION_IDLE_TIMEOUT:PT4H}
+    absolute-timeout: ${SESSION_ABSOLUTE_TIMEOUT:PT24H}
+    max-per-user: ${SESSION_MAX_PER_USER:10}
+    ended-retention: ${SESSION_ENDED_RETENTION:P30D}
   mail:
     enabled: ${MAIL_ENABLED:false}
     sender: ${MAIL_SENDER:thesis-dev@test.aet.cit.tum.de}

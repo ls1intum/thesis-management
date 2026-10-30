@@ -134,19 +134,15 @@ const loginWithPassword = async (page: Page, username: string, password: string)
   await page.locator('#password').fill(password)
   await page.locator('#kc-login').click()
   await expect(page).toHaveURL(/localhost:\d+/, { timeout: 30_000 })
-  await page.waitForFunction(
-    () => {
-      try {
-        const tokens = localStorage.getItem('authentication_tokens')
-        if (!tokens) return false
-        const parsed = JSON.parse(tokens)
-        return !!parsed.access_token && !!parsed.refresh_token
-      } catch {
-        return false
-      }
-    },
-    { timeout: 15_000 },
-  )
+  await expect
+    .poll(
+      async () =>
+        (await page.context().cookies()).some(
+          (cookie) => cookie.name === 'sid' || cookie.name === '__Host-sid',
+        ),
+      { timeout: 15_000 },
+    )
+    .toBe(true)
 }
 
 test.describe('Passkey - Prompt', () => {
