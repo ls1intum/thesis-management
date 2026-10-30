@@ -27,7 +27,7 @@ jobs:
           --health-retries 10
 
       mailpit:
-        image: axllent/mailpit:v1.31.4
+        image: axllent/mailpit:v1.32.0
         ports:
           - 1125:1025
           - 8125:8025
@@ -130,7 +130,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '24.21.0'
+          node-version: '24.22.2'
           cache: 'pnpm'
           cache-dependency-path: client/pnpm-lock.yaml
 
