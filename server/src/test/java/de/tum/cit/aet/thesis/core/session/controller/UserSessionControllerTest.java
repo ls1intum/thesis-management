@@ -12,6 +12,8 @@ import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
 import de.tum.cit.aet.thesis.mock.BaseSessionIntegrationTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -287,6 +289,42 @@ class UserSessionControllerTest extends BaseSessionIntegrationTest {
 				.andExpect(status().isNoContent());
 		mockMvc.perform(as(second, MockMvcRequestBuilders.get("/v2/auth/session"))).andExpect(status().isUnauthorized());
 		mockMvc.perform(as(first, MockMvcRequestBuilders.get("/v2/auth/session"))).andExpect(status().isOk());
+	}
+
+	@ParameterizedTest
+	@ValueSource(ints = {1, 6})
+	void endOtherSession_afterItRotated_endsTheReplacementUsingTheDisplayedId(int rotations) throws Exception {
+		Login caller = login("end-rotated-user", "student");
+		Login target = exchange("end-rotated-user");
+		String displayedId = null;
+		for (var session : listSessions(caller)) {
+			if (!session.get("current").asBoolean()) {
+				displayedId = session.get("id").asString();
+			}
+		}
+		assertThat(displayedId).isNotNull();
+
+		Login replacement = target;
+		for (int i = 0; i < rotations; i++) {
+			String identifier = UserSessionTokens.parse(replacement.cookieValue()).orElseThrow().identifier();
+			jdbcTemplateUpdate("UPDATE user_sessions SET rotation_required = TRUE WHERE token_identifier = ?", identifier);
+			MvcResult rotation = mockMvc.perform(as(replacement, MockMvcRequestBuilders.get("/v2/auth/session")))
+					.andExpect(status().isOk()).andReturn();
+			String cookie = rotation.getResponse().getHeader(HttpHeaders.SET_COOKIE);
+			assertThat(cookie).isNotNull();
+			replacement = new Login(target.universityId(), cookie.substring(cookie.indexOf('=') + 1, cookie.indexOf(';')), target.csrfToken());
+		}
+
+		Login stranger = login("end-rotated-stranger", "student");
+		mockMvc.perform(as(stranger, MockMvcRequestBuilders.delete("/v2/auth/sessions/" + displayedId)))
+				.andExpect(status().isNotFound());
+		mockMvc.perform(as(replacement, MockMvcRequestBuilders.get("/v2/auth/session"))).andExpect(status().isOk());
+
+		mockMvc.perform(as(caller, MockMvcRequestBuilders.delete("/v2/auth/sessions/" + displayedId)))
+				.andExpect(status().isNoContent());
+		mockMvc.perform(as(replacement, MockMvcRequestBuilders.get("/v2/auth/session"))).andExpect(status().isUnauthorized());
+		mockMvc.perform(as(target, MockMvcRequestBuilders.get("/v2/auth/session"))).andExpect(status().isUnauthorized());
+		mockMvc.perform(as(caller, MockMvcRequestBuilders.get("/v2/auth/session"))).andExpect(status().isOk());
 	}
 
 	@Test

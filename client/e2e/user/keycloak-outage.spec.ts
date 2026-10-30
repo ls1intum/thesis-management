@@ -77,6 +77,37 @@ test.describe('Keycloak outage', () => {
     await context.close()
   })
 
+  test('logging out immediately clears the signed-in UI in another open tab', async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({ storageState: { cookies: [], origins: [] } })
+
+    try {
+      await loginWithApi(context, 'student5')
+      const page = await context.newPage()
+      const otherTab = await context.newPage()
+      await navigateTo(page, '/dashboard')
+      await navigateTo(otherTab, '/dashboard')
+      await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible()
+      await expect(otherTab.getByRole('heading', { name: /dashboard/i })).toBeVisible()
+
+      // Logout must clear both tabs even when the university login cannot be reached. Do not navigate or
+      // reload the second tab: it must learn about the successful logout through the shared session channel.
+      await context.route(`${KEYCLOAK_ORIGIN}/**`, (route) => route.abort('connectionrefused'))
+      await page.goto('/logout')
+
+      await expect(page.locator('header').getByText('Login')).toBeVisible()
+      await expect(
+        otherTab.locator('header').getByRole('button', { name: 'Login', exact: true }),
+      ).toBeVisible()
+      await expect(otherTab.getByRole('heading', { name: /dashboard/i })).toBeHidden()
+      expect((await context.request.get(`${SERVER_ORIGIN}/api/v2/auth/session`)).status()).toBe(401)
+    } finally {
+      await logoutWithApi(context)
+      await context.close()
+    }
+  })
+
   test('public pages load for visitors without a session while Keycloak is unreachable', async ({
     browser,
   }) => {

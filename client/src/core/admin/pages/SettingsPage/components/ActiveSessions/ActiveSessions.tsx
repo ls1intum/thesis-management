@@ -87,8 +87,9 @@ const ActiveSessions = () => {
     <Stack>
       <Title order={3}>Active sessions</Title>
       <Text>
-        These are the browsers and devices that are currently signed in to your account. End a
-        session if you do not recognise it or after using a shared computer.
+        These are your active Thesis Management sessions. Ending a session invalidates its current
+        access, but a browser still signed in with your university login can sign in again
+        automatically. On a shared computer, use Logout before leaving.
       </Text>
       {isLoading && <Loader size='sm' />}
       {!isLoading && loadFailed && sessions.length === 0 && (

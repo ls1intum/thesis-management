@@ -16,7 +16,9 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -254,20 +256,28 @@ public class UserSessionService {
 			log.info("Session {} of user {} ended: {}", UserSessionTokens.logId(session.getTokenIdentifier()), session.getUserId(), reason);
 		}
 
-		endReplacements(session.getId(), session.getUserId(), reason, now, 0);
+		endReplacements(session.getId(), session.getUserId(), reason, now);
 	}
 
-	private void endReplacements(UUID sessionId, UUID userId, UserSessionEndReason reason, Instant now, int depth) {
-		if (depth >= MAX_ROTATION_HOPS) {
-			return;
-		}
+	private void endReplacements(UUID sessionId, UUID userId, UserSessionEndReason reason, Instant now) {
+		// Settings can hold an old row id through multiple rotations. Revocation must reach every replacement,
+		// even beyond the bounded chain accepted during authentication's short cookie grace window.
+		Deque<UUID> pending = new ArrayDeque<>();
+		Set<UUID> visited = new LinkedHashSet<>();
+		pending.add(sessionId);
 
-		for (UUID replacementId : repository.findIdsByRotatedFrom(sessionId)) {
-			if (repository.endById(replacementId, now, reason) > 0) {
-				log.info("Session {} of user {} ended with its predecessor: {}", replacementId, userId, reason);
+		while (!pending.isEmpty()) {
+			UUID predecessorId = pending.removeFirst();
+			if (!visited.add(predecessorId)) {
+				continue;
 			}
 
-			endReplacements(replacementId, userId, reason, now, depth + 1);
+			for (UUID replacementId : repository.findIdsByRotatedFrom(predecessorId)) {
+				if (repository.endById(replacementId, now, reason) > 0) {
+					log.info("Session {} of user {} ended with its predecessor: {}", replacementId, userId, reason);
+				}
+				pending.addLast(replacementId);
+			}
 		}
 	}
 
@@ -302,7 +312,7 @@ public class UserSessionService {
 	}
 
 	/**
-	 * Ends one of the caller's own sessions.
+	 * Ends one of the caller's own sessions, following replacements if it rotated after the list was loaded.
 	 *
 	 * @param userId the caller
 	 * @param sessionId the session row id
@@ -310,7 +320,7 @@ public class UserSessionService {
 	 */
 	public boolean endOwn(UUID userId, UUID sessionId) {
 		Optional<UserSession> session = repository.findByIdAndUserId(sessionId, userId)
-				.filter(candidate -> candidate.getEndedAt() == null);
+				.filter(candidate -> candidate.getEndedAt() == null || candidate.getEndReason() == UserSessionEndReason.ROTATED);
 
 		session.ifPresent(candidate -> end(candidate, UserSessionEndReason.LOGOUT));
 

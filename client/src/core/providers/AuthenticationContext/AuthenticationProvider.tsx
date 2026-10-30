@@ -31,6 +31,8 @@ import {
   forgetSession,
   isLoggingOut,
   isRecoveryBlocked,
+  setSessionEndedHandler,
+  announceSessionLogin,
   setSessionRecoveryHandler,
 } from '@/core/auth/session'
 
@@ -211,6 +213,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
   const [hasSession, setHasSession] = useState(false)
   const hasSessionRef = useRef(false)
+  const sessionEndVersionRef = useRef(0)
   const loginUnavailableNoticeAt = useRef(0)
   // Set when Keycloak knows the user but the server refused to turn that login into a session. Calling login()
   // again would only bounce between the web app and Keycloak (which answers at once), so it reports instead.
@@ -243,7 +246,11 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
    * it) must also give way to a logout that another tab began; an explicit login only to one of this tab.
    */
   const establishSessionFromKeycloak = async (silent: boolean): Promise<boolean> => {
-    const mayCreateSession = () => !(silent ? isRecoveryBlocked() : isLoggingOut())
+    const sessionEndVersion = sessionEndVersionRef.current
+    const mayCreateSession = () =>
+      silent
+        ? !isRecoveryBlocked() && sessionEndVersion === sessionEndVersionRef.current
+        : !isLoggingOut()
 
     // The silent check waits for Keycloak and would hang if it is down, so look first. Not when the browser has
     // just come back from the Keycloak login: its one-time code must be exchanged now, and Keycloak just answered.
@@ -277,6 +284,8 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
       return false
     }
+
+    announceSessionLogin()
 
     return true
   }
@@ -337,7 +346,15 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
   const recoverSessionSilently = async (): Promise<boolean> => {
     // Another tab may have signed in again already: the session cookie is shared, so adopt that session
     // instead of logging in a second time (which would replace it and desynchronise the other tabs).
+    const sessionEndVersion = sessionEndVersionRef.current
     const existingSession = await fetchSession().catch(() => undefined)
+
+    // A logout may have completed in another tab while this check was in flight. Its response must not restore
+    // the authenticated UI that the logout just cleared.
+    if (sessionEndVersion !== sessionEndVersionRef.current) {
+      forgetSession()
+      return false
+    }
 
     if (existingSession) {
       updateHasSession(true)
@@ -394,15 +411,27 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
     removeLegacyTokens()
     setUser(undefined)
     setSessionRecoveryHandler(recoverSessionSilently)
+    setSessionEndedHandler(() => {
+      sessionEndVersionRef.current += 1
+      updateHasSession(false)
+      setUser(undefined)
+      setResearchGroups([])
+    })
 
     const bootstrap = async () => {
       try {
         // A valid session needs no Keycloak at all, which keeps the application usable while Keycloak is down.
+        const sessionEndVersion = sessionEndVersionRef.current
         const existingSession = await fetchSession().catch((error) => {
           console.error('Failed to check the session', error)
 
           return undefined
         })
+
+        if (sessionEndVersion !== sessionEndVersionRef.current) {
+          forgetSession()
+          return
+        }
 
         if (existingSession) {
           updateHasSession(true)
@@ -439,6 +468,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
     return () => {
       setSessionRecoveryHandler(undefined)
+      setSessionEndedHandler(undefined)
     }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- mount-only session bootstrap: the setters and helpers it calls only touch refs and stable state setters
   }, [])
@@ -562,7 +592,17 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
       },
       login: (redirectUri?: string) =>
         readySignal.then(async () => {
+          const sessionEndVersion = sessionEndVersionRef.current
           if (hasSessionRef.current) {
+            return
+          }
+
+          // Protected pages may call login automatically after the cross-tab logout clears their user. Give
+          // the originating tab time to end the Keycloak login before another tab can start one again.
+          if (isRecoveryBlocked()) {
+            showLoginUnavailableNotice(
+              'You are signing out in another tab. Please try again in a moment.',
+            )
             return
           }
 
@@ -584,6 +624,9 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
           }
 
           const client = await ensureKeycloak()
+          if (isRecoveryBlocked() || sessionEndVersion !== sessionEndVersionRef.current) {
+            return
+          }
           const keycloakRedirectUri = getLoginRedirectUri(redirectUri)
 
           return client.login(

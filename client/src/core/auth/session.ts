@@ -20,6 +20,7 @@ let sessionUserId: string | undefined
 let tabUserId: string | undefined
 let identityChanged = false
 let identityChangeHandler: (() => void) | undefined
+let sessionEndedHandler: (() => void) | undefined
 let recoveryHandler: (() => Promise<boolean>) | undefined
 let recoveryInFlight: Promise<boolean> | undefined
 // Set once a logout has begun: from then on no silent re-login may create a new session.
@@ -34,7 +35,10 @@ const RECOVERY_BLOCK_AFTER_LOGOUT_MS = 30_000
 // What the tabs of one browser tell each other: they share the session cookie, so a logout or a login in one of
 // them concerns all.
 type SessionBroadcast =
-  { type: 'logout' } | { type: 'logout-failed' } | { type: 'login'; userId?: string }
+  | { type: 'logout' }
+  | { type: 'logout-failed' }
+  | { type: 'logout-completed'; userId?: string }
+  | { type: 'login'; userId?: string }
 
 const sessionChannel = (() => {
   try {
@@ -61,10 +65,23 @@ sessionChannel?.addEventListener('message', (event: MessageEvent<SessionBroadcas
     recoveryBlockedUntil = Date.now() + RECOVERY_BLOCK_AFTER_LOGOUT_MS
   } else if (message?.type === 'logout-failed') {
     recoveryBlockedUntil = 0
+  } else if (message?.type === 'logout-completed') {
+    // A failed logout must leave the other tabs signed in. Only completion clears their private state.
+    // Ignore an old account's delayed completion if this tab has already adopted another account.
+    if (message.userId !== undefined && tabUserId !== undefined && message.userId !== tabUserId) {
+      return
+    }
+    recoveryBlockedUntil = Date.now() + RECOVERY_BLOCK_AFTER_LOGOUT_MS
+    forgetSession()
+    sessionEndedHandler?.()
   } else if (message?.type === 'login') {
     // Someone logged in, in another tab. If that is not the user this tab shows, its requests would now be
     // answered with that other user's data, so the tab starts over (a safe request is never rejected for this).
-    if (message.userId !== undefined && tabUserId !== undefined && message.userId !== tabUserId) {
+    if (
+      message.userId !== undefined &&
+      tabUserId !== undefined &&
+      (message.userId !== tabUserId || sessionUserId === undefined)
+    ) {
       handleIdentityChange()
     }
   }
@@ -123,6 +140,11 @@ export const isRecoveryBlocked = () => loggingOut || Date.now() < recoveryBlocke
  */
 export const setIdentityChangeHandler = (handler: (() => void) | undefined) => {
   identityChangeHandler = handler
+}
+
+/** Registers how this tab clears its private UI after another tab successfully ends the shared session. */
+export const setSessionEndedHandler = (handler: (() => void) | undefined) => {
+  sessionEndedHandler = handler
 }
 
 export function handleIdentityChange() {
@@ -185,11 +207,11 @@ export async function createSession(keycloakToken: string): Promise<ISessionInfo
     throw new SessionExchangeError(response.status, body?.message)
   }
 
-  const info = await readSessionInfo(response)
-  broadcast({ type: 'login', userId: info.userId })
-
-  return info
+  return readSessionInfo(response)
 }
+
+/** Publishes a login only after its caller accepts the new session instead of abandoning it after a logout. */
+export const announceSessionLogin = () => broadcast({ type: 'login', userId: sessionUserId })
 
 /**
  * Ends a session that was created at a moment when it must not exist any more (a logout began in the meantime).
@@ -252,10 +274,12 @@ export function refreshCsrfToken(): Promise<string | undefined> {
  * CSRF token is kept so that the logout can be retried.
  */
 export async function deleteSession(): Promise<void> {
+  const userId = tabUserId
   // the session is gone: forget it and who this tab showed, but keep refusing silent re-logins until the page leaves
   const endLocally = () => {
     forgetSession()
     tabUserId = undefined
+    broadcast({ type: 'logout-completed', userId })
   }
 
   const send = (token: string | undefined) =>

@@ -90,6 +90,7 @@ const renderProvider = () =>
 describe('AuthenticationProvider startup', () => {
   beforeEach(() => {
     localStorage.clear()
+    vi.mocked(session.isRecoveryBlocked).mockReturnValue(false)
     vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(true)
   })
 
@@ -148,8 +149,10 @@ describe('AuthenticationProvider startup', () => {
       authenticated: true,
       token: 'kc-token',
     } as never)
-    vi.mocked(session.createSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
-    vi.mocked(session.isRecoveryBlocked).mockReturnValueOnce(false).mockReturnValue(true)
+    vi.mocked(session.createSession).mockImplementationOnce(async () => {
+      vi.mocked(session.isRecoveryBlocked).mockReturnValue(true)
+      return { csrfToken: 'c', expiresAt: 'x' }
+    })
 
     renderProvider()
 

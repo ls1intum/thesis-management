@@ -77,14 +77,54 @@ describe('session, between the tabs of one browser', () => {
     expect(channel.posted).toEqual([{ type: 'logout' }, { type: 'logout-failed' }])
   })
 
-  it('tells the other tabs who logged in', async () => {
+  it('tells the other tabs who logged in only after the new session is accepted', async () => {
     fetchMock.mockResolvedValueOnce(
       jsonResponse(200, { csrfToken: 'a', expiresAt: 'x', userId: 'alice' }),
     )
 
     await session.createSession('kc-token')
+    expect(channel.posted).toEqual([])
+
+    session.announceSessionLogin()
 
     expect(channel.posted).toEqual([{ type: 'login', userId: 'alice' }])
+  })
+
+  it.each([204, 401])(
+    'announces completed logout only after the server accepts it (%s)',
+    async (status) => {
+      session.setSessionUserId('alice')
+      session.setCsrfToken('csrf')
+      fetchMock.mockResolvedValueOnce(new Response(null, { status }))
+
+      await session.deleteSession()
+
+      expect(channel.posted).toEqual([
+        { type: 'logout' },
+        { type: 'logout-completed', userId: 'alice' },
+      ])
+    },
+  )
+
+  it('resets a logged-out tab when the same user signs in again elsewhere', () => {
+    const identityChanged = vi.fn()
+    session.setIdentityChangeHandler(identityChanged)
+    session.setSessionUserId('alice')
+    channel.receive({ type: 'logout-completed', userId: 'alice' })
+
+    channel.receive({ type: 'login', userId: 'alice' })
+
+    expect(identityChanged).toHaveBeenCalledOnce()
+  })
+
+  it('ignores delayed logout completion for a different user', () => {
+    session.setSessionUserId('bob')
+    session.setCsrfToken('bob-csrf')
+
+    channel.receive({ type: 'logout-completed', userId: 'alice' })
+
+    expect(session.getSessionUserId()).toBe('bob')
+    expect(session.getCsrfToken()).toBe('bob-csrf')
   })
 
   it('starts a tab over when another tab logged in as somebody else, but not for the same user', async () => {
