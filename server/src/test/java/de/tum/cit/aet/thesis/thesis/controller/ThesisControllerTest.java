@@ -787,6 +787,32 @@ class ThesisControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void uploadThesisFile_ZipPresentationSource_Success() throws Exception {
+			UUID thesisId = createTestThesis("Test Thesis");
+
+			MockMultipartFile file = new MockMultipartFile(
+					"file", "slides.zip", "application/zip", "zip content".getBytes()
+			);
+			MockMultipartFile type = new MockMultipartFile(
+					"type", "", MediaType.TEXT_PLAIN_VALUE, "PRESENTATION_SOURCE".getBytes()
+			);
+
+			mockMvc.perform(MockMvcRequestBuilders.multipart("/v2/theses/{thesisId}/files", thesisId)
+							.file(file)
+							.file(type)
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isOk());
+
+			assertThat(thesisFileRepository.findAll())
+					.singleElement()
+					.satisfies(stored -> {
+						assertThat(stored.getType()).isEqualTo("PRESENTATION_SOURCE");
+						assertThat(stored.getUploadName()).isEqualTo("slides.zip");
+						assertThat(stored.getFilename()).endsWith(".zip");
+					});
+		}
+
+		@Test
 		void getThesisFile_Success() throws Exception {
 			UUID thesisId = createTestThesis("Test Thesis");
 
