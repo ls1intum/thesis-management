@@ -120,4 +120,15 @@ public class PdfServiceTest {
 
 		assertThrows(RuntimeException.class, () -> pdfService.extractImagesFromPdf(multipartFile), "Expected an IOException to be thrown for invalid PDF content");
 	}
+
+	@Test
+	public void testReplaceUnpairedSurrogates() {
+		String validPair = "x \uD835\uDC65 y";
+		assertSame(validPair, PdfService.replaceUnpairedSurrogates(validPair), "Well-formed text must be returned unchanged");
+		assertEquals("a\uFFFDb", PdfService.replaceUnpairedSurrogates("a\uD835b"), "Lone high surrogate must be replaced");
+		assertEquals("a\uFFFD", PdfService.replaceUnpairedSurrogates("a\uD835"), "Trailing high surrogate must be replaced");
+		assertEquals("\uFFFD\uFFFD", PdfService.replaceUnpairedSurrogates("\uDC65\uD835"), "Reversed pair must be replaced");
+		assertEquals("\uD835\uDC65\uFFFD", PdfService.replaceUnpairedSurrogates("\uD835\uDC65\uDC65"), "Valid pair must survive next to a lone low surrogate");
+		assertNull(PdfService.replaceUnpairedSurrogates(null));
+	}
 }

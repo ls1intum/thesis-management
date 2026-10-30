@@ -28,8 +28,9 @@ import java.time.Duration;
  * upstream as "client disconnected") and then retried three more times to no avail.
  *
  * <p>Setting the option as a builder default fixes it: the value is merged into the prompt options
- * of every call, is non-null, and therefore wins over the 60s default. Once Spring AI populates the
- * option from configuration itself, this class can go.
+ * of every call, is non-null, and therefore wins over the 60s default. Spring AI 2.0.2 leaves the
+ * option unset by default, so the shared client's timeout applies and this class is redundant but
+ * harmless; it can be removed together with its test.
  */
 @Configuration
 @Conditional(AIFeaturesEnabled.class)

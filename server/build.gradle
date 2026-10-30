@@ -5,15 +5,15 @@ plugins {
 	id "jacoco"
 	id "com.github.andygoossens.modernizer" version "1.15.0"
 	id "com.gorylenko.gradle-git-properties" version "4.0.1"
-	id "org.springframework.boot" version "4.1.1"
+	id "org.springframework.boot" version "4.1.2"
 	id "io.spring.dependency-management" version "1.1.7"
-	id "io.github.ben-manes.versions" version "0.64.0"
-	id "com.diffplug.spotless" version "8.10.3"
-	id "org.cyclonedx.bom" version "3.4.1"
+	id "io.github.ben-manes.versions" version "0.66.0"
+	id "com.diffplug.spotless" version "8.10.4"
+	id "org.cyclonedx.bom" version "3.5.1"
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.11.5"
+version = "4.12.0"
 description = "Thesis Management"
 
 // The explicit Tomcat (11.0.22) and Netty (4.2.13.Final) version overrides that
@@ -55,7 +55,7 @@ repositories {
 ext['jackson-2-bom.version'] = '2.22.1'
 
 // The Spring Boot BOM manages Logback 1.5.x; use the newer 1.6 line
-ext['logback.version'] = '1.6.5'
+ext['logback.version'] = '1.6.6'
 
 // Exclude Jackson 2.x databind from compile classpath to prevent accidental usage.
 // Jackson 3.x (tools.jackson) is the primary Jackson version in Spring Boot 4.x.
@@ -78,7 +78,7 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-actuator"
 	implementation "org.springframework.boot:spring-boot-starter-websocket"
 
-	implementation platform("org.springframework.ai:spring-ai-bom:2.0.1")
+	implementation platform("org.springframework.ai:spring-ai-bom:2.0.2")
 	implementation "org.springframework.ai:spring-ai-pdf-document-reader"
 	implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 
@@ -91,13 +91,13 @@ dependencies {
 	implementation("net.minidev:json-smart") { version { 				strictly "2.6.0" } }
 
 	implementation "org.springframework.boot:spring-boot-starter-liquibase"
-	implementation "org.postgresql:postgresql:42.7.13"
+	implementation "org.postgresql:postgresql:42.7.14"
 
 	implementation "commons-io:commons-io:2.22.0"
 	implementation "org.mnode.ical4j:ical4j:4.4.0"
 	implementation "com.itextpdf:itext-core:9.8.0"
 	implementation "com.itextpdf:html2pdf:6.3.4"
-	implementation "com.auth0:java-jwt:4.6.1"
+	implementation "com.auth0:java-jwt:4.6.2"
 
 	// Use the latest version of commons-lang3 to avoid security issues
 	implementation "org.apache.commons:commons-lang3:${commons_lang3_version}"
@@ -132,7 +132,7 @@ dependencies {
 
 	testImplementation "com.github.dasniko:testcontainers-keycloak:4.4.0"
 
-	testImplementation "com.icegreen:greenmail-junit5:2.1.14"
+	testImplementation "com.icegreen:greenmail-junit5:2.1.15"
 	testImplementation "org.wiremock:wiremock-standalone:3.13.2"
 
 	testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"
@@ -239,7 +239,7 @@ test {
 }
 
 jacoco {
-	toolVersion = "0.8.15"
+	toolVersion = "0.8.16"
 }
 
 jacocoTestReport {
