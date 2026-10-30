@@ -174,7 +174,7 @@ overrides:
   uuid: 14.0.3
   picomatch@<4: 2.3.2
   picomatch@>=4: 4.0.7
-  fork-ts-checker-webpack-plugin>schema-utils: 4.5.0
+  fork-ts-checker-webpack-plugin>schema-utils: 4.8.1
   '@tiptap/extension-bubble-menu': 3.32.1
   '@tiptap/extension-floating-menu': 3.32.1
   qs@<6.16.0: 6.16.0
@@ -4004,10 +4004,6 @@ packages:
   scheduler@0.28.0:
     resolution: {integrity: sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw==}
 
-  schema-utils@4.5.0:
-    resolution: {integrity: sha512-zJlMCZ0cAR5p/Y4oVpRoqioDMJcGxaXRrQ/4rP4WyR84vc5z/DolXdbvXeDpTwbtocDFr2rhPqHPErDCUtz2kA==}
-    engines: {node: '>= 10.13.0'}
-
   schema-utils@4.8.1:
     resolution: {integrity: sha512-x39pYlJPyH7Uge5QO64B9XGP9zLDc9WNmiQZc+CE3IzZPvMu3lHOuAMGpYNoPixEL7MSWlGhYTg5UlLSL8G6iw==}
     engines: {node: '>= 10.13.0'}
@@ -6918,7 +6914,7 @@ snapshots:
       memfs: 3.5.3
       minimatch: 10.2.6
       node-abort-controller: 3.1.1
-      schema-utils: 4.5.0
+      schema-utils: 4.8.1(webpack@5.112.2)
       semver: 7.8.5
       tapable: 2.3.3
       typescript: 6.0.3
@@ -8325,13 +8321,6 @@ snapshots:
       xmlchars: 2.2.0
 
   scheduler@0.28.0: {}
-
-  schema-utils@4.5.0:
-    dependencies:
-      '@types/json-schema': 7.0.15
-      ajv: 8.20.0
-      ajv-formats: 3.0.1
-      ajv-keywords: 5.1.0(ajv@8.20.0)
 
   schema-utils@4.8.1(webpack@5.112.2):
     dependencies:
