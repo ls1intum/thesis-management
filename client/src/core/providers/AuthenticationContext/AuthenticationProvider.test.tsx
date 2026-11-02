@@ -14,6 +14,7 @@ vi.mock('@/core/auth/keycloakClient', () => ({
   ensureSsoChecked: vi.fn(),
   getKeycloak: vi.fn(),
   isKeycloakReachable: vi.fn(),
+  LOGOUT_SSO_CHECK_TIMEOUT_MS: 3000,
 }))
 
 vi.mock('@/core/auth/session', async (importOriginal) => ({
@@ -241,10 +242,30 @@ describe('AuthenticationProvider startup', () => {
       expect(logout).toHaveBeenCalledWith({ redirectUri: `${window.location.origin}/` }),
     )
     // a fresh check, not the cached result of this page load (a login made in another tab since would be missed)
-    expect(keycloakClient.initKeycloak).toHaveBeenCalledWith({ checkSso: true })
+    expect(keycloakClient.initKeycloak).toHaveBeenCalledWith({
+      checkSso: true,
+      timeoutMs: 3000,
+    })
     expect(keycloakClient.ensureSsoChecked).not.toHaveBeenCalled()
     expect(session.deleteSession).toHaveBeenCalled()
     expect(screen.getByTestId('authenticated').textContent).toBe('false')
+  })
+
+  it('does not ask Keycloak for a silent login on the logout page', async () => {
+    window.history.pushState({}, '', '/logout')
+    vi.mocked(session.fetchSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(true)
+
+    try {
+      renderProvider()
+      await waitFor(() => expect(session.fetchSession).toHaveBeenCalled())
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      expect(keycloakClient.isKeycloakReachable).not.toHaveBeenCalled()
+      expect(keycloakClient.initKeycloak).not.toHaveBeenCalled()
+    } finally {
+      window.history.pushState({}, '', '/')
+    }
   })
 
   it('does not contact Keycloak for the logout when it is unreachable', async () => {

@@ -21,6 +21,7 @@ import {
   getKeycloak,
   initKeycloak,
   isKeycloakReachable,
+  LOGOUT_SSO_CHECK_TIMEOUT_MS,
 } from '@/core/auth/keycloakClient'
 import {
   SessionExchangeError,
@@ -444,6 +445,11 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             })
           }
 
+          return
+        }
+
+        // Nothing to sign in to on the logout page: asking Keycloak would only delay (and possibly break) the logout.
+        if (window.location.pathname === '/logout') {
           return
         }
 
@@ -884,7 +890,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
             // The silent check yields the id token that lets Keycloak end the login without asking for a
             // confirmation; without a Keycloak login there is nothing to end. It is made afresh: an earlier
             // result of this page load may predate a login that another tab has made since.
-            await initKeycloak({ checkSso: true })
+            await initKeycloak({ checkSso: true, timeoutMs: LOGOUT_SSO_CHECK_TIMEOUT_MS })
             const client = getKeycloak()
 
             if (client?.authenticated) {

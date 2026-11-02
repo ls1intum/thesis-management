@@ -130,10 +130,10 @@ class UserSessionServiceIntegrationTest extends BaseIntegrationTest {
 		Created valid = sessionService.create(user, client(CHROME_MAC_130));
 		Created expired = sessionService.create(user, client(CHROME_MAC_130));
 
-		at(Duration.ofHours(4).minusSeconds(1));
+		at(Duration.ofDays(14).minusSeconds(1));
 		authenticated(authenticate(valid));
 
-		at(Duration.ofHours(4));
+		at(Duration.ofDays(14));
 		assertThat(rejected(authenticate(expired)).reason()).isEqualTo(Reason.EXPIRED_IDLE);
 		UserSession row = sessionRepository.findById(expired.session().getId()).orElseThrow();
 		assertThat(row.getEndedAt()).isNotNull();
@@ -145,15 +145,15 @@ class UserSessionServiceIntegrationTest extends BaseIntegrationTest {
 		User user = createUser("svc-absolute");
 		Created created = sessionService.create(user, client(CHROME_MAC_130));
 
-		for (int hours = 3; hours <= 21; hours += 3) {
-			at(Duration.ofHours(hours));
+		for (int days = 7; days <= 28; days += 7) {
+			at(Duration.ofDays(days));
 			authenticated(authenticate(created));
 		}
 
-		at(Duration.ofHours(24).minusSeconds(1));
+		at(Duration.ofDays(30).minusSeconds(1));
 		authenticated(authenticate(created));
 
-		at(Duration.ofHours(24));
+		at(Duration.ofDays(30));
 		assertThat(rejected(authenticate(created)).reason()).isEqualTo(Reason.EXPIRED_ABSOLUTE);
 	}
 
@@ -346,17 +346,17 @@ class UserSessionServiceIntegrationTest extends BaseIntegrationTest {
 		Created created = sessionService.create(user, client(CHROME_MAC_130));
 
 		// keep the session busy so that only the absolute timeout is left
-		for (int hours = 3; hours <= 21; hours += 3) {
-			at(Duration.ofHours(hours));
+		for (int days = 7; days <= 28; days += 7) {
+			at(Duration.ofDays(days));
 			authenticated(authenticate(created));
 		}
 
-		at(Duration.ofHours(24).minusSeconds(10));
+		at(Duration.ofDays(30).minusSeconds(10));
 		sessionService.markForRotation(user.getId());
 		authenticated(authenticate(created));
 
 		// 20 s of the 30 s grace window are left, but the session itself is past its absolute timeout
-		at(Duration.ofHours(24).plusSeconds(5));
+		at(Duration.ofDays(30).plusSeconds(5));
 		assertThat(rejected(authenticate(created)).reason()).isEqualTo(Reason.SUPERSEDED_EXPIRED);
 	}
 
@@ -367,9 +367,9 @@ class UserSessionServiceIntegrationTest extends BaseIntegrationTest {
 		Created stale = sessionService.create(user, client(CHROME_MAC_130));
 
 		// the oldest session stays in use, the second one is abandoned and passes its idle timeout
-		at(Duration.ofHours(3));
+		at(Duration.ofDays(10));
 		authenticated(authenticate(live));
-		at(Duration.ofHours(4).plusMinutes(30));
+		at(Duration.ofDays(14).plusHours(12));
 
 		for (int i = 0; i < 9; i++) {
 			sessionService.create(user, client(CHROME_MAC_130));
@@ -421,7 +421,7 @@ class UserSessionServiceIntegrationTest extends BaseIntegrationTest {
 		User user = createUser("svc-list");
 		sessionService.create(user, client(CHROME_MAC_130));
 
-		at(Duration.ofHours(5));
+		at(Duration.ofDays(15));
 		Created recent = sessionService.create(user, client(CHROME_MAC_130));
 
 		assertThat(sessionService.listActive(user.getId())).extracting(UserSession::getId)
@@ -488,7 +488,7 @@ class UserSessionServiceIntegrationTest extends BaseIntegrationTest {
 		replacement.setUserId(user.getId());
 		replacement.setCreatedAt(START);
 		replacement.setLastUsedAt(START);
-		replacement.setExpiresAt(START.plus(Duration.ofHours(24)));
+		replacement.setExpiresAt(START.plus(Duration.ofDays(30)));
 		replacement.setCsrfToken("csrf");
 		replacement.setRotatedFrom(current.session().getId());
 		replacement = sessionRepository.save(replacement);

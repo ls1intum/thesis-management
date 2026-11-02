@@ -61,7 +61,7 @@ class UserSessionControllerTest extends BaseSessionIntegrationTest {
 				.contains("Path=/")
 				.doesNotContain("Domain")
 				.doesNotContain("Secure");
-		assertThat(setCookie).containsPattern("Max-Age=8639[0-9]|Max-Age=86400");
+		assertThat(setCookie).containsPattern("Max-Age=259199[0-9]|Max-Age=2592000");
 
 		String cookieValue = setCookie.substring(setCookie.indexOf('=') + 1, setCookie.indexOf(';'));
 		var parsed = UserSessionTokens.parse(cookieValue).orElseThrow();
