@@ -268,6 +268,36 @@ describe('AuthenticationProvider startup', () => {
     }
   })
 
+  it('goes to the Keycloak end-session page when the silent check times out during logout', async () => {
+    const original = window.location
+    const fakeLocation = {
+      origin: original.origin,
+      pathname: original.pathname,
+      search: '',
+      hash: '',
+      href: '',
+    }
+    Object.defineProperty(window, 'location', { configurable: true, value: fakeLocation })
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
+    vi.mocked(session.deleteSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(true)
+    vi.mocked(keycloakClient.initKeycloak).mockRejectedValue(new Error('timed out'))
+
+    try {
+      renderProvider()
+      await waitFor(() => expect(screen.getByTestId('authenticated').textContent).toBe('true'))
+      fireEvent.click(screen.getByRole('button', { name: 'log out' }))
+
+      await waitFor(() => expect(fakeLocation.href).toContain('/protocol/openid-connect/logout?'))
+      const params = new URL(fakeLocation.href).searchParams
+      expect(params.get('post_logout_redirect_uri')).toBe(`${original.origin}/`)
+      expect(params.get('client_id')).toBeTruthy()
+    } finally {
+      Object.defineProperty(window, 'location', { configurable: true, value: original })
+    }
+  })
+
   it('does not contact Keycloak for the logout when it is unreachable', async () => {
     vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
     vi.mocked(session.deleteSession).mockResolvedValue(undefined)

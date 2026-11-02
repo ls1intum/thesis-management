@@ -75,6 +75,19 @@ const getPasskeyEndpoint = (path: string) => {
   return `${baseUrl}/realms/${realm}/passkey/${clientId}/${path}`
 }
 
+// Keycloak's end-session endpoint. Without an id token Keycloak identifies the client by id and may ask the
+// user to confirm, which is still better than leaving its single-sign-on session alive.
+const getKeycloakLogoutUrl = (redirectUri: string) => {
+  const baseUrl = GLOBAL_CONFIG.keycloak.host.replace(/\/+$/, '')
+  const realm = encodeURIComponent(GLOBAL_CONFIG.keycloak.realm)
+  const params = new URLSearchParams({
+    client_id: GLOBAL_CONFIG.keycloak.client_id,
+    post_logout_redirect_uri: redirectUri,
+  })
+
+  return `${baseUrl}/realms/${realm}/protocol/openid-connect/logout?${params.toString()}`
+}
+
 const getAccountCredentialsEndpoint = (credentialId?: string) => {
   const baseUrl = GLOBAL_CONFIG.keycloak.host.replace(/\/+$/, '')
   const realm = encodeURIComponent(GLOBAL_CONFIG.keycloak.realm)
@@ -449,7 +462,7 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
         }
 
         // Nothing to sign in to on the logout page: asking Keycloak would only delay (and possibly break) the logout.
-        if (window.location.pathname === '/logout') {
+        if (/^\/logout\/?$/.test(window.location.pathname)) {
           return
         }
 
@@ -898,9 +911,19 @@ const AuthenticationProvider = (props: PropsWithChildren) => {
 
               return true
             }
+
+            // The check answered: there is no Keycloak login to end.
+            window.location.href = target
+
+            return true
           }
         } catch (error) {
+          // The check timed out or failed, so it is unknown whether a Keycloak login exists. Go to its end-session
+          // endpoint rather than leaving a login that would sign the user in again at the next page load.
           console.error('Failed to end the Keycloak session', error)
+          window.location.href = getKeycloakLogoutUrl(target)
+
+          return true
         }
 
         window.location.href = target
