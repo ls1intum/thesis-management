@@ -30,6 +30,16 @@ describe('initKeycloak', () => {
     await assertion
   })
 
+  it('gives up after a shorter bound when the caller asks for one', async () => {
+    mockInit.mockReturnValue(new Promise(() => undefined))
+
+    const result = initKeycloak({ checkSso: true, timeoutMs: 3_000 })
+    const assertion = expect(result).rejects.toThrow(/did not answer/)
+    await vi.advanceTimersByTimeAsync(3_000)
+
+    await assertion
+  })
+
   it('returns the outcome of a silent check that answers in time', async () => {
     mockInit.mockResolvedValue(true)
 
