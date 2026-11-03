@@ -121,7 +121,7 @@ All under `/v2/auth` (new `UserSessionController`).
 |---|---|---|
 | `POST /v2/auth/session` | Keycloak access token as Bearer (the **only** place a Bearer token is accepted) | Calls `AuthenticationService.updateAuthenticatedUser(Jwt)` (creates or updates the user, assigns the default student group, rejects anonymised or deletion-requested accounts, reactivates disabled accounts, sets `lastLoginAt`), then creates a session (replacing the one the browser still holds for the same user), sets the cookie, returns `{ csrfToken, expiresAt, userId }`. The web app compares `userId` before replaying a request after the session was replaced. Exempt from CSRF (it is authenticated by a Bearer token, which a cross-site attacker cannot attach; CORS only allows the client origin). Applies the 10-session cap. |
 | `GET /v2/auth/session` | Session cookie | `200 { csrfToken, expiresAt, userId }` or `401`. Lets the web app learn at startup whether it has a session. A request without any cookie is a normal 401 and is not counted as suspicious. |
-| `DELETE /v2/auth/session` | Session cookie + CSRF | Ends the session on the server. Response clears the cookie and sends `Clear-Site-Data: "cache"` and `Cache-Control: no-store`. |
+| `DELETE /v2/auth/session` | Session cookie + CSRF | Ends the session on the server. Response clears the cookie and sends `Cache-Control: no-store`. It deliberately does not send `Clear-Site-Data: "cache"`: Chrome holds the response back until its HTTP cache is cleared, which stalled the logout for seconds to minutes. Private cacheable responses (avatars, thesis and comment files) send `Vary: Cookie` instead, so a cached copy is never reused after logout or by another user. |
 | `GET /v2/auth/sessions` | Session cookie | The caller's active sessions: row id, created, last used, IP, readable device label, `current` flag. |
 | `DELETE /v2/auth/sessions/{id}` and `DELETE /v2/auth/sessions` | Cookie + CSRF | End one of the caller's sessions (this can also be the current one, which then clears the cookie) / all sessions except the current one. Only the caller's own rows are reachable; others are reported as not found. |
 
@@ -278,7 +278,7 @@ Everything ships in one pull request (D10), one commit per phase. Order matters:
 | Renew ID after privilege change | Role changes flag sessions for rotation (5.5) |
 | Strict mode: never accept an ID the server did not generate | Unknown identifiers are rejected, not adopted |
 | Invalidate on logout on both sides; visible logout | `DELETE /v2/auth/session`; cookie cleared; existing logout control kept |
-| `Cache-Control: no-store` on session responses; `Clear-Site-Data` on logout | 5.3 |
+| `Cache-Control: no-store` on session responses; no cached private data across logout | 5.3 (`Vary: Cookie` on private cacheable responses instead of `Clear-Site-Data`) |
 | CSRF token in addition to `SameSite` | C3 |
 | Detect guessing, anomalies; bind to client properties; alert | 5.6 (User-Agent bound, IP logged) |
 | Log session lifecycle; never log raw IDs; log hashed IDs | 5.6 |

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -96,6 +97,8 @@ public class AvatarController {
 		return ResponseEntity.ok()
 				.contentType(MediaType.IMAGE_PNG)
 				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS).cachePrivate())
+				// the browser cache must not hand this picture to anyone who is not signed in with the same session
+				.header(HttpHeaders.VARY, HttpHeaders.COOKIE)
 				.body(resource);
 	}
 }

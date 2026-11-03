@@ -212,7 +212,8 @@ class UserSessionControllerTest extends BaseSessionIntegrationTest {
 
 		mockMvc.perform(as(login, MockMvcRequestBuilders.delete("/v2/auth/session")))
 				.andExpect(status().isNoContent())
-				.andExpect(header().string("Clear-Site-Data", "\"cache\""))
+				// Chrome delays the response until its HTTP cache is cleared, which would stall the logout
+				.andExpect(header().doesNotExist("Clear-Site-Data"))
 				.andExpect(header().string(HttpHeaders.SET_COOKIE, org.hamcrest.Matchers.containsString("Max-Age=0")));
 
 		mockMvc.perform(as(login, MockMvcRequestBuilders.get("/v2/auth/session")))
