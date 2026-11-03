@@ -128,7 +128,7 @@ If you want to modify the emails, you can read about that [here](/developer/mail
 
 ## Sessions and Keycloak availability
 
-Keycloak is only needed when a user logs in. After a successful login the application creates its own session (HttpOnly cookie, 4 hours idle / 24 hours absolute timeout, see [Application-owned sessions](/developer/development-setup#application-owned-sessions)), so users who are already logged in keep working while Keycloak is down or being maintained. Logging in, passkey management and the Keycloak user search need a reachable Keycloak. The server also starts and restarts without Keycloak.
+Keycloak is only needed when a user logs in. After a successful login the application creates its own session (HttpOnly cookie, 14 days idle / 30 days absolute timeout, see [Application-owned sessions](/developer/development-setup#application-owned-sessions)), so users who are already logged in keep working while Keycloak is down or being maintained. Logging in, passkey management and the Keycloak user search need a reachable Keycloak. The server also starts and restarts without Keycloak.
 
 What users notice after a long Keycloak outage: if their Keycloak single-sign-on session has idled out in the meantime (30 minutes in the development realm; the production value is up to the Keycloak operator), the next login after the outage asks for TUM Login again. Sessions of Thesis Management itself are not affected by Keycloak's session settings.
 

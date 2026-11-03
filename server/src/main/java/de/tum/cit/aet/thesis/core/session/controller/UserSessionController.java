@@ -103,12 +103,14 @@ public class UserSessionController {
 	 * @return an empty response
 	 */
 	@DeleteMapping("/session")
+	// No Clear-Site-Data header here: Chrome holds the response back until it has cleared the site's HTTP cache,
+	// which takes seconds to minutes for a large cache and leaves the logout waiting. Cached private responses are
+	// kept from other users by "Vary: Cookie" instead (see AvatarController and ThesisController).
 	public ResponseEntity<Void> deleteSession(@RequestAttribute(UserSessionAuthenticationFilter.SESSION_ATTRIBUTE) UserSession session) {
 		sessionService.end(session, UserSessionEndReason.LOGOUT);
 
 		return ResponseEntity.noContent()
 				.header(HttpHeaders.SET_COOKIE, cookies.clear().toString())
-				.header("Clear-Site-Data", "\"cache\"")
 				.cacheControl(CacheControl.noStore())
 				.build();
 	}

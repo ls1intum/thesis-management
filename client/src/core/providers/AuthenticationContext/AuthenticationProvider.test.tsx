@@ -14,6 +14,7 @@ vi.mock('@/core/auth/keycloakClient', () => ({
   ensureSsoChecked: vi.fn(),
   getKeycloak: vi.fn(),
   isKeycloakReachable: vi.fn(),
+  LOGOUT_SSO_CHECK_TIMEOUT_MS: 3000,
 }))
 
 vi.mock('@/core/auth/session', async (importOriginal) => ({
@@ -241,10 +242,92 @@ describe('AuthenticationProvider startup', () => {
       expect(logout).toHaveBeenCalledWith({ redirectUri: `${window.location.origin}/` }),
     )
     // a fresh check, not the cached result of this page load (a login made in another tab since would be missed)
-    expect(keycloakClient.initKeycloak).toHaveBeenCalledWith({ checkSso: true })
+    expect(keycloakClient.initKeycloak).toHaveBeenCalledWith({
+      checkSso: true,
+      timeoutMs: 3000,
+    })
     expect(keycloakClient.ensureSsoChecked).not.toHaveBeenCalled()
     expect(session.deleteSession).toHaveBeenCalled()
     expect(screen.getByTestId('authenticated').textContent).toBe('false')
+  })
+
+  it.each(['/logout', '/logout/'])(
+    'does not ask Keycloak for a silent login on %s',
+    async (path) => {
+      window.history.pushState({}, '', path)
+      vi.mocked(session.fetchSession).mockResolvedValue(undefined)
+      vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(true)
+
+      try {
+        renderProvider()
+        await waitFor(() => expect(session.fetchSession).toHaveBeenCalled())
+        await new Promise((resolve) => setTimeout(resolve, 0))
+
+        expect(keycloakClient.isKeycloakReachable).not.toHaveBeenCalled()
+        expect(keycloakClient.initKeycloak).not.toHaveBeenCalled()
+      } finally {
+        window.history.pushState({}, '', '/')
+      }
+    },
+  )
+
+  it('returns to the web app without the end-session page when Keycloak has no login to end', async () => {
+    const original = window.location
+    const fakeLocation = {
+      origin: original.origin,
+      pathname: original.pathname,
+      search: '',
+      hash: '',
+      href: '',
+    }
+    Object.defineProperty(window, 'location', { configurable: true, value: fakeLocation })
+    const logout = vi.fn()
+    vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
+    vi.mocked(session.deleteSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(true)
+    vi.mocked(keycloakClient.initKeycloak).mockResolvedValue(false)
+    vi.mocked(keycloakClient.getKeycloak).mockReturnValue({ authenticated: false, logout } as never)
+
+    try {
+      renderProvider()
+      await waitFor(() => expect(screen.getByTestId('authenticated').textContent).toBe('true'))
+      fireEvent.click(screen.getByRole('button', { name: 'log out' }))
+
+      await waitFor(() => expect(fakeLocation.href).toBe(`${original.origin}/`))
+      expect(logout).not.toHaveBeenCalled()
+    } finally {
+      Object.defineProperty(window, 'location', { configurable: true, value: original })
+    }
+  })
+
+  it('goes to the Keycloak end-session page when the silent check times out during logout', async () => {
+    const original = window.location
+    const fakeLocation = {
+      origin: original.origin,
+      pathname: original.pathname,
+      search: '',
+      hash: '',
+      href: '',
+    }
+    Object.defineProperty(window, 'location', { configurable: true, value: fakeLocation })
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    vi.mocked(session.fetchSession).mockResolvedValue({ csrfToken: 'c', expiresAt: 'x' })
+    vi.mocked(session.deleteSession).mockResolvedValue(undefined)
+    vi.mocked(keycloakClient.isKeycloakReachable).mockResolvedValue(true)
+    vi.mocked(keycloakClient.initKeycloak).mockRejectedValue(new Error('timed out'))
+
+    try {
+      renderProvider()
+      await waitFor(() => expect(screen.getByTestId('authenticated').textContent).toBe('true'))
+      fireEvent.click(screen.getByRole('button', { name: 'log out' }))
+
+      await waitFor(() => expect(fakeLocation.href).toContain('/protocol/openid-connect/logout?'))
+      const params = new URL(fakeLocation.href).searchParams
+      expect(params.get('post_logout_redirect_uri')).toBe(`${original.origin}/`)
+      expect(params.get('client_id')).toBeTruthy()
+    } finally {
+      Object.defineProperty(window, 'location', { configurable: true, value: original })
+    }
   })
 
   it('does not contact Keycloak for the logout when it is unreachable', async () => {

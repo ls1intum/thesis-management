@@ -110,8 +110,8 @@ thesis-management:
   client:
     host: ${CLIENT_HOST:http://localhost:3100}
   session:
-    idle-timeout: ${SESSION_IDLE_TIMEOUT:PT4H}
-    absolute-timeout: ${SESSION_ABSOLUTE_TIMEOUT:PT24H}
+    idle-timeout: ${SESSION_IDLE_TIMEOUT:P14D}
+    absolute-timeout: ${SESSION_ABSOLUTE_TIMEOUT:P30D}
     max-per-user: ${SESSION_MAX_PER_USER:10}
     ended-retention: ${SESSION_ENDED_RETENTION:P30D}
   mail:

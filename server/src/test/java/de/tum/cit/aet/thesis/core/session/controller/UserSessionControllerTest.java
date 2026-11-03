@@ -61,7 +61,7 @@ class UserSessionControllerTest extends BaseSessionIntegrationTest {
 				.contains("Path=/")
 				.doesNotContain("Domain")
 				.doesNotContain("Secure");
-		assertThat(setCookie).containsPattern("Max-Age=8639[0-9]|Max-Age=86400");
+		assertThat(setCookie).containsPattern("Max-Age=259199[0-9]|Max-Age=2592000");
 
 		String cookieValue = setCookie.substring(setCookie.indexOf('=') + 1, setCookie.indexOf(';'));
 		var parsed = UserSessionTokens.parse(cookieValue).orElseThrow();
@@ -212,7 +212,8 @@ class UserSessionControllerTest extends BaseSessionIntegrationTest {
 
 		mockMvc.perform(as(login, MockMvcRequestBuilders.delete("/v2/auth/session")))
 				.andExpect(status().isNoContent())
-				.andExpect(header().string("Clear-Site-Data", "\"cache\""))
+				// Chrome delays the response until its HTTP cache is cleared, which would stall the logout
+				.andExpect(header().doesNotExist("Clear-Site-Data"))
 				.andExpect(header().string(HttpHeaders.SET_COOKIE, org.hamcrest.Matchers.containsString("Max-Age=0")));
 
 		mockMvc.perform(as(login, MockMvcRequestBuilders.get("/v2/auth/session")))

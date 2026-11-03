@@ -363,9 +363,9 @@ Keycloak (with TUM Login behind it) answers one question: *who is this?* Thesis 
 
 **Security properties** (following the [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html))
 
-- Cookie `__Host-sid`: `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/`, no `Domain`, lifetime up to the 24 hour absolute timeout. Over plain http in local development the cookie is named `sid` and has no `Secure` attribute (browsers reject `__Host-` and `Secure` there); the choice follows the scheme of `CLIENT_HOST`.
+- Cookie `__Host-sid`: `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/`, no `Domain`, lifetime up to the 30 day absolute timeout. Over plain http in local development the cookie is named `sid` and has no `Secure` attribute (browsers reject `__Host-` and `Secure` there); the choice follows the scheme of `CLIENT_HOST`.
 - The cookie value is `<identifier>.<verifier>`, both random (128 and 256 bits). Only a SHA-256 hash of the verifier is stored, compared in constant time. Nothing session-related is stored in `localStorage` or `sessionStorage`.
-- Idle timeout 4 hours, absolute timeout 24 hours, both enforced on the server on every request (`thesis-management.session.*`).
+- Idle timeout 14 days, absolute timeout 30 days, both enforced on the server on every request (`thesis-management.session.*`).
 - A session is replaced (new cookie value, same CSRF token) on the next request after the user's roles change, with a 30 second grace window for parallel requests.
 - Logout and account deletion end sessions on the server; users can see and end their own sessions in *Settings → Account → Active sessions*. At most 10 sessions per user.
 - Ending a session from the active-sessions list invalidates that application credential, including its rotated replacements. It does not end the remote browser's Keycloak single-sign-on session: while that login is valid, the browser can silently create a new application session. On shared computers, use Logout on the device itself; it also ends the Keycloak login when Keycloak is reachable. Successful logout clears the signed-in user in the other open tabs of that browser; failed logout leaves them signed in.

@@ -19,8 +19,8 @@ import java.time.Duration;
  */
 @ConfigurationProperties(prefix = "thesis-management.session")
 public record UserSessionProperties(
-		@DefaultValue("PT4H") Duration idleTimeout,
-		@DefaultValue("PT24H") Duration absoluteTimeout,
+		@DefaultValue("P14D") Duration idleTimeout,
+		@DefaultValue("P30D") Duration absoluteTimeout,
 		@DefaultValue("10") int maxPerUser,
 		@DefaultValue("PT5M") Duration lastUsedWriteInterval,
 		@DefaultValue("PT30S") Duration rotationGrace,

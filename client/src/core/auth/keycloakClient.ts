@@ -13,6 +13,9 @@ let ssoCheck: Promise<boolean> | undefined
 // the iframe never does, so the check must be bounded.
 const SSO_CHECK_TIMEOUT_MS = 10_000
 
+// A logout must feel instant: it only needs the check for the id token that spares the confirmation page.
+export const LOGOUT_SSO_CHECK_TIMEOUT_MS = 3_000
+
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(message)), timeoutMs)
@@ -43,7 +46,7 @@ export const getKeycloak = () => keycloak
  * Creates a fresh keycloak-js client and initialises it. With `checkSso` a silent single-sign-on
  * check is made. Resolves to whether the browser currently holds a Keycloak session.
  */
-export function initKeycloak(options: { checkSso: boolean }): Promise<boolean> {
+export function initKeycloak(options: { checkSso: boolean; timeoutMs?: number }): Promise<boolean> {
   const client = createKeycloakClient()
   keycloak = client
 
@@ -58,7 +61,7 @@ export function initKeycloak(options: { checkSso: boolean }): Promise<boolean> {
   const initialised = options.checkSso
     ? withTimeout(
         initialisation,
-        SSO_CHECK_TIMEOUT_MS,
+        options.timeoutMs ?? SSO_CHECK_TIMEOUT_MS,
         'Keycloak did not answer the silent login check',
       )
     : initialisation
