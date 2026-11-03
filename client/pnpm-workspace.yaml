@@ -27,10 +27,10 @@ overrides:
   qs@<6.16.0: 6.17.1
   # GHSA-58qx-3vcg-4xpx
   ws@>=8.0.0 <8.20.1: 8.22.0
-  # GHSA-w7jw-789q-3m8p (shell-quote newline escaping, via launch-editor)
-  shell-quote@<1.8.4: 1.12.0
+  # GHSA-w7jw-789q-3m8p (shell-quote newline escaping, via launch-editor) + quote() command injection via line terminator
+  shell-quote@<1.12.0: 1.12.0
   # GHSA-v6wh-96g9-6wx3 (launch-editor NTLMv2 hash disclosure, via webpack-dev-server)
-  launch-editor@<2.14.1: 2.14.2
+  launch-editor@<2.14.2: 2.14.2
   # GHSA-fx2h-pf6j-xcff (vite server.fs.deny bypass, via vitest)
   vite@>=8.0.0 <8.0.16: 8.3.5
   # GHSA-ph9p-34f9-6g65 (tmp path traversal, via patch-package)
@@ -56,3 +56,11 @@ overrides:
   baseline-browser-mapping@<2.11.0: 2.11.34
   # GHSA-g84c-rxfj-3j2c (webpack-dev-middleware, via webpack-dev-server)
   webpack-dev-middleware@<8.3.0: 8.6.0
+  # compression memory-leak DoS on premature close (GHSA-vc2v-76pw-4v95, via webpack-dev-server)
+  compression@<1.8.2: 1.8.2
+  # proxy-addr IPv4-mapped IPv6 trust-subnet spoofing (via express in webpack-dev-server)
+  proxy-addr@<2.0.8: 2.0.8
+  # postcss-selector-parser quadratic selector parsing
+  postcss-selector-parser@<7.1.7: 7.1.7
+  # prosemirror-view paste handling lacks schema attribute validation (CVE-2026-104847, via @tiptap/pm)
+  prosemirror-view@<1.42.3: 1.42.6
