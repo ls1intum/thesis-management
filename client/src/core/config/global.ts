@@ -43,7 +43,7 @@ const getCommaSeparatedEnvironmentVariable = (key: string) => {
 
 const parseThesisProcess = (): IGlobalConfig['thesis_process'] => {
   const url = getEnvironmentVariable('THESIS_PROCESS_URL')?.trim()
-  if (!url) {
+  if (!url || !URL.canParse(url) || !['http:', 'https:'].includes(new URL(url).protocol)) {
     return undefined
   }
   return { url, label: getEnvironmentVariable('THESIS_PROCESS_LABEL')?.trim() || 'Thesis Process' }
