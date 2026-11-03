@@ -234,6 +234,14 @@ artefacts.
 - Each slot has an eye icon (preview), a download icon, and an upload icon.
   You can re-upload as often as needed; the **file history** at the bottom
   keeps every previous version.
+- The **presentation source** can be a Keynote or PowerPoint file, or a ZIP of
+  a code-based slide deck (e.g. [open-slide](https://github.com/1weiho/open-slide)).
+  Create the ZIP without `node_modules`, `dist`, or `.git`, for example with
+  GitHub's **Download ZIP** or `git archive --format=zip -o slides.zip HEAD`.
+  Both include exactly the committed files, so commit (and push) your latest
+  changes first, make sure `node_modules` and `dist` are not committed, and
+  check the ZIP's contents before uploading.
+  Keep it under 25 MB and upload the `.zip` file itself, not the folder.
 - An **orange reminder** at the top warns that uploading here does **not**
   replace the official university submission (e.g. TUMonline). Follow the link
   in the reminder for the correct procedure.
