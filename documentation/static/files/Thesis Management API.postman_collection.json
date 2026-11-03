@@ -4,7 +4,7 @@
 		"name": "Thesis Management API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "18638253",
-		"description": "Authentication: Bearer tokens are only accepted by POST {{baseUrl}}/auth/session. Run 'Authentication / Create Session' first (it signs in through Keycloak and stores the session cookie in Postman's cookie jar and the CSRF token in the collection variable csrfToken); all other requests are authenticated by that cookie, and the collection's pre-request script adds the X-CSRF-Token header to state-changing requests. Sessions expire after 4 hours of inactivity or 24 hours in total; run Create Session again."
+		"description": "Authentication: Bearer tokens are only accepted by POST {{baseUrl}}/auth/session. Run 'Authentication / Create Session' first (it signs in through Keycloak and stores the session cookie in Postman's cookie jar and the CSRF token in the collection variable csrfToken); all other requests are authenticated by that cookie, and the collection's pre-request script adds the X-CSRF-Token header to state-changing requests. Sessions expire after 14 days of inactivity or 30 days in total; run Create Session again."
 	},
 	"item": [
 		{
