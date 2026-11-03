@@ -6,7 +6,7 @@ allowBuilds:
 # webpack, eslint, etc.
 overrides:
   ajv: 8.20.0
-  minimatch: 10.2.6
+  minimatch: 11.0.3
   serialize-javascript: 7.1.4
   lodash: 4.18.1
   follow-redirects: 1.16.2
