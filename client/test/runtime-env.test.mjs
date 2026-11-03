@@ -50,6 +50,15 @@ describe('generate-runtime-env.js — allowed env vars', () => {
     assert.equal(out.ENVIRONMENT, 'staging')
   })
 
+  test('THESIS_PROCESS_URL and THESIS_PROCESS_LABEL are exposed to the client', () => {
+    const out = runGenerator({
+      THESIS_PROCESS_URL: 'https://wiki.example.com/thesis',
+      THESIS_PROCESS_LABEL: 'Our Thesis Process',
+    })
+    assert.equal(out.THESIS_PROCESS_URL, 'https://wiki.example.com/thesis')
+    assert.equal(out.THESIS_PROCESS_LABEL, 'Our Thesis Process')
+  })
+
   test('previously-allowlisted vars still flow through', () => {
     const out = runGenerator({
       SERVER_HOST: 'https://api.example.com',
