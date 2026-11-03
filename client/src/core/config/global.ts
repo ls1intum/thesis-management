@@ -41,12 +41,21 @@ const getCommaSeparatedEnvironmentVariable = (key: string) => {
     : []
 }
 
+const parseThesisProcess = (): IGlobalConfig['thesis_process'] => {
+  const url = getEnvironmentVariable('THESIS_PROCESS_URL')?.trim()
+  if (!url) {
+    return undefined
+  }
+  return { url, label: getEnvironmentVariable('THESIS_PROCESS_LABEL')?.trim() || 'Thesis Process' }
+}
+
 export const GLOBAL_CONFIG: IGlobalConfig = {
   title: getEnvironmentVariable('APPLICATION_TITLE') ?? 'ThesisManagement',
 
   chair_name: getEnvironmentVariable('CHAIR_NAME') ?? 'ThesisManagement',
   chair_url: getEnvironmentVariable('CHAIR_URL') ?? window.origin,
   thesis_portal_url: getEnvironmentVariable('THESIS_PORTAL_URL') ?? 'https://portal.cit.tum.de/',
+  thesis_process: parseThesisProcess(),
 
   environment: parseEnvironment(getEnvironmentVariable('ENVIRONMENT')),
 

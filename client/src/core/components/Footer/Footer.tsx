@@ -58,6 +58,11 @@ const Footer = (props: IFooterProps) => {
           justify='center'
           align='center'
         >
+          {GLOBAL_CONFIG.thesis_process && (
+            <Anchor href={GLOBAL_CONFIG.thesis_process.url} target='_blank' c='dimmed'>
+              {GLOBAL_CONFIG.thesis_process.label}
+            </Anchor>
+          )}
           <Anchor href={DOCS_URL} target='_blank' c='dimmed'>
             Docs
           </Anchor>

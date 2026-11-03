@@ -122,6 +122,8 @@ services:
       - APPLICATION_TITLE
       - CHAIR_NAME
       - CHAIR_URL
+      - THESIS_PROCESS_URL
+      - THESIS_PROCESS_LABEL
     depends_on:
       - server
     networks:

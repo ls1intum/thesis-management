@@ -5,6 +5,7 @@ export interface IGlobalConfig {
 
   chair_name: string
   chair_url: string
+  thesis_process?: { url: string; label: string }
   // Portal students submit their final thesis to, unless the school of the thesis defines its own
   thesis_portal_url: string
 
