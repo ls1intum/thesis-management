@@ -182,7 +182,7 @@ spotless {
 
 
 checkstyle {
-	toolVersion = "14.3.0"
+	toolVersion = "14.4.0"
 	configFile = file("config/checkstyle/checkstyle.xml")
 	maxWarnings = 0
 }
