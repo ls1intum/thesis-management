@@ -174,7 +174,7 @@ overrides:
   uuid: 14.0.3
   picomatch@<4: 2.3.2
   picomatch@>=4: 4.0.7
-  fork-ts-checker-webpack-plugin>schema-utils: 4.8.1
+  fork-ts-checker-webpack-plugin>schema-utils: 4.8.3
   '@tiptap/extension-bubble-menu': 3.32.2
   '@tiptap/extension-floating-menu': 3.32.2
   qs@<6.16.0: 6.17.1
@@ -3981,6 +3981,16 @@ packages:
       webpack:
         optional: true
 
+  schema-utils@4.8.3:
+    resolution: {integrity: sha512-qIfo3f+lRNqnMPgpXSKvUhsT3pY5U+ppmgGr4j8LanFP3W/Ze+xj8DY/dPb5qVu3m6qFIMyMWKVRLNKxrNhxWg==}
+    engines: {node: '>= 10.13.0'}
+    hasBin: true
+    peerDependencies:
+      webpack: ^5.0.0
+    peerDependenciesMeta:
+      webpack:
+        optional: true
+
   selfsigned@5.5.0:
     resolution: {integrity: sha512-ftnu3TW4+3eBfLRFnDEkzGxSF/10BJBkaLJuBHZX0kiPS7bRdlpZGu6YGt4KngMkdTwJE6MbjavFpqHvqVt+Ew==}
     engines: {node: '>=18'}
@@ -6880,7 +6890,7 @@ snapshots:
       memfs: 3.5.3
       minimatch: 11.0.3
       node-abort-controller: 3.1.1
-      schema-utils: 4.8.1(webpack@5.112.2)
+      schema-utils: 4.8.3(webpack@5.112.2)
       semver: 7.8.5
       tapable: 2.3.3
       typescript: 6.0.3
@@ -8246,6 +8256,15 @@ snapshots:
   scheduler@0.28.0: {}
 
   schema-utils@4.8.1(webpack@5.112.2):
+    dependencies:
+      '@types/json-schema': 7.0.15
+      ajv: 8.20.0
+      ajv-formats: 3.0.1
+      ajv-keywords: 5.1.0(ajv@8.20.0)
+    optionalDependencies:
+      webpack: 5.112.2(clean-css@5.3.3)(cssnano@7.1.9(postcss@8.5.32))(csso@5.0.5)(html-minifier-terser@6.1.0)(lightningcss@1.33.0)(postcss@8.5.32)(svgo@4.1.0)(webpack-cli@7.3.1)
+
+  schema-utils@4.8.3(webpack@5.112.2):
     dependencies:
       '@types/json-schema': 7.0.15
       ajv: 8.20.0
