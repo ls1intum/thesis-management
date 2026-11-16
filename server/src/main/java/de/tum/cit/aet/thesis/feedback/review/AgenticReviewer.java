@@ -77,6 +77,8 @@ public class AgenticReviewer implements ThesisReviewer {
 	/** Characters of each page shown in the index of a document too long to inline. */
 	private static final int PAGE_PREVIEW_LENGTH = 200;
 
+	private static final String FINISH_TOOL = "finish_review";
+
 	private final PdfService pdfService;
 	private final ChatClient chatClient;
 	private final ToolCallingManager toolCallingManager;
@@ -188,6 +190,13 @@ public class AgenticReviewer implements ThesisReviewer {
 		if (toolbox.finished()) {
 			return false;
 		}
+		if (callsTool(response, FINISH_TOOL)) {
+			// The verdict is in this turn, often together with the last findings. Letting the loop
+			// execute them would send the results back for one more model call with nothing left to
+			// do, so run them here and stop.
+			runFinalToolCalls(response, toolbox);
+			return false;
+		}
 		if (meter.llmCalls() >= maxTurns) {
 			// Returning false stops the loop, but it also skips this turn's tool calls, and the last
 			// permitted turn is exactly where an agent records its final findings and its verdict.
@@ -200,9 +209,16 @@ public class AgenticReviewer implements ThesisReviewer {
 		return true;
 	}
 
+	/** Whether any generation of this response calls the named tool. */
+	private static boolean callsTool(ChatResponse response, String name) {
+		return response.getResults().stream()
+				.flatMap(generation -> generation.getOutput().getToolCalls().stream())
+				.anyMatch(call -> name.equals(call.name()));
+	}
+
 	/**
-	 * Executes the tool calls of the turn that used up the budget, so its recorded findings and
-	 * verdict count. A call that fails is skipped; the rest still run.
+	 * Executes the tool calls of the turn that ends the run, by its verdict or by the budget, so its
+	 * recorded findings and verdict count. A call that fails is skipped; the rest still run.
 	 */
 	private static void runFinalToolCalls(ChatResponse response, ReviewToolbox toolbox) {
 		Map<String, ToolCallback> tools = toolbox.callbacks().stream()

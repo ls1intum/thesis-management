@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.execution.ToolCallResultConverter;
 import org.springframework.ai.tool.function.FunctionToolCallback;
-import org.springframework.ai.tool.metadata.ToolMetadata;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -142,9 +141,9 @@ public class ReviewToolbox {
 						.description("End the review with a short summary, an integer score from 0 to 100, and an "
 								+ "overall assessment that is exactly one of: good, acceptable, needs-work.")
 						.inputType(FinishArg.class)
-						// Ends the agent loop on the spot: once the verdict is in there is nothing
-						// left to ask the model, and another round would only cost a call.
-						.toolMetadata(ToolMetadata.builder().returnDirect(true).build())
+						// Not returnDirect: Spring AI ANDs that flag across a turn's tool calls, so it
+						// would not stop a turn that also records findings. AgenticReviewer stops the
+						// loop on any turn that calls finish_review instead.
 						.toolCallResultConverter(PLAIN_TEXT)
 						.build());
 	}

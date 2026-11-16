@@ -108,10 +108,10 @@ class AgenticReviewerRequestTest {
 	}
 
 	@Test
-	void theToolCallsOfTheTurnThatExhaustsTheBudgetStillRun() {
-		// With a budget of one turn, the first turn is also the last. Its findings and its verdict
-		// must count, rather than being skipped because the loop stops there.
-		AssistantMessage finalTurn = AssistantMessage.builder()
+	void aTurnThatRecordsFindingsAndFinishesEndsTheRunWithoutAnotherModelCall() {
+		// The common last turn: the final finding and the verdict together. Spring AI's returnDirect
+		// is ANDed across a turn's tools, so it would not stop this batch on its own.
+		AssistantMessage lastTurn = AssistantMessage.builder()
 				.content("")
 				.toolCalls(List.of(
 						new AssistantMessage.ToolCall("1", "function", "record_finding", """
@@ -119,12 +119,32 @@ class AgenticReviewerRequestTest {
 						new AssistantMessage.ToolCall("2", "function", "finish_review",
 								"{\"assessment\": \"good\", \"score\": 80, \"summary\": \"Final verdict.\"}")))
 				.build();
+		RecordingChatModel model = new RecordingChatModel(lastTurn);
+
+		ReviewResult result = review(model, List.of("Abstract\nSome text."), 40);
+
+		assertThat(model.prompts).hasSize(1);
+		assertThat(result.findings()).singleElement().satisfies(finding -> assertThat(finding.title()).isEqualTo("Wordy"));
+		assertThat(result.summary()).endsWith("Final verdict.");
+	}
+
+	@Test
+	void theToolCallsOfTheTurnThatExhaustsTheBudgetStillRun() {
+		// With a budget of one turn, the first turn is also the last. A finding recorded in it must
+		// count, rather than being skipped because the loop stops there. No finish_review here, so
+		// the budget, not the verdict, is what ends the run.
+		AssistantMessage finalTurn = AssistantMessage.builder()
+				.content("")
+				.toolCalls(List.of(
+						new AssistantMessage.ToolCall("1", "function", "record_finding", """
+								{"severity": "MINOR", "category": "WRITING", "title": "Wordy", "description": "Trim it."}""")))
+				.build();
 		RecordingChatModel model = new RecordingChatModel(finalTurn);
 
 		ReviewResult result = review(model, List.of("Abstract\nSome text."), 1);
 
 		assertThat(model.prompts).hasSize(1);
 		assertThat(result.findings()).singleElement().satisfies(finding -> assertThat(finding.title()).isEqualTo("Wordy"));
-		assertThat(result.summary()).endsWith("Final verdict.");
+		assertThat(result.summary()).startsWith("Incomplete review:");
 	}
 }

@@ -304,6 +304,9 @@ class FindingVerifierTest {
 		assertThat(text.getValue())
 				.contains("the specific requirement it relies on is actually stated in one of them")
 				.contains("ZERO IS A VALID ANSWER")
+				// A finding about an unreadable figure can quote only its caption, which the
+				// verifier, seeing text alone, must not read as contradicting the claim.
+				.contains("Do not drop a visual claim under rule 5")
 				.contains("avoid double verbs");
 	}
 

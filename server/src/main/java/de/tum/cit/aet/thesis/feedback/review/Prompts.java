@@ -484,6 +484,8 @@ public enum Prompts {
 					5. CONTRADICTED: the quoted evidence does not show the problem the finding claims, or shows the opposite.
 					6. QUOTE NOT ON THE PAGE: a finding carrying "quoteOnlyInPageImage" quotes text that is not in the document's extracted text, so the image of each listed page is attached. Drop it unless the quoted wording is actually visible on one of those images, for example in a figure or on a scanned page.
 
+					VISUAL CLAIMS: some problems exist only in how a page looks — unreadable figure labels, low-resolution or cut-off images, layout, or what a diagram shows. You see only extracted text, so a finding about such a problem can quote no more than nearby text, such as a figure caption. Do not drop a visual claim under rule 5 because its quote does not show the visual problem: you cannot inspect it, and the review that produced it could. Judge such a finding only by rules 1 to 4.
+
 					ZERO IS A VALID ANSWER. A document that complies with this category's rules produces no findings for it, and reporting that honestly is the correct outcome. You are not filling a quota, you are not expected to keep a representative sample, and an empty result is not a failed verification — it is a compliant document. Never keep a finding because dropping it would leave nothing.
 
 					Be conservative in the other direction too: when the rules clearly state the requirement and the evidence clearly shows the breach, keep the finding. You are removing fabrications, not pruning for brevity.

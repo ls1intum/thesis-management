@@ -60,17 +60,6 @@ class ReviewToolboxTest {
 	}
 
 	@Test
-	void finishingTheReviewReturnsDirectlySoTheAgentLoopEndsOnTheVerdict() {
-		// Without this the loop would make one more call just to learn there is nothing left to do.
-		ToolCallback finish = toolbox().callbacks().stream()
-				.filter(callback -> callback.getToolDefinition().name().equals("finish_review"))
-				.findFirst()
-				.orElseThrow();
-
-		assertThat(finish.getToolMetadata().returnDirect()).isTrue();
-	}
-
-	@Test
 	void fetchingACategorysRulesIsWhatCountsItAsChecked() {
 		ReviewToolbox toolbox = toolbox();
 		int total = ReviewCategory.values().length + 1;
