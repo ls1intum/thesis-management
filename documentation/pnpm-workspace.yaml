@@ -46,4 +46,4 @@ overrides:
   # source-map-js event-loop DoS via indexed source maps
   source-map-js@<1.2.2: 1.2.2
   # tinypool prototype-pollution gadget to RCE (via @docusaurus/core)
-  tinypool@<2.1.2: 2.1.2
+  tinypool@<2.1.2: 2.2.0
