@@ -120,20 +120,10 @@ const getClient = (): Client => {
   }
 
   const stompClient: Client = new Client({
+    // The handshake is authenticated by the session cookie, which the browser sends with the upgrade request
+    // (same site as the API); no token travels in a STOMP header.
     brokerURL: wsBrokerUrl(),
     reconnectDelay: 5000,
-    beforeConnect: async () => {
-      // Mirrors the refresh-then-read pattern in core/requests/request.ts — a native WebSocket
-      // handshake carries no Authorization header, so the fresh token travels as a STOMP CONNECT
-      // header instead. Imported lazily so merely importing this module (e.g. transitively, from
-      // a component under test) never eagerly constructs the real Keycloak client.
-      const { keycloak } =
-        await import('@/core/providers/AuthenticationContext/AuthenticationProvider')
-      if (keycloak.isTokenExpired(5)) {
-        await keycloak.updateToken(5 * 60)
-      }
-      stompClient.connectHeaders = { Authorization: `Bearer ${keycloak.token ?? ''}` }
-    },
     onConnect: () => {
       // Re-subscribes everything still wanted after the initial connect or any reconnect.
       for (const [jobId, job] of jobs) {

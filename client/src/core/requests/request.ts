@@ -1,5 +1,12 @@
 import { GLOBAL_CONFIG } from '@/core/config/global'
-import { keycloak } from '@/core/providers/AuthenticationContext/AuthenticationProvider'
+import {
+  getCsrfToken,
+  handleIdentityChange,
+  isIdentityChangePending,
+  recoverSession,
+  refreshCsrfToken,
+  sessionBelongsToOtherUser,
+} from '@/core/auth/session'
 
 export type ApiResponse<T> =
   | { ok: true; status: number; data: T }
@@ -17,6 +24,21 @@ export interface IRequestOptions {
   controller?: AbortController
 }
 
+/** Reads the body of a successful response; responses without content (204) have none. */
+const readSuccessBody = async (result: Response, responseType?: ResponseType) => {
+  if (responseType === 'blob') {
+    return result.blob()
+  }
+
+  if (result.status === 204 || result.status === 205) {
+    return undefined
+  }
+
+  const text = await result.text()
+
+  return text ? JSON.parse(text) : undefined
+}
+
 export function doRequest<T>(url: string, options: IRequestOptions): Promise<ApiResponse<T>>
 export function doRequest<T>(
   url: string,
@@ -30,19 +52,16 @@ export function doRequest<T>(
 ): Promise<ApiResponse<T>> | (() => void) {
   const controller = options.controller ?? new AbortController()
 
-  const executeRequest = async (): Promise<ApiResponse<T>> => {
-    if (options.requiresAuth && keycloak.isTokenExpired(5)) {
-      const updateSuccess = await keycloak.updateToken(5 * 60)
-
-      if (!updateSuccess) {
-        throw new Error('Failed to refresh access token. Please try to refresh the page')
+  const executeRequest = async (isReplay = false): Promise<ApiResponse<T>> => {
+    // Once the tab found out that it shows another user than the session, nothing may be sent until the page has
+    // been reloaded: the request would be carried out as the other user.
+    if (isIdentityChangePending()) {
+      return {
+        ok: false,
+        status: 401,
+        data: undefined,
+        error: new Error('The signed-in user changed. The page is being reloaded.'),
       }
-    }
-
-    const jwtToken = keycloak.token
-
-    if (options.requiresAuth && !jwtToken) {
-      throw new Error('User not authenticated')
     }
 
     const params = new URLSearchParams()
@@ -57,29 +76,50 @@ export function doRequest<T>(
       throw new Error('Cannot send both data and formData')
     }
 
+    const csrfToken = options.method === 'GET' ? undefined : getCsrfToken()
+
     const result = await fetch(`${GLOBAL_CONFIG.server_host}/api${url}?${params.toString()}`, {
       method: options.method,
+      credentials: 'include',
       headers: {
-        ...(options.requiresAuth ? { Authorization: `Bearer ${jwtToken}` } : {}),
+        ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
         ...(options.data ? { 'Content-Type': 'application/json' } : {}),
       },
       body: options.formData ?? (options.data ? JSON.stringify(options.data) : undefined),
       signal: controller.signal,
     })
 
-    if (result.status >= 200 && result.status < 300) {
-      // 204 No Content (e.g. successful deletes) has no body to parse
-      const data =
-        options.responseType === 'blob'
-          ? await result.blob()
-          : result.status === 204
-            ? undefined
-            : await result.json()
+    // The session ended (24 hour limit, ended from another device). A 401 means the server rejected
+    // the request before processing it, so replaying it once after a silent re-login is safe, unless the re-login
+    // produced the session of another user than the one this tab shows: then the request would run as that user.
+    if (result.status === 401 && options.requiresAuth && !isReplay && (await recoverSession())) {
+      if (!sessionBelongsToOtherUser()) {
+        return executeRequest(true)
+      }
 
+      handleIdentityChange()
+    }
+
+    // A 403 for a request that carried a CSRF token may mean that another tab replaced the session and with it
+    // the token. Replay once if the token really changed (and the session still belongs to the same user);
+    // otherwise it is an ordinary permission error.
+    if (result.status === 403 && csrfToken && !isReplay) {
+      const refreshedToken = await refreshCsrfToken()
+
+      if (refreshedToken && refreshedToken !== csrfToken) {
+        if (!sessionBelongsToOtherUser()) {
+          return executeRequest(true)
+        }
+
+        handleIdentityChange()
+      }
+    }
+
+    if (result.status >= 200 && result.status < 300) {
       return {
         ok: true,
         status: result.status,
-        data: data as T,
+        data: (await readSuccessBody(result, options.responseType)) as T,
       }
     } else {
       let errorMessage: string | undefined = undefined

@@ -10,6 +10,7 @@ import de.tum.cit.aet.thesis.core.upload.service.UploadService;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,30 +47,31 @@ public class AuthenticationService {
 	}
 
 	/**
-	 * Returns the authenticated user identified by the university ID in the JWT.
+	 * Returns the authenticated user identified by the university ID of the authentication.
 	 *
-	 * @param jwt the JWT authentication token
+	 * @param authentication the authentication of the current request
 	 * @return the authenticated user
 	 */
-	public User getAuthenticatedUser(JwtAuthenticationToken jwt) {
-		return userRepository.findByUniversityId(getUniversityId(jwt))
+	public User getAuthenticatedUser(Authentication authentication) {
+		return userRepository.findByUniversityId(getUniversityId(authentication))
 				.orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
 	}
 
 	/**
 	 * Returns the authenticated user with their research group eagerly loaded.
 	 *
-	 * @param jwt the JWT authentication token
+	 * @param authentication the authentication of the current request
 	 * @return the authenticated user with research group loaded
 	 */
-	public User getAuthenticatedUserWithResearchGroup(JwtAuthenticationToken jwt) {
-		return userRepository.findByUniversityIdWithResearchGroup(getUniversityId(jwt))
+	public User getAuthenticatedUserWithResearchGroup(Authentication authentication) {
+		return userRepository.findByUniversityIdWithResearchGroup(getUniversityId(authentication))
 				.orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
 	}
 
 	/**
-	 * Creates or updates the local user from the JWT token's profile claims.
-	 * Assigns the default student group to new users with no existing groups.
+	 * Creates or updates the local user from the Keycloak token's profile claims. This runs when a session is
+	 * created, the only moment Keycloak's claims are available; the session endpoints and every later request
+	 * read the stored user. Assigns the default student group to new users with no existing groups.
 	 *
 	 * @param jwt the JWT authentication token
 	 * @return the created or updated user
@@ -139,7 +141,6 @@ public class AuthenticationService {
 	 * @param lastName the user's last name
 	 * @param gender the user's gender
 	 * @param nationality the user's nationality
-	 * @param email the user's email address
 	 * @param studyDegree the user's study degree
 	 * @param studyProgram the user's study program, may be {@code null}
 	 * @param enrolledAt the enrollment date
@@ -159,7 +160,6 @@ public class AuthenticationService {
 			String lastName,
 			String gender,
 			String nationality,
-			String email,
 			String studyDegree,
 			StudyProgram studyProgram,
 			Instant enrolledAt,
@@ -176,7 +176,6 @@ public class AuthenticationService {
 		user.setLastName(lastName);
 		user.setGender(gender);
 		user.setNationality(nationality);
-		user.setEmail(email);
 		user.setStudyDegree(studyDegree);
 		user.setStudyProgram(studyProgram);
 		user.setEnrolledAt(enrolledAt);
@@ -271,7 +270,7 @@ public class AuthenticationService {
 		return settings;
 	}
 
-	private String getUniversityId(JwtAuthenticationToken jwt) {
-		return jwt.getName();
+	private String getUniversityId(Authentication authentication) {
+		return authentication.getName();
 	}
 }

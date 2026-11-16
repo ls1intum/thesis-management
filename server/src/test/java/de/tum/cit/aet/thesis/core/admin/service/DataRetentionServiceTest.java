@@ -389,9 +389,9 @@ class DataRetentionServiceTest extends BaseIntegrationTest {
 			entityManager.clear();
 		});
 
-		// Simulate login via updateAuthenticatedUser
+		// A login is the exchange of the Keycloak token for a session, which reactivates the account
 		String authHeader = generateTestAuthenticationHeader(student.universityId(), List.of("student"));
-		mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
+		mockMvc.perform(MockMvcRequestBuilders.post("/v2/auth/session")
 						.header("Authorization", authHeader))
 				.andReturn();
 

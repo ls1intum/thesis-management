@@ -10,6 +10,7 @@ import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
 import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.session.service.UserSessionService;
 import de.tum.cit.aet.thesis.core.topic.repository.TopicRoleRepository;
 import de.tum.cit.aet.thesis.core.upload.service.UploadService;
 import de.tum.cit.aet.thesis.core.user.dto.UserDeletionPreviewDto;
@@ -49,6 +50,7 @@ public class UserDeletionService {
 	private final UserGroupRepository userGroupRepository;
 	private final NotificationSettingRepository notificationSettingRepository;
 	private final UploadService uploadService;
+	private final UserSessionService userSessionService;
 	private final Path dataExportPath;
 
 	/**
@@ -64,6 +66,7 @@ public class UserDeletionService {
 	 * @param userGroupRepository the user group repository
 	 * @param notificationSettingRepository the notification setting repository
 	 * @param uploadService the upload service
+	 * @param userSessionService the session service, used to end the user's sessions
 	 * @param dataExportPath the data export directory path
 	 */
 	public UserDeletionService(
@@ -77,6 +80,7 @@ public class UserDeletionService {
 			UserGroupRepository userGroupRepository,
 			NotificationSettingRepository notificationSettingRepository,
 			UploadService uploadService,
+			UserSessionService userSessionService,
 			@Value("${thesis-management.data-export.path}") String dataExportPath) {
 		this.userRepository = userRepository;
 		this.thesisRoleRepository = thesisRoleRepository;
@@ -88,6 +92,7 @@ public class UserDeletionService {
 		this.userGroupRepository = userGroupRepository;
 		this.notificationSettingRepository = notificationSettingRepository;
 		this.uploadService = uploadService;
+		this.userSessionService = userSessionService;
 		this.dataExportPath = Path.of(dataExportPath);
 	}
 
@@ -169,6 +174,9 @@ public class UserDeletionService {
 			result = performSoftDeletion(user, retentionBlockedRoles);
 			uploadService.deleteFile(avatarPath);
 		}
+
+		// A deleted or deactivated account must not stay usable through a session that is still valid
+		userSessionService.revokeAll(userId);
 
 		// Delete export files after DB operations succeeded (worst case: orphaned files)
 		deleteExportFiles(exportFilePaths);

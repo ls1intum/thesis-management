@@ -59,6 +59,7 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
     Omit<IUpdateUserInformationPayload, 'enrolledAt' | 'studyProgramId'> & {
       studyProgramId: string | null
       matriculationNumber: string // read-only, synced from Keycloak, not sent to server
+      email: string // read-only, synced from Keycloak, not sent to server
       semester: string
       researchGroupName: string | null
       customData: Record<string, string>
@@ -221,7 +222,6 @@ const UserInformationForm = (props: IUserInformationFormProps) => {
               lastName: values.lastName || null,
               gender: values.gender || null,
               nationality: values.nationality || null,
-              email: values.email || null,
               studyDegree: values.studyDegree || null,
               studyProgramId: values.studyProgramId ?? null,
               enrolledAt: semesterToEnrollmentDate(values.semester),

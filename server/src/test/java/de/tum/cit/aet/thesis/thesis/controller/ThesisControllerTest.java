@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.thesis.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
@@ -809,7 +810,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/theses/{thesisId}/files/{fileId}", thesisId, fileId)
 							.header("Authorization", createRandomAdminAuthentication()))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andExpect(header().stringValues("Vary", org.hamcrest.Matchers.hasItem("Cookie")));
 		}
 
 		@Test
@@ -1128,7 +1130,8 @@ class ThesisControllerTest extends BaseIntegrationTest {
 
 			mockMvc.perform(MockMvcRequestBuilders.get("/v2/theses/{thesisId}/comments/{commentId}/file", thesisId, commentId)
 							.header("Authorization", createRandomAdminAuthentication()))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk())
+					.andExpect(header().stringValues("Vary", org.hamcrest.Matchers.hasItem("Cookie")));
 		}
 	}
 

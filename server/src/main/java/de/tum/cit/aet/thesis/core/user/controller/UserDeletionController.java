@@ -8,7 +8,7 @@ import de.tum.cit.aet.thesis.core.user.service.UserDeletionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,24 +41,24 @@ public class UserDeletionController {
 	/**
 	 * Returns a preview of the data affected by deleting the authenticated user.
 	 *
-	 * @param jwt the authentication token
+	 * @param authentication the authentication of the current request
 	 * @return the deletion preview
 	 */
 	@GetMapping("/me/preview")
-	public ResponseEntity<UserDeletionPreviewDto> previewSelfDeletion(JwtAuthenticationToken jwt) {
-		User user = authenticationService.getAuthenticatedUser(jwt);
+	public ResponseEntity<UserDeletionPreviewDto> previewSelfDeletion(Authentication authentication) {
+		User user = authenticationService.getAuthenticatedUser(authentication);
 		return ResponseEntity.ok(userDeletionService.previewDeletion(user.getId()));
 	}
 
 	/**
 	 * Deletes or anonymizes the authenticated user's account.
 	 *
-	 * @param jwt the authentication token
+	 * @param authentication the authentication of the current request
 	 * @return the deletion result
 	 */
 	@DeleteMapping("/me")
-	public ResponseEntity<UserDeletionResultDto> deleteSelf(JwtAuthenticationToken jwt) {
-		User user = authenticationService.getAuthenticatedUser(jwt);
+	public ResponseEntity<UserDeletionResultDto> deleteSelf(Authentication authentication) {
+		User user = authenticationService.getAuthenticatedUser(authentication);
 		UserDeletionResultDto result = userDeletionService.deleteOrAnonymizeUser(user.getId());
 		return ResponseEntity.ok(result);
 	}

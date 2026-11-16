@@ -168,12 +168,12 @@ test.describe('Authenticated avatar loading', () => {
   test.use({ storageState: authStatePath('supervisor') })
 
   // The student user is a STUDENT on thesis 1 (WRITING/PRIVATE).
-  // The CustomAvatar component must use authenticated fetch (doRequest with
-  // Authorization header) instead of plain <img src> so that avatars of
-  // non-publicly-visible users load correctly.
+  // The CustomAvatar component loads avatars through doRequest (a fetch that sends the session cookie) and
+  // shows them as blob URLs, not as a plain <img src>. This test documents and guards that: avatars of
+  // non-publicly-visible users are only served to an authenticated request.
   const STUDENT_AVATAR_FILENAME = 'avatar_test_student.png'
 
-  test('avatar requests use Authorization header when user is authenticated', async ({
+  test('avatar requests carry the session cookie when user is authenticated', async ({
     page,
   }) => {
     test.setTimeout(60_000)
@@ -190,17 +190,25 @@ test.describe('Authenticated avatar loading', () => {
       fs.writeFileSync(avatarPath, png)
     }
 
-    // Track all avatar requests and whether they include an Authorization header.
-    // With the fix (doRequest + blob URLs), avatar fetches include the Bearer token.
-    // Without the fix (plain <img src>), the browser sends no Authorization header,
-    // causing 404 for non-publicly-visible users on production.
-    const avatarRequests: { url: string; hasAuth: boolean }[] = []
-    page.on('request', (request) => {
+    // Track the avatar requests. Avatars are fetched through doRequest (fetch + blob URLs) and carry the
+    // session cookie. A plain <img src> would not be a regression of the cookie itself (the cookie is
+    // SameSite=Strict and the app and API are same-site), but it would bypass doRequest, which is what this
+    // test guards.
+    // Only finished requests count (a request React cancels before it is sent never carries the cookie), and
+    // a response served from the browser cache is not sent at all, so some requests show no cookie.
+    const avatarRequests: { url: string; resourceType: string; hasCookie: boolean }[] = []
+    const pendingChecks: Promise<void>[] = []
+    page.on('requestfinished', (request) => {
       if (request.url().includes('/v2/avatars/')) {
-        avatarRequests.push({
-          url: request.url(),
-          hasAuth: request.headers()['authorization'] !== undefined,
-        })
+        pendingChecks.push(
+          request.allHeaders().then((headers) => {
+            avatarRequests.push({
+              url: request.url(),
+              resourceType: request.resourceType(),
+              hasCookie: /(?:^|;\s*)(?:__Host-)?sid=/.test(headers['cookie'] ?? ''),
+            })
+          }),
+        )
       }
     })
 
@@ -218,16 +226,23 @@ test.describe('Authenticated avatar loading', () => {
     // Wait for avatar requests to complete (CustomAvatar fetches asynchronously)
     await page.waitForTimeout(3_000)
 
+    await Promise.all(pendingChecks)
+
     // Verify at least one avatar request was made (the student has an avatar)
     expect(avatarRequests.length, 'Expected at least one avatar request').toBeGreaterThan(0)
 
-    // Verify ALL avatar requests include the Authorization header.
-    // Without the fix, <img src> sends unauthenticated requests.
-    const unauthenticated = avatarRequests.filter((r) => !r.hasAuth)
+    // No avatar may be loaded as a plain <img> (unauthenticated) request ...
+    const plainImageRequests = avatarRequests.filter((r) => r.resourceType === 'image')
     expect(
-      unauthenticated,
-      `Avatar requests without Authorization header: ${JSON.stringify(unauthenticated)}`,
+      plainImageRequests,
+      `Avatar requests loaded as plain images: ${JSON.stringify(plainImageRequests)}`,
     ).toHaveLength(0)
+
+    // ... and the authenticated fetches carry the session cookie.
+    expect(
+      avatarRequests.some((r) => r.hasCookie),
+      `No avatar request carried the session cookie: ${JSON.stringify(avatarRequests)}`,
+    ).toBe(true)
   })
 })
 

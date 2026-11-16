@@ -18,8 +18,8 @@ import java.time.Duration;
 
 /**
  * Guards the workaround in {@link ChatClientTimeoutConfig}. Spring AI derives the per-request
- * timeout from the chat options rather than from {@code spring.ai.openai.timeout}, and defaults
- * that option to 60s, so without the customizer every call is cancelled after a minute.
+ * timeout from the chat options rather than from {@code spring.ai.openai.timeout}, and defaulted
+ * that option to 60s up to 2.0.1, so without the customizer every call was cancelled after a minute.
  */
 class ChatClientTimeoutConfigTest {
 
@@ -61,17 +61,18 @@ class ChatClientTimeoutConfigTest {
 	}
 
 	/**
-	 * Documents the framework gap this configuration exists to close: the configured 10m reaches
-	 * the shared HTTP client, but the chat options Spring AI derives each request's timeout from
-	 * stay at 60s. If this ever reports 10m, Spring AI has fixed it and the workaround can go.
+	 * Documents the framework behaviour this configuration was written against. Spring AI 2.0.1
+	 * defaulted the chat options' timeout to 60s, which overrode the configured 10m on every
+	 * request; since 2.0.2 the option stays unset, so the shared HTTP client's timeout applies.
+	 * This test now pins that unset default. If it fails again, Spring AI is populating the
+	 * option itself and the workaround can go.
 	 */
 	@Test
-	void springAiLeavesTheRequestTimeoutAtOneMinute() {
+	void springAiLeavesTheRequestTimeoutUnsetSoTheClientTimeoutApplies() {
 		runner().run(context -> {
-			assertThat(context.getBean(OpenAiChatModel.class).getOptions().getTimeout())
-				.isEqualTo(Duration.ofMinutes(1));
+			assertThat(context.getBean(OpenAiChatModel.class).getOptions().getTimeout()).isNull();
 			assertThat(read(context.getBean(ChatClient.Builder.class), "defaultRequest", "optionsCustomizer"))
-				.as("no default chat options, so the 60s model default is what each request carries")
+				.as("no default chat options, so requests carry no per-call timeout of their own")
 				.isNull();
 		});
 	}

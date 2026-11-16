@@ -67,54 +67,42 @@ public class PdfService {
 		PagePdfDocumentReader reader = new PagePdfDocumentReader(new ByteArrayResource(bytes), config);
 
 		List<Document> docs = reader.read();
-		return docs.stream().map(Document::getText).map(PdfService::toValidText).toList();
+		return docs.stream().map(Document::getText).map(PdfService::replaceUnpairedSurrogates).toList();
 	}
 
 	/**
-	 * Strips characters that cannot survive the trip to the model.
+	 * Replaces every UTF-16 surrogate that is not part of a valid pair with U+FFFD. Fonts with a
+	 * broken ToUnicode map make PDFBox emit lone surrogates, which end up in the LLM request body;
+	 * an OpenAI-compatible gateway (e.g. a Python one) then fails to re-encode the prompt as UTF-8
+	 * ("surrogates not allowed") and rejects the whole review.
 	 *
-	 * <p>PDF text extraction yields Java strings, and Java strings are UTF-16: a glyph the document
-	 * encoded oddly can come back as an <em>unpaired</em> surrogate, a code unit with no legal UTF-8
-	 * encoding at all. It serializes into the request as an escaped half-character — syntactically
-	 * valid JSON — and then kills the provider's tokenizer, which answers
-	 * {@code 500 Internal Server Error} with no indication of what it objected to. One such code
-	 * unit anywhere in a document therefore fails every call of every review strategy for that
-	 * document, permanently and unrecoverably.
-	 *
-	 * <p>Verified against the gateway: a request carrying a lone high surrogate returns a 500, while
-	 * the same request without it succeeds. A NUL byte, which extraction also produces, was
-	 * accepted — it is dropped here anyway, because it carries no textual meaning and other
-	 * providers are less forgiving.
-	 *
-	 * <p>Surrogate <em>pairs</em> are preserved: together they are an ordinary character outside the
-	 * basic plane, and dropping them would quietly delete content.
-	 *
-	 * @param text one page's extracted text
-	 * @return the text with unpaired surrogates and meaningless control characters removed
+	 * @param text extracted page text, may be {@code null}
+	 * @return the text with only well-formed code points
 	 */
-	static String toValidText(String text) {
+	static String replaceUnpairedSurrogates(String text) {
 		if (text == null) {
-			return "";
+			return null;
 		}
-
-		StringBuilder clean = new StringBuilder(text.length());
-		for (int index = 0; index < text.length(); index++) {
-			char current = text.charAt(index);
-			if (Character.isHighSurrogate(current)) {
-				if (index + 1 < text.length() && Character.isLowSurrogate(text.charAt(index + 1))) {
-					clean.append(current).append(text.charAt(index + 1));
-					index++;
+		StringBuilder result = null;
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			boolean paired = Character.isHighSurrogate(c) && i + 1 < text.length()
+					&& Character.isLowSurrogate(text.charAt(i + 1));
+			if (paired) {
+				if (result != null) {
+					result.append(c).append(text.charAt(i + 1));
 				}
-			} else if (!Character.isLowSurrogate(current) && !isMeaninglessControl(current)) {
-				clean.append(current);
+				i++;
+			} else if (Character.isSurrogate(c)) {
+				if (result == null) {
+					result = new StringBuilder(text.length()).append(text, 0, i);
+				}
+				result.append('\uFFFD');
+			} else if (result != null) {
+				result.append(c);
 			}
 		}
-		return clean.toString();
-	}
-
-	/** True for C0 controls that carry no textual meaning; line breaks and tabs are kept. */
-	private static boolean isMeaninglessControl(char character) {
-		return character < 0x20 && character != '\n' && character != '\r' && character != '\t';
+		return result == null ? text : result.toString();
 	}
 
 	/**

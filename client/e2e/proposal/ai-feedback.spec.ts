@@ -28,15 +28,8 @@ async function fetchThesis(page: Page, thesisId: string) {
     const env = (window as unknown as { RUNTIME_ENVIRONMENT_VARIABLES?: Record<string, string> })
       .RUNTIME_ENVIRONMENT_VARIABLES
     const serverHost = (env?.SERVER_HOST ?? 'http://localhost:8180').replace(/\/+$/, '')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const tokens = JSON.parse(localStorage.getItem('authentication_tokens') ?? '{}') as {
-      access_token?: string
-    }
-    const res = await fetch(`${serverHost}/api/v2/theses/${id}`, {
-      headers: tokens.access_token
-        ? { Authorization: `Bearer ${tokens.access_token}` }
-        : undefined,
-    })
+    // the application session cookie authenticates the request
+    const res = await fetch(`${serverHost}/api/v2/theses/${id}`, { credentials: 'include' })
     return { status: res.status, body: await res.text() }
   }, thesisId)
 

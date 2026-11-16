@@ -77,7 +77,7 @@ services:
       retries: 30
 
   mailpit:
-    image: axllent/mailpit:v1.31.4
+    image: axllent/mailpit:v1.32.0
     container_name: thesis-management-showcase-mailpit
     ports:
       - "1125:1025"
@@ -109,7 +109,6 @@ services:
       # In-container URL for Admin API calls (AccessManagementService).
       KEYCLOAK_HOST: http://keycloak:8080
       KEYCLOAK_REALM_NAME: thesis-management
-      KEYCLOAK_CLIENT_ID: thesis-management-app
       KEYCLOAK_SERVICE_CLIENT_ID: thesis-management-service-client
       # The realm JSON imports the service client with secret "**********",
       # which is also the default in application.yml. Kept here for clarity.

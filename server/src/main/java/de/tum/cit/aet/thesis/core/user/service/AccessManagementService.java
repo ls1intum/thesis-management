@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.core.user.service;
 
 import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.core.session.service.UserSessionService;
 import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.user.entity.UserGroup;
 import de.tum.cit.aet.thesis.core.user.entity.key.UserGroupId;
@@ -40,6 +41,7 @@ public class AccessManagementService {
 	private final Object tokenLock = new Object();
 
 	private final UserGroupRepository userGroupRepository;
+	private final UserSessionService userSessionService;
 
 	/**
 	 * Constructs the access management service with Keycloak connection settings for user lookup
@@ -50,6 +52,7 @@ public class AccessManagementService {
 	 * @param serviceClientId the service client ID for Keycloak API access
 	 * @param serviceClientSecret the service client secret for Keycloak API access
 	 * @param userGroupRepository the repository for managing user group assignments
+	 * @param userSessionService the session service, told to rotate a user's sessions when their roles change
 	 */
 	@Autowired
 	public AccessManagementService(
@@ -57,9 +60,11 @@ public class AccessManagementService {
 			@Value("${thesis-management.keycloak.realm-name}") String keycloakRealmName,
 			@Value("${thesis-management.keycloak.service-client.id}") String serviceClientId,
 			@Value("${thesis-management.keycloak.service-client.secret}") String serviceClientSecret,
-			UserGroupRepository userGroupRepository
+			UserGroupRepository userGroupRepository,
+			UserSessionService userSessionService
 	) {
 		this.userGroupRepository = userGroupRepository;
+		this.userSessionService = userSessionService;
 		this.keycloakRealmName = keycloakRealmName;
 		this.serviceClientId = serviceClientId;
 		this.serviceClientSecret = serviceClientSecret;
@@ -142,6 +147,7 @@ public class AccessManagementService {
 	private void addGroup(User user, String group) {
 		java.util.Objects.requireNonNull(user, "user must not be null");
 		userGroupRepository.insertIfNotExists(user.getId(), group);
+		userSessionService.markForRotation(user.getId());
 
 		// Update in-memory set if the group isn't already present
 		boolean alreadyPresent = user.getGroups().stream()
@@ -163,6 +169,7 @@ public class AccessManagementService {
 	private void removeGroup(User user, String group) {
 		java.util.Objects.requireNonNull(user, "user must not be null");
 		userGroupRepository.deleteByUserIdAndGroup(user.getId(), group);
+		userSessionService.markForRotation(user.getId());
 		user.getGroups().removeIf(ug -> ug.getId().getGroup().equals(group));
 	}
 

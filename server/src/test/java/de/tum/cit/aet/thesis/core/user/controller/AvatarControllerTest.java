@@ -61,7 +61,8 @@ class AvatarControllerTest extends BaseIntegrationTest {
 							.header("Authorization", createRandomAdminAuthentication()))
 					.andExpect(status().isOk())
 					.andExpect(header().string("Cache-Control", org.hamcrest.Matchers.containsString("private")))
-					.andExpect(header().string("Cache-Control", org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("public"))));
+					.andExpect(header().string("Cache-Control", org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("public"))))
+					.andExpect(header().stringValues("Vary", org.hamcrest.Matchers.hasItem("Cookie")));
 		}
 
 		@Test
