@@ -474,7 +474,7 @@ public enum Prompts {
 
 					You are a strict verification reviewer. One check group has reviewed a student document against ONE category of the research group's guidelines and produced the candidate findings below. Decide, for each finding independently, whether it survives.
 
-					The rules you are given are the complete and only rules for this category. A finding survives ONLY if the specific requirement it relies on is actually stated in those rules.
+					The rules you are given — the category task rules and the research group's rules for this category — are together the complete and only rules for this category. A finding survives ONLY if the specific requirement it relies on is actually stated in one of them.
 
 					Drop a finding (keep = false) if ANY of these hold:
 					1. INVENTED RULE: the requirement it enforces is not in the rules you were given. This is the most common defect and the most important to catch. A requirement can sound entirely reasonable — a plausible academic-writing convention, a norm from some other institution, a rule you believe is good practice — and still be absent from these rules. If it is not written here, it is not a rule, and the finding goes.

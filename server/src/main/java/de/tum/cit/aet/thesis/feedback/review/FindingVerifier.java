@@ -54,6 +54,10 @@ public class FindingVerifier {
 	/** Fence tag wrapping the JSON-serialized candidate findings in the verifier user message. */
 	static final String FINDINGS_FENCE_TAG = "candidate-findings";
 
+	/** Introduces the category's task prompt as rules the verifier must accept, not as its own task. */
+	private static final String TASK_RULES_HEADING = "# Category task rules\n"
+			+ "The check group was given the task below. Every rule in it is one of this category's rules.\n\n";
+
 	private final ChatClient chatClient;
 	private final ObjectMapper objectMapper;
 	private final ReviewMeter meter;
@@ -163,7 +167,12 @@ public class FindingVerifier {
 	 */
 	private List<Finding> keepVerified(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt,
 			List<Finding> candidates, List<CategoryCandidates.RejectedFinding> rejected) {
-		String systemPrompt = String.join("\n\n", Prompts.VERIFIER.getPrompt(reviewType), guidelinesPrompt);
+		// The check group was reviewed against its category's task rules as well as the group's own,
+		// and a group that leaves a category empty is told to apply only the task rules. Without them
+		// here, every finding resting on a built-in rule (a missing required section, say) would look
+		// invented and be dropped.
+		String taskRules = TASK_RULES_HEADING + Prompts.taskPromptFor(category, reviewType);
+		String systemPrompt = String.join("\n\n", Prompts.VERIFIER.getPrompt(reviewType), taskRules, guidelinesPrompt);
 
 		ResponseEntity<ChatResponse, FindingVerdicts> response = chatClient.prompt()
 				.system(systemMessage -> systemMessage.text(systemPrompt))

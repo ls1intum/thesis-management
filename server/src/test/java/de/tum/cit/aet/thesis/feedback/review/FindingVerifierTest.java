@@ -96,6 +96,30 @@ class FindingVerifierTest {
 	}
 
 	@Test
+	void theVerifierJudgesAgainstTheCategoryTaskRulesAsWellAsTheGroupRules() {
+		// A group that leaves a category empty is told to apply only the task rules, so a finding
+		// for a missing required section rests on the task prompt alone. Without it the verifier
+		// would see no such rule and drop a real finding as invented.
+		String noGroupRules = "The research group did not provide specific rules for this category. "
+				+ "Apply only the task rules above.";
+		stubVerdicts("{\"verdicts\":[{\"finding\":1,\"keep\":true,\"reason\":\"Required section missing.\"}]}");
+
+		verifier(new ReviewMeter()).verify(ReviewCategory.STRUCTURE, ReviewType.PROPOSAL, noGroupRules,
+				new CategoryFindings(List.of(finding("No Schedule section", null))), PAGES);
+
+		ArgumentCaptor<Consumer<ChatClient.PromptSystemSpec>> system = consumerCaptor();
+		verify(requestSpec).system(system.capture());
+		ChatClient.PromptSystemSpec systemSpec = org.mockito.Mockito.mock(ChatClient.PromptSystemSpec.class);
+		system.getValue().accept(systemSpec);
+		ArgumentCaptor<String> text = ArgumentCaptor.forClass(String.class);
+		verify(systemSpec).text(text.capture());
+
+		assertThat(text.getValue())
+				.contains(Prompts.taskPromptFor(ReviewCategory.STRUCTURE, ReviewType.PROPOSAL))
+				.contains(noGroupRules);
+	}
+
+	@Test
 	void aCategoryWhereEverythingWasInventedCorrectlyEndsUpEmpty() {
 		// Zero findings for a compliant category is the right answer, not a failed verification.
 		stubVerdicts("{\"verdicts\":[{\"finding\":1,\"keep\":false,\"reason\":\"Invented rule.\"}]}");
@@ -230,7 +254,7 @@ class FindingVerifierTest {
 		// Both halves must be present: without the rules the verifier cannot tell an invented
 		// requirement from a real one, which is the whole job.
 		assertThat(text.getValue())
-				.contains("the specific requirement it relies on is actually stated in those rules")
+				.contains("the specific requirement it relies on is actually stated in one of them")
 				.contains("ZERO IS A VALID ANSWER")
 				.contains("avoid double verbs");
 	}

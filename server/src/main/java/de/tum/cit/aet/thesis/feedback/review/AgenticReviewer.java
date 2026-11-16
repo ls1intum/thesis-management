@@ -156,7 +156,7 @@ public class AgenticReviewer implements ThesisReviewer {
 		chatClient.prompt()
 				.system(AgentPrompt.systemPrompt(type))
 				.user(openingMessage(type, pages))
-				.tools(toolbox.callbacks().toArray())
+				.toolCallbacks(toolbox.callbacks())
 				.advisors(ToolCallingAdvisor.builder()
 						.toolCallingManager(toolCallingManager)
 						.toolExecutionEligibilityChecker(response -> continueLoop(response, toolbox, meter))

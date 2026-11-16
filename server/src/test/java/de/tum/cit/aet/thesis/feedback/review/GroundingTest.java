@@ -56,6 +56,29 @@ class GroundingTest {
 	}
 
 	@Test
+	void aSentenceRunningAcrossAPageBreakIsGrounded() {
+		List<String> pages = List.of(
+				"Intro\nThe evaluation compares three scheduling",
+				"strategies across two datasets.\nResults follow.",
+				"Conclusion\nDone.");
+
+		assertThat(Grounding.isGrounded(pages,
+				"The evaluation compares three scheduling strategies across two datasets.")).isTrue();
+	}
+
+	@Test
+	void joiningPagesOnlyBridgesNeighbours() {
+		// Pages one and three are not adjacent, so text split between them is not one sentence.
+		List<String> pages = List.of(
+				"The evaluation compares three scheduling",
+				"Unrelated middle page.",
+				"strategies across two datasets.");
+
+		assertThat(Grounding.isGrounded(pages,
+				"The evaluation compares three scheduling strategies across two datasets.")).isFalse();
+	}
+
+	@Test
 	void aQuoteTooShortToJudgeIsAccepted() {
 		// Two words prove nothing either way, and hyphenation across a line break would defeat an
 		// exact match anyway — rejecting here would cost real findings.

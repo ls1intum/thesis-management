@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.feedback.review;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -41,7 +42,8 @@ final class Grounding {
 		if (needle.length() < MIN_CHECKED_LENGTH) {
 			return true;
 		}
-		if (pages.stream().anyMatch(page -> normalize(page).contains(needle))) {
+		List<String> haystacks = acrossPageBreaks(pages);
+		if (haystacks.stream().anyMatch(text -> normalize(text).contains(needle))) {
 			return true;
 		}
 		// Second pass with ligatures folded. Extraction routinely renders a ligature glyph as its
@@ -50,7 +52,23 @@ final class Grounding {
 		// Comparing the two literally then rejects a perfectly real quote. Both sides are folded, so
 		// the comparison is between forms that agree however the glyph survived extraction.
 		String folded = foldLigatures(needle);
-		return pages.stream().anyMatch(page -> foldLigatures(normalize(page)).contains(folded));
+		return haystacks.stream().anyMatch(text -> foldLigatures(normalize(text)).contains(folded));
+	}
+
+	/**
+	 * The text a quote is searched in: every pair of consecutive pages joined by a space, so a
+	 * sentence that runs across a page break still matches. Each pair contains both its pages, so a
+	 * quote within one page is found as before; a single-page document is searched as it is.
+	 */
+	private static List<String> acrossPageBreaks(List<String> pages) {
+		if (pages.size() < 2) {
+			return pages;
+		}
+		List<String> pairs = new ArrayList<>(pages.size() - 1);
+		for (int i = 0; i + 1 < pages.size(); i++) {
+			pairs.add(pages.get(i) + " " + pages.get(i + 1));
+		}
+		return pairs;
 	}
 
 	/**

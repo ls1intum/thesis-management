@@ -203,7 +203,7 @@ bootRun {
 // -Pkey=value on the command line becomes --key=value for EvalPlan; anything not given falls back
 // to the matching environment variable. Resolved through the provider API so the configuration
 // cache tracks these properties as inputs rather than reading `project` at execution time.
-def evalArguments = ["models", "approaches", "corpus", "out", "seeds", "temperature", "base-url", "api-key", "thinking-models"]
+def evalArguments = ["models", "approaches", "corpus", "out", "seeds", "temperature", "base-url", "api-key", "thinking-models", "anonymize"]
 	.collect { name -> providers.gradleProperty(name).map { "--$name=$it".toString() } }
 
 tasks.register("evalReview", JavaExec) {
