@@ -8,6 +8,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -97,7 +98,11 @@ public record EvalCorpus(List<EvalDocument> documents) {
 		} catch (IOException e) {
 			throw new UncheckedIOException("Cannot read corpus directory " + directory, e);
 		}
-		pdfs.sort((a, b) -> a.getFileName().toString().compareToIgnoreCase(b.getFileName().toString()));
+		// Case-insensitive first, so ids follow the order a person reads; then exact, because on a
+		// case-sensitive filesystem A.pdf and a.pdf are both present and the stream's order is not
+		// specified, which would hand the same anonymous id to a different file on another copy.
+		pdfs.sort(Comparator.comparing((Path pdf) -> pdf.getFileName().toString(), String.CASE_INSENSITIVE_ORDER)
+				.thenComparing(pdf -> pdf.getFileName().toString()));
 
 		String prefix = type.name().toLowerCase(Locale.ROOT);
 		Set<String> taken = new HashSet<>();

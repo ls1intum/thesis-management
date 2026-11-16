@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ResponseEntity;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.converter.StructuredOutputConverter;
 import tools.jackson.databind.ObjectMapper;
 
@@ -56,6 +57,7 @@ class FindingVerifierTest {
 
 	private void stubVerdicts(String json) {
 		when(chatClient.prompt()).thenReturn(requestSpec);
+		when(requestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(requestSpec);
 		when(requestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any()))
 				.thenReturn(requestSpec);
 		when(requestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any()))
@@ -89,7 +91,7 @@ class FindingVerifierTest {
 				new CategoryFindings(List.of(
 						finding("Avoid the first person", "I will design, implement, and evaluate Elapsia"),
 						finding("Triple-verb objective", "I will design, implement, and evaluate Elapsia"))),
-				PAGES);
+				PAGES, List.of());
 
 		assertThat(result.findings()).singleElement()
 				.extracting(Finding::title).isEqualTo("Triple-verb objective");
@@ -105,7 +107,7 @@ class FindingVerifierTest {
 		stubVerdicts("{\"verdicts\":[{\"finding\":1,\"keep\":true,\"reason\":\"Required section missing.\"}]}");
 
 		verifier(new ReviewMeter()).verify(ReviewCategory.STRUCTURE, ReviewType.PROPOSAL, noGroupRules,
-				new CategoryFindings(List.of(finding("No Schedule section", null))), PAGES);
+				new CategoryFindings(List.of(finding("No Schedule section", null))), PAGES, List.of());
 
 		ArgumentCaptor<Consumer<ChatClient.PromptSystemSpec>> system = consumerCaptor();
 		verify(requestSpec).system(system.capture());
@@ -120,6 +122,52 @@ class FindingVerifierTest {
 	}
 
 	@Test
+	void aQuoteMissingFromTheTextIsCheckedAgainstItsPageImageWhenTheReviewSawImages() {
+		// Text inside a figure, or on a scanned page, is visible to an image-based review but absent
+		// from the extracted text; dropping it in code would discard feedback the images support.
+		stubVerdicts("{\"verdicts\":[{\"finding\":1,\"keep\":true,\"reason\":\"Visible in the figure.\"}]}");
+		List<org.springframework.ai.content.Media> images = List.of(pageImage(), pageImage());
+		Finding figureText = new Finding("MINOR", "WRITING", "Typo in figure label", "Fix it.",
+				List.of(new Location(2, "Introduction", "Resorce allocation across the inheriting grant tree")));
+
+		CategoryCandidates result = verifier(new ReviewMeter()).check(ReviewCategory.FIGURES, ReviewType.PROPOSAL,
+				GUIDELINES, new CategoryFindings(List.of(figureText)), PAGES, images);
+
+		assertThat(result.ungrounded()).isEmpty();
+		assertThat(result.kept()).containsExactly(figureText);
+
+		ArgumentCaptor<Consumer<ChatClient.PromptUserSpec>> user = consumerCaptor();
+		verify(requestSpec).user(user.capture());
+		ChatClient.PromptUserSpec userSpec = org.mockito.Mockito.mock(ChatClient.PromptUserSpec.class);
+		user.getValue().accept(userSpec);
+		ArgumentCaptor<String> text = ArgumentCaptor.forClass(String.class);
+		verify(userSpec).text(text.capture());
+		assertThat(text.getValue()).contains("\"quoteOnlyInPageImage\":[2]");
+		// Only the cited page's image travels, not the whole document.
+		verify(userSpec).media(images.get(1));
+	}
+
+	@Test
+	void aQuoteMissingFromTheTextIsStillDroppedWhenItsPageHasNoImage() {
+		Finding outOfRange = new Finding("MINOR", "WRITING", "Typo", "Fix it.",
+				List.of(new Location(7, "Introduction", "Resorce allocation across the inheriting grant tree")));
+		ReviewMeter meter = new ReviewMeter();
+
+		CategoryCandidates result = verifier(meter).check(ReviewCategory.FIGURES, ReviewType.PROPOSAL,
+				GUIDELINES, new CategoryFindings(List.of(outOfRange)), PAGES, List.of(pageImage(), pageImage()));
+
+		assertThat(result.ungrounded()).containsExactly(outOfRange);
+		assertThat(meter.llmCalls()).isZero();
+	}
+
+	private static org.springframework.ai.content.Media pageImage() {
+		return org.springframework.ai.content.Media.builder()
+				.mimeType(org.springframework.util.MimeTypeUtils.IMAGE_PNG)
+				.data(new byte[] {1, 2, 3})
+				.build();
+	}
+
+	@Test
 	void aCategoryWhereEverythingWasInventedCorrectlyEndsUpEmpty() {
 		// Zero findings for a compliant category is the right answer, not a failed verification.
 		stubVerdicts("{\"verdicts\":[{\"finding\":1,\"keep\":false,\"reason\":\"Invented rule.\"}]}");
@@ -128,7 +176,7 @@ class FindingVerifierTest {
 				ReviewCategory.WRITING_FORMATTING, ReviewType.PROPOSAL, GUIDELINES,
 				new CategoryFindings(List.of(finding("Headings must be sentence case",
 						"The estate is modelled as a resource tree"))),
-				PAGES);
+				PAGES, List.of());
 
 		assertThat(result.findings()).isEmpty();
 	}
@@ -141,7 +189,7 @@ class FindingVerifierTest {
 
 		CategoryCandidates result = verifier(new ReviewMeter()).check(
 				ReviewCategory.WRITING_FORMATTING, ReviewType.PROPOSAL, GUIDELINES,
-				new CategoryFindings(List.of(fabricated, invented)), PAGES);
+				new CategoryFindings(List.of(fabricated, invented)), PAGES, List.of());
 
 		assertThat(result.generated()).containsExactly(fabricated, invented);
 		assertThat(result.ungrounded()).containsExactly(fabricated);
@@ -161,7 +209,7 @@ class FindingVerifierTest {
 				ReviewCategory.BIBLIOGRAPHY, ReviewType.PROPOSAL, GUIDELINES,
 				new CategoryFindings(List.of(
 						finding("Fabricated claim", "This sentence appears nowhere in the uploaded proposal."))),
-				PAGES);
+				PAGES, List.of());
 
 		// Nothing survived the free tier, so the paid tier is never reached.
 		assertThat(result.findings()).isEmpty();
@@ -176,7 +224,7 @@ class FindingVerifierTest {
 		CategoryFindings result = verifier(new ReviewMeter()).verify(
 				ReviewCategory.STRUCTURE, ReviewType.PROPOSAL, GUIDELINES,
 				new CategoryFindings(List.of(finding("No Schedule section", null))),
-				PAGES);
+				PAGES, List.of());
 
 		assertThat(result.findings()).hasSize(1);
 	}
@@ -187,7 +235,7 @@ class FindingVerifierTest {
 
 		CategoryFindings result = verifier(meter).verify(
 				ReviewCategory.FIGURES, ReviewType.PROPOSAL, GUIDELINES,
-				new CategoryFindings(List.of()), PAGES);
+				new CategoryFindings(List.of()), PAGES, List.of());
 
 		assertThat(result.findings()).isEmpty();
 		assertThat(meter.llmCalls()).isZero();
@@ -201,7 +249,7 @@ class FindingVerifierTest {
 				ReviewCategory.WRITING_STYLE, ReviewType.PROPOSAL, GUIDELINES,
 				new CategoryFindings(List.of(finding("Triple-verb objective",
 						"I will design, implement, and evaluate Elapsia"))),
-				PAGES);
+				PAGES, List.of());
 
 		// Failing open: losing real findings to a flaky verifier is worse than keeping an invented
 		// one, which is exactly the situation that held before this stage existed.
@@ -217,7 +265,7 @@ class FindingVerifierTest {
 				ReviewCategory.WRITING_STYLE, ReviewType.PROPOSAL, GUIDELINES,
 				new CategoryFindings(List.of(finding("Triple-verb objective",
 						"I will design, implement, and evaluate Elapsia"))),
-				PAGES);
+				PAGES, List.of());
 
 		assertThat(result.findings()).hasSize(1);
 	}
@@ -225,8 +273,8 @@ class FindingVerifierTest {
 	@Test
 	void theCandidateFindingsReachTheModelAsNumberedFencedData() {
 		String prompt = verifier(new ReviewMeter()).buildVerificationPrompt(List.of(
-				finding("Avoid the first person", "I will design"),
-				finding("Triple-verb objective", "I will design")));
+				new FindingVerifier.Candidate(finding("Avoid the first person", "I will design"), java.util.Set.of()),
+				new FindingVerifier.Candidate(finding("Triple-verb objective", "I will design"), java.util.Set.of())));
 
 		assertThat(prompt)
 				.startsWith("<candidate-findings>\n")
@@ -243,7 +291,7 @@ class FindingVerifierTest {
 		when(systemSpec.text(org.mockito.ArgumentMatchers.anyString())).thenReturn(systemSpec);
 
 		verifier(new ReviewMeter()).verify(ReviewCategory.WRITING_STYLE, ReviewType.PROPOSAL, GUIDELINES,
-				new CategoryFindings(List.of(finding("Triple-verb objective", "I will design"))), PAGES);
+				new CategoryFindings(List.of(finding("Triple-verb objective", "I will design"))), PAGES, List.of());
 
 		ArgumentCaptor<Consumer<ChatClient.PromptSystemSpec>> captor = consumerCaptor();
 		verify(requestSpec).system(captor.capture());

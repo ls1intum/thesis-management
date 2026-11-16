@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -138,10 +139,10 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 		ReviewResult merged = merge(request.type(), outcomes.findings(), request.progress(), meter);
 		// A constant number of sequential stages however many categories there are: the fan-out is
 		// concurrent, each category verifies its own findings inside that same concurrent task, and
-		// the merge waits for all of them. Two stages, or three with verification on — still a
-		// constant, which is the point of comparison with AgenticReviewer, whose depth is one stage
-		// per model turn.
-		meter.addDepth(verifyFindings ? 3 : 2);
+		// the merge waits for all of them. Two stages, or three when any category made a verification
+		// call — still a constant, which is the point of comparison with AgenticReviewer, whose depth
+		// is one stage per model turn.
+		meter.addDepth(outcomes.verificationRan() ? 3 : 2);
 
 		metricsRecorder.record(meter.snapshot(strategy(),
 				ReviewCategory.values().length - outcomes.failed().size(), ReviewCategory.values().length));
@@ -161,6 +162,7 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 		int total = ReviewCategory.values().length + 1;
 
 		Map<ReviewCategory, CompletableFuture<CategoryFindings>> futures = new EnumMap<>(ReviewCategory.class);
+		AtomicBoolean verificationRan = new AtomicBoolean();
 		int index = 0;
 		for (ReviewCategory category : ReviewCategory.values()) {
 			index++;
@@ -176,8 +178,13 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 					// own after the fan-out: the checks run concurrently with the other categories'
 					// reviews, so the whole pass costs one extra latency instead of one per category.
 					CategoryCandidates candidates = verifyFindings
-							? createVerifier(meter).check(category, request.type(), guidelinesPrompt, generated, pages)
+							? createVerifier(meter).check(category, request.type(), guidelinesPrompt, generated, pages, images)
 							: CategoryCandidates.unverified(category, generated.findings());
+					// Only candidates that survive grounding reach the verification call; with none left,
+					// check() returns without calling the model.
+					if (verifyFindings && candidates.generated().size() > candidates.ungrounded().size()) {
+						verificationRan.set(true);
+					}
 					metricsRecorder.recordCandidates(candidates);
 					progress.stepCompleted(category.getSlug(), stepIndex, total);
 					return new CategoryFindings(candidates.kept());
@@ -190,7 +197,7 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 			}, reviewExecutor));
 		}
 
-		return collectSucceeded(futures);
+		return collectSucceeded(futures, verificationRan);
 	}
 
 	/**
@@ -205,11 +212,13 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	 * <p>Every category is awaited even once one has failed: they were all dispatched up front and
 	 * are already in flight, so there is nothing to save by abandoning them.
 	 *
-	 * @param futures the dispatched per-category calls, in {@link ReviewCategory} declaration order
+	 * @param futures         the dispatched per-category calls, in {@link ReviewCategory} declaration order
+	 * @param verificationRan set by any category whose verification called the model; read once all are done
 	 * @return the findings of the successful categories, keyed by category slug and in that same
 	 *         order, together with the categories that failed
 	 */
-	private CategoryOutcomes collectSucceeded(Map<ReviewCategory, CompletableFuture<CategoryFindings>> futures) {
+	private CategoryOutcomes collectSucceeded(Map<ReviewCategory, CompletableFuture<CategoryFindings>> futures,
+			AtomicBoolean verificationRan) {
 		Map<String, CategoryFindings> results = new LinkedHashMap<>();
 		List<ReviewCategory> failed = new ArrayList<>();
 		Throwable firstFailure = null;
@@ -240,7 +249,7 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 			log.warn("Continuing the review with {} of {} categories; {} failed and were dropped",
 					results.size(), futures.size(), slugsOf(failed));
 		}
-		return new CategoryOutcomes(results, List.copyOf(failed));
+		return new CategoryOutcomes(results, List.copyOf(failed), verificationRan.get());
 	}
 
 	private ReviewResult merge(ReviewType reviewType, Map<String, CategoryFindings> perCategory,
@@ -250,11 +259,11 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 		try {
 			String mergerSystemPrompt = Prompts.MERGER.getPrompt(reviewType);
 			ResponseEntity<ChatResponse, ReviewResult> response = chatClient.prompt()
+					.advisors(new MeteringAdvisor(meter))
 					.system(systemMessage -> systemMessage.text(mergerSystemPrompt))
 					.user(userMessage -> userMessage.text(buildMergePrompt(perCategory)))
 					.call()
 					.responseEntity(LenientOutputConverter.forType(ReviewResult.class));
-			meter.recordCall(response.getResponse());
 			progress.stepCompleted(MERGE_STEP_ID, total, total);
 			return response.getEntity();
 		} catch (RuntimeException e) {
@@ -299,8 +308,10 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	 * categories failed outright.
 	 *
 	 * @param findings the findings of the categories that answered
-	 * @param failed   the categories whose call failed; empty when every category answered
+	 * @param failed          the categories whose call failed; empty when every category answered
+	 * @param verificationRan whether any category made a verification call
 	 */
-	private record CategoryOutcomes(Map<String, CategoryFindings> findings, List<ReviewCategory> failed) {
+	private record CategoryOutcomes(Map<String, CategoryFindings> findings, List<ReviewCategory> failed,
+			boolean verificationRan) {
 	}
 }

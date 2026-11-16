@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ResponseEntity;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.converter.StructuredOutputConverter;
@@ -46,6 +47,7 @@ public class CategoryReviewerTest {
 		Media pageImage = new Media(MimeTypeUtils.IMAGE_PNG, URI.create("file:///proposal-page-1.png"));
 
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(anyPromptSystemConsumer())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(anyPromptUserConsumer())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
@@ -96,6 +98,7 @@ public class CategoryReviewerTest {
 	@Test
 	void reviewParsesAModelAnswerWhoseStringsContainRawLineBreaks() {
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(anyPromptSystemConsumer())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(anyPromptUserConsumer())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);

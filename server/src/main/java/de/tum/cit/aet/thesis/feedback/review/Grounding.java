@@ -3,6 +3,8 @@ package de.tum.cit.aet.thesis.feedback.review;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * Checks a model's quote against the document it claims to come from.
@@ -27,6 +29,9 @@ final class Grounding {
 	 */
 	private static final int MIN_CHECKED_LENGTH = 24;
 
+	/** A hyphen between two letters with a line break after it, as extraction leaves a split word. */
+	private static final Pattern LINE_END_HYPHEN = Pattern.compile("(?<=\\p{L})-[ \\t]*\\R[ \\t]*(?=\\p{L})");
+
 	private Grounding() {
 	}
 
@@ -42,8 +47,11 @@ final class Grounding {
 		if (needle.length() < MIN_CHECKED_LENGTH) {
 			return true;
 		}
-		List<String> haystacks = acrossPageBreaks(pages);
-		if (haystacks.stream().anyMatch(text -> normalize(text).contains(needle))) {
+		List<String> haystacks = acrossPageBreaks(pages).stream()
+				.flatMap(Grounding::lineBreakVariants)
+				.map(Grounding::normalize)
+				.toList();
+		if (haystacks.stream().anyMatch(text -> text.contains(needle))) {
 			return true;
 		}
 		// Second pass with ligatures folded. Extraction routinely renders a ligature glyph as its
@@ -52,7 +60,21 @@ final class Grounding {
 		// Comparing the two literally then rejects a perfectly real quote. Both sides are folded, so
 		// the comparison is between forms that agree however the glyph survived extraction.
 		String folded = foldLigatures(needle);
-		return haystacks.stream().anyMatch(text -> foldLigatures(normalize(text)).contains(folded));
+		return haystacks.stream().anyMatch(text -> foldLigatures(text).contains(folded));
+	}
+
+	/**
+	 * A page as extracted, plus the two readings of a hyphen at the end of a line. Extraction keeps
+	 * the line break, so {@code inter-\noperability} would normalize to {@code inter- operability}
+	 * and match neither spelling a model writes. Whether that hyphen splits a word or belongs to a
+	 * compound cannot be told from the text, so both are offered: joined ({@code interoperability})
+	 * and kept ({@code state-of-the-art}).
+	 */
+	private static Stream<String> lineBreakVariants(String text) {
+		return Stream.of(text,
+				LINE_END_HYPHEN.matcher(text).replaceAll(""),
+				LINE_END_HYPHEN.matcher(text).replaceAll("-"))
+				.distinct();
 	}
 
 	/**

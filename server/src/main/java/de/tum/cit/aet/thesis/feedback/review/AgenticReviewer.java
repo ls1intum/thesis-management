@@ -9,14 +9,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.ToolCallingAdvisor;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.model.tool.ToolCallingManager;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -132,6 +136,12 @@ public class AgenticReviewer implements ThesisReviewer {
 			log.warn("Agentic review covered {} of {} categories; {} were never checked",
 					toolbox.coveredCount(), ReviewCategory.values().length, slugsOf(missing));
 		}
+		if (missing.isEmpty() && !toolbox.finished()) {
+			// Every category's rules were fetched, but the agent stopped before finish_review, so
+			// there is no verdict. Returned unchanged, its empty summary would replace the previous
+			// one and read as a finished review.
+			return IncompleteCoverage.qualifyUnfinished(result);
+		}
 		return IncompleteCoverage.qualify(result, missing);
 	}
 
@@ -179,11 +189,38 @@ public class AgenticReviewer implements ThesisReviewer {
 			return false;
 		}
 		if (meter.llmCalls() >= maxTurns) {
-			log.warn("Agentic review hit its {}-turn budget; stopping the agent and keeping what it recorded",
+			// Returning false stops the loop, but it also skips this turn's tool calls, and the last
+			// permitted turn is exactly where an agent records its final findings and its verdict.
+			// So run them here, against the toolbox directly; nothing is sent back to the model.
+			log.warn("Agentic review hit its {}-turn budget; running that turn's tool calls and stopping",
 					maxTurns);
+			runFinalToolCalls(response, toolbox);
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Executes the tool calls of the turn that used up the budget, so its recorded findings and
+	 * verdict count. A call that fails is skipped; the rest still run.
+	 */
+	private static void runFinalToolCalls(ChatResponse response, ReviewToolbox toolbox) {
+		Map<String, ToolCallback> tools = toolbox.callbacks().stream()
+				.collect(Collectors.toMap(tool -> tool.getToolDefinition().name(), tool -> tool));
+		for (Generation generation : response.getResults()) {
+			for (AssistantMessage.ToolCall call : generation.getOutput().getToolCalls()) {
+				ToolCallback tool = tools.get(call.name());
+				if (tool == null) {
+					log.debug("Skipping unknown tool {} in the agent's final turn", call.name());
+					continue;
+				}
+				try {
+					tool.call(call.arguments());
+				} catch (RuntimeException e) {
+					log.warn("Tool {} failed in the agent's final turn", call.name(), e);
+				}
+			}
+		}
 	}
 
 	/**

@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ResponseEntity;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.converter.StructuredOutputConverter;
 import org.springframework.core.io.ByteArrayResource;
@@ -80,6 +81,7 @@ class SinglePromptReviewerTest {
 		reviewer = new SinglePromptReviewer(pdfService, chatClientBuilder, recorded::add, false, "test/model");
 		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Page one.", "Page two."));
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(anySystem())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(anyUser())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
@@ -97,10 +99,11 @@ class SinglePromptReviewerTest {
 		verify(pdfService, never()).extractImagesFromPdf(any(Resource.class));
 		verify(progress).stepStarted(eq("review"), anyString(), eq(1), eq(1));
 		verify(progress).stepCompleted("review", 1, 1);
+		// The call is counted by the metering advisor; MeteringAdvisorTest covers the counting.
+		verify(chatClientRequestSpec).advisors(org.mockito.ArgumentMatchers.any(MeteringAdvisor.class));
 
 		assertThat(recorded).singleElement().satisfies(metrics -> {
 			assertThat(metrics.strategy()).isEqualTo("SinglePromptReviewer");
-			assertThat(metrics.llmCalls()).isEqualTo(1);
 			assertThat(metrics.callDepth()).isEqualTo(1);
 			assertThat(metrics.categoriesCovered()).isEqualTo(ReviewCategory.values().length);
 		});
@@ -152,6 +155,17 @@ class SinglePromptReviewerTest {
 				.hasMessage("provider down");
 		verify(progress).stepFailed(eq("review"), anyInt(), anyInt(), anyString());
 		assertThat(recorded).isEmpty();
+	}
+
+	@Test
+	void aModelThatAnswersNullFailsTheStepInsteadOfReturningNothing() {
+		// The JSON literal null parses cleanly, so nothing upstream rejects it.
+		when(callResponseSpec.responseEntity(anyConverter())).thenReturn(new ResponseEntity<>(null, null));
+
+		assertThatThrownBy(() -> reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdf, progress)))
+				.isInstanceOf(IllegalStateException.class);
+		verify(progress).stepFailed(eq("review"), anyInt(), anyInt(), anyString());
+		verify(progress, never()).stepCompleted(anyString(), anyInt(), anyInt());
 	}
 
 	private static StructuredOutputConverter<ReviewResult> anyConverter() {

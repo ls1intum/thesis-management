@@ -53,6 +53,20 @@ public record EvalPlan(
 	 * @throws IllegalArgumentException if a required value is missing or an approach is unknown
 	 */
 	public static EvalPlan parse(String[] args) {
+		return parse(args, System.getenv());
+	}
+
+	/**
+	 * Parses a plan from command-line arguments and the given environment, so a test controls
+	 * every value rather than inheriting whatever {@code EVAL_*} variables the shell exports.
+	 *
+	 * @param args        {@code --key=value} pairs
+	 * @param environment the environment variables to fall back on
+	 * @return the parsed plan
+	 * @throws IllegalArgumentException if a required value is missing, an approach is unknown, or
+	 *                                  two models would write to the same results directory
+	 */
+	public static EvalPlan parse(String[] args, Map<String, String> environment) {
 		Map<String, String> values = new LinkedHashMap<>();
 		for (String arg : args) {
 			if (!arg.startsWith("--") || !arg.contains("=")) {
@@ -62,23 +76,24 @@ public record EvalPlan(
 			values.put(arg.substring(2, split), arg.substring(split + 1));
 		}
 
-		List<String> approaches = csv(resolve(values, "approaches", "EVAL_APPROACHES",
+		List<String> approaches = csv(resolve(values, environment, "approaches", "EVAL_APPROACHES",
 				String.join(",", EvalApproach.ids())));
 		// Anything not listed is a typo worth failing on before a context is booted.
 		approaches.forEach(EvalApproach::fromId);
 
-		List<String> models = csv(require(values, "models", "EVAL_MODELS"));
+		List<String> models = csv(require(values, environment, "models", "EVAL_MODELS"));
+		rejectSlugCollisions(models);
 		return new EvalPlan(
 				models,
 				approaches,
-				Paths.get(require(values, "corpus", "EVAL_CORPUS")),
-				Paths.get(resolve(values, "out", "EVAL_OUT", "eval-runs")),
-				Integer.parseInt(resolve(values, "seeds", "EVAL_SEEDS", "1")),
-				Double.parseDouble(resolve(values, "temperature", "EVAL_TEMPERATURE", "1.0")),
-				require(values, "base-url", "OPENAI_BASE_URL"),
-				require(values, "api-key", "OPENAI_API_KEY"),
-				Boolean.parseBoolean(resolve(values, "anonymize", "EVAL_ANONYMIZE", "false")),
-				optionalCsv(resolve(values, "thinking-models", "EVAL_THINKING_MODELS", "")));
+				Paths.get(require(values, environment, "corpus", "EVAL_CORPUS")),
+				Paths.get(resolve(values, environment, "out", "EVAL_OUT", "eval-runs")),
+				Integer.parseInt(resolve(values, environment, "seeds", "EVAL_SEEDS", "1")),
+				Double.parseDouble(resolve(values, environment, "temperature", "EVAL_TEMPERATURE", "1.0")),
+				require(values, environment, "base-url", "OPENAI_BASE_URL"),
+				require(values, environment, "api-key", "OPENAI_API_KEY"),
+				Boolean.parseBoolean(resolve(values, environment, "anonymize", "EVAL_ANONYMIZE", "false")),
+				optionalCsv(resolve(values, environment, "thinking-models", "EVAL_THINKING_MODELS", "")));
 	}
 
 	/**
@@ -102,6 +117,21 @@ public record EvalPlan(
 		return model.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9._-]+", "_");
 	}
 
+	/**
+	 * Fails when two models share a {@link #slug}: they would write to the same results directory,
+	 * and the second model's runs would silently overwrite the first's.
+	 */
+	private static void rejectSlugCollisions(List<String> models) {
+		Map<String, String> bySlug = new LinkedHashMap<>();
+		for (String model : models) {
+			String earlier = bySlug.putIfAbsent(slug(model), model);
+			if (earlier != null && !earlier.equals(model)) {
+				throw new IllegalArgumentException("Models '" + earlier + "' and '" + model
+						+ "' would both write to the results directory '" + slug(model) + "'");
+			}
+		}
+	}
+
 	private static List<String> optionalCsv(String value) {
 		return value.isBlank() ? List.of() : csv(value);
 	}
@@ -120,16 +150,18 @@ public record EvalPlan(
 		return List.copyOf(items);
 	}
 
-	private static String resolve(Map<String, String> values, String key, String env, String fallback) {
+	private static String resolve(Map<String, String> values, Map<String, String> environment, String key,
+			String env, String fallback) {
 		String value = values.get(key);
 		if (value == null || value.isBlank()) {
-			value = System.getenv(env);
+			value = environment.get(env);
 		}
 		return value == null || value.isBlank() ? fallback : value;
 	}
 
-	private static String require(Map<String, String> values, String key, String env) {
-		String value = resolve(values, key, env, null);
+	private static String require(Map<String, String> values, Map<String, String> environment, String key,
+			String env) {
+		String value = resolve(values, environment, key, env, null);
 		if (value == null) {
 			throw new IllegalArgumentException("Missing required --" + key + " (or " + env + ")");
 		}

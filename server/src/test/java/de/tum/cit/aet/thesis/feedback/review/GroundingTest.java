@@ -79,6 +79,24 @@ class GroundingTest {
 	}
 
 	@Test
+	void aWordSplitByALineEndHyphenMatchesItsWholeSpelling() {
+		List<String> pages = List.of("The platform improves inter-\noperability between the existing services.");
+
+		assertThat(Grounding.isGrounded(pages,
+				"The platform improves interoperability between the existing services.")).isTrue();
+	}
+
+	@Test
+	void aCompoundHyphenAtALineEndStillMatchesWithItsHyphen() {
+		// Whether the hyphen splits a word or belongs to it cannot be told from the text, so a real
+		// compound must not be broken by the joining.
+		List<String> pages = List.of("We compare against the state-of-\nthe-art baselines in the field.");
+
+		assertThat(Grounding.isGrounded(pages,
+				"We compare against the state-of-the-art baselines in the field.")).isTrue();
+	}
+
+	@Test
 	void aQuoteTooShortToJudgeIsAccepted() {
 		// Two words prove nothing either way, and hyphenation across a line break would defeat an
 		// exact match anyway — rejecting here would cost real findings.

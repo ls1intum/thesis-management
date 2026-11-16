@@ -67,6 +67,8 @@ public final class EvalApplication {
 	public static void main(String[] args) {
 		EvalPlan plan = EvalPlan.parse(args);
 		EvalCorpus corpus = EvalCorpus.discover(plan.corpus(), plan.anonymize());
+		// Fail on a document type without fixed guidelines now, not one context boot per cell later.
+		corpus.documents().stream().map(EvalCorpus.EvalDocument::type).distinct().forEach(EvalGuidelines::forType);
 		Path runRoot = plan.outputRoot().resolve(RUN_ID.format(Instant.now()));
 
 		int total = plan.totalRuns(corpus.documents().size());
@@ -135,7 +137,7 @@ public final class EvalApplication {
 		Instant started = Instant.now();
 		try {
 			ReviewResult result = reviewer.review(new ReviewRequest(
-					document.type(), EvalGuidelines.build(), new FileSystemResource(document.file())));
+					document.type(), EvalGuidelines.forType(document.type()), new FileSystemResource(document.file())));
 			writer.writeRun(run, result, metrics.last());
 			writer.writeTrace(run, metrics.candidates(), metrics.categoryFailures());
 			System.out.printf("  [%d/%d] %s seed=%d -> %d findings, %ds%n",

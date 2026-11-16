@@ -101,7 +101,7 @@ class EvalWriterTest {
 		Files.writeString(corpusDir.resolve("proposal/Max_Mustermann.pdf"), "%PDF-1.4");
 		EvalPlan plan = EvalPlan.parse(new String[]{
 				"--models=m", "--corpus=" + corpusDir, "--base-url=http://e", "--api-key=k",
-				"--anonymize=true"});
+				"--anonymize=true"}, java.util.Map.of());
 		EvalCorpus corpus = EvalCorpus.discover(corpusDir, plan.anonymize());
 
 		try (EvalWriter writer = new EvalWriter(root)) {

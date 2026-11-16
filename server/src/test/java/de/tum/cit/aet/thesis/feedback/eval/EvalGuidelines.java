@@ -2,8 +2,10 @@ package de.tum.cit.aet.thesis.feedback.eval;
 
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.CategoryGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
+import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * The research group's proposal guidelines, held fixed in code for the whole sweep.
@@ -31,7 +33,28 @@ public final class EvalGuidelines {
 			subsections), Schedule, Bibliography, and an AI Transparency Statement.""";
 
 	/**
-	 * The guidelines every arm of the sweep judges against.
+	 * The fixed guidelines for a review type.
+	 *
+	 * <p>Only proposals have a fixed set so far. Reviewing a thesis against the proposal rules would
+	 * enforce proposal page limits, proposal sections and a preliminary schedule, and so measure
+	 * proposal compliance rather than thesis review quality; a thesis is rejected until it has a set
+	 * of its own.
+	 *
+	 * @param type the review type of the documents being judged
+	 * @return the fixed structured guidelines for that type
+	 * @throws IllegalArgumentException for a type without a fixed guideline set
+	 */
+	public static StructuredGuidelines forType(ReviewType type) {
+		if (type != ReviewType.PROPOSAL) {
+			throw new IllegalArgumentException("The evaluation has fixed guidelines for proposals only, so "
+					+ type.name().toLowerCase(Locale.ROOT) + " documents cannot be judged yet. "
+					+ "Remove them from the corpus, or add a guideline set for this type to EvalGuidelines.");
+		}
+		return build();
+	}
+
+	/**
+	 * The proposal guidelines every arm of the sweep judges against.
 	 *
 	 * @return the fixed structured guidelines
 	 */

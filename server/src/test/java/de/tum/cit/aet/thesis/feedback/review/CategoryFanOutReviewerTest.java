@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ResponseEntity;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.converter.StructuredOutputConverter;
@@ -106,6 +107,7 @@ public class CategoryFanOutReviewerTest {
 		when(pdfService.extractImagesFromPdf(any(Resource.class))).thenReturn(extractedImages);
 		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
@@ -132,6 +134,7 @@ public class CategoryFanOutReviewerTest {
 		when(pdfService.extractImagesFromPdf(any(Resource.class))).thenReturn(List.of());
 		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
@@ -179,6 +182,7 @@ public class CategoryFanOutReviewerTest {
 		when(failingCategoryReviewer.review(anyList(), anyList())).thenThrow(new RuntimeException("502 Bad Gateway"));
 		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
@@ -213,6 +217,7 @@ public class CategoryFanOutReviewerTest {
 		when(failingCategoryReviewer.review(anyList(), anyList())).thenThrow(new RuntimeException("502 Bad Gateway"));
 		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
@@ -247,6 +252,7 @@ public class CategoryFanOutReviewerTest {
 		when(pdfService.extractImagesFromPdf(any(Resource.class))).thenReturn(List.of());
 		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
@@ -329,6 +335,7 @@ public class CategoryFanOutReviewerTest {
 		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Page one."));
 		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
@@ -373,10 +380,11 @@ public class CategoryFanOutReviewerTest {
 		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
 		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of(invented)));
 		// Every category's candidate is rejected: a compliant document legitimately yields nothing.
-		when(verifier.check(any(), any(), any(), any(), anyList())).thenAnswer(invocation -> new CategoryCandidates(
+		when(verifier.check(any(), any(), any(), any(), anyList(), anyList())).thenAnswer(invocation -> new CategoryCandidates(
 				invocation.getArgument(0), List.of(invented), List.of(),
 				List.of(new CategoryCandidates.RejectedFinding(invented, "No such rule.")), List.of(), false));
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
@@ -386,7 +394,7 @@ public class CategoryFanOutReviewerTest {
 		verifying.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource));
 
 		// One verification per category, and the merger therefore sees nothing invented.
-		verify(verifier, times(ReviewCategory.values().length)).check(any(), any(), any(), any(), anyList());
+		verify(verifier, times(ReviewCategory.values().length)).check(any(), any(), any(), any(), anyList(), anyList());
 		// The evaluation measures the stage by what it dropped, so every category's trace is recorded.
 		assertThat(traced).hasSize(ReviewCategory.values().length)
 				.allSatisfy(candidates -> assertThat(candidates.rejected()).singleElement()
@@ -415,6 +423,7 @@ public class CategoryFanOutReviewerTest {
 		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
 		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
@@ -425,7 +434,34 @@ public class CategoryFanOutReviewerTest {
 
 		// The property has to actually disable the stage: it is the control condition when the two
 		// configurations are compared.
-		verify(verifier, org.mockito.Mockito.never()).check(any(), any(), any(), any(), anyList());
+		verify(verifier, org.mockito.Mockito.never()).check(any(), any(), any(), any(), anyList(), anyList());
+	}
+
+	@Test
+	void verificationAddsADepthStageOnlyWhenACategoryActuallyCalledTheVerifier() {
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
+		// Verification on, with the real verifier: no category finds anything, so no verification
+		// call is ever made and the run is two stages deep, not three.
+		CategoryFanOutReviewer verifying = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, metrics, true, false, "") {
+			@Override
+			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt, ReviewMeter meter) {
+				return categoryReviewer;
+			}
+		};
+
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
+		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
+		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
+		when(callResponseSpec.responseEntity(anyReviewResultConverter()))
+				.thenReturn(merged(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of())));
+
+		verifying.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource));
+
+		assertThat(recorded).singleElement().extracting(ReviewRunMetrics::callDepth).isEqualTo(2);
 	}
 
 	/**

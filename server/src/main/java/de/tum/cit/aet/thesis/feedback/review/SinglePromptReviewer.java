@@ -91,14 +91,19 @@ public class SinglePromptReviewer implements ThesisReviewer {
 		ReviewResult result;
 		try {
 			ResponseEntity<ChatResponse, ReviewResult> response = chatClient.prompt()
+					.advisors(new MeteringAdvisor(meter))
 					.system(systemMessage -> systemMessage.text(systemPrompt(request)))
 					.user(userMessage -> userMessage
 							.text(CategoryReviewer.fencedPages(pages))
 							.media(images.toArray(new Media[0])))
 					.call()
 					.responseEntity(LenientOutputConverter.forType(ReviewResult.class));
-			meter.recordCall(response.getResponse());
 			result = response.getEntity();
+			if (result == null) {
+				// A model can answer with the JSON literal null, which parses cleanly. Treat it as the
+				// failure it is rather than completing the step and handing the caller nothing.
+				throw new IllegalStateException("The single-prompt review returned no result");
+			}
 		} catch (RuntimeException e) {
 			// One call is the whole review, so unlike the fan-out there is nothing left to keep.
 			log.warn("AI review failed in the single-prompt strategy ({})", request.type(), e);

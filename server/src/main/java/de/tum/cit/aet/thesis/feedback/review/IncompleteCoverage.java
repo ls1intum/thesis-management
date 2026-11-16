@@ -53,4 +53,24 @@ public final class IncompleteCoverage {
 
 		return new ReviewResult(null, null, summary, result.findings());
 	}
+
+	/**
+	 * Qualifies a result whose run checked every category but stopped before giving its verdict,
+	 * such as an agent that timed out before {@code finish_review}. Its findings are kept; the
+	 * score and assessment, which only the verdict sets, are dropped.
+	 *
+	 * @param result the result as the strategy produced it; may be {@code null}
+	 * @return a qualified copy, or {@code null} for a {@code null} result
+	 */
+	public static ReviewResult qualifyUnfinished(ReviewResult result) {
+		if (result == null) {
+			return null;
+		}
+		String warning = "Incomplete review: the review stopped before it finished, so no overall score or "
+				+ "assessment is given. The findings below are the ones recorded before it stopped.";
+		String summary = result.summary() == null || result.summary().isBlank()
+				? warning
+				: warning + "\n\n" + result.summary();
+		return new ReviewResult(null, null, summary, result.findings());
+	}
 }

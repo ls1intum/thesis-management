@@ -10,11 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.ResponseEntity;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.content.Media;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Drops the findings one category pass invented, before the merge ever sees them.
@@ -42,7 +45,9 @@ import java.util.Map;
  * <p>The call deliberately does <em>not</em> carry the document. The defect being removed is an
  * invented rule, which is settled by the rules and the finding alone; whether the quote is real is
  * already settled in code. Re-sending every page to nine verifiers would roughly double the run's
- * token cost to re-check something that was never in question.
+ * token cost to re-check something that was never in question. The one exception is a quote the
+ * extracted text cannot settle — from a scanned page or a figure in an image-based review — which
+ * travels with the image of just the page it cites.
  *
  * <p>Fails open. A verification call that errors leaves its category's findings untouched and logs
  * why — losing real findings because a verifier call timed out is a worse outcome than keeping a
@@ -84,11 +89,13 @@ public class FindingVerifier {
 	 *                         rules a finding from it may rest on
 	 * @param findings         the candidate findings
 	 * @param pages            the document's per-page text, for the grounding check
+	 * @param images           the per-page images the category was reviewed with, in page order;
+	 *                         empty for a text-only review
 	 * @return the findings that survived; possibly empty, which is a valid result
 	 */
 	public CategoryFindings verify(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt,
-			CategoryFindings findings, List<String> pages) {
-		return new CategoryFindings(check(category, reviewType, guidelinesPrompt, findings, pages).kept());
+			CategoryFindings findings, List<String> pages, List<Media> images) {
+		return new CategoryFindings(check(category, reviewType, guidelinesPrompt, findings, pages, images).kept());
 	}
 
 	/**
@@ -100,87 +107,119 @@ public class FindingVerifier {
 	 * @param guidelinesPrompt the rendered rules this category was reviewed against
 	 * @param findings         the candidate findings
 	 * @param pages            the document's per-page text, for the grounding check
+	 * @param images           the per-page images the category was reviewed with, in page order;
+	 *                         empty for a text-only review
 	 * @return the candidates, split into kept, ungrounded, and rejected
 	 */
 	public CategoryCandidates check(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt,
-			CategoryFindings findings, List<String> pages) {
+			CategoryFindings findings, List<String> pages, List<Media> images) {
 		List<Finding> generated = findings.findings();
 		List<Finding> ungrounded = new ArrayList<>();
-		List<Finding> candidates = groundedOnly(category, generated, pages, ungrounded);
+		List<Candidate> candidates = groundedOnly(category, generated, pages, images, ungrounded);
+		List<Finding> candidateFindings = candidates.stream().map(Candidate::finding).toList();
 		if (candidates.isEmpty()) {
 			return new CategoryCandidates(category, generated, ungrounded, List.of(), List.of(), false);
 		}
 
 		List<CategoryCandidates.RejectedFinding> rejected = new ArrayList<>();
 		try {
-			List<Finding> kept = keepVerified(category, reviewType, guidelinesPrompt, candidates, rejected);
+			List<Finding> kept = keepVerified(category, reviewType, guidelinesPrompt, candidates, images, rejected);
 			return new CategoryCandidates(category, generated, ungrounded, rejected, kept, false);
 		} catch (RuntimeException e) {
 			log.warn("Verification failed for category {} ({}); keeping its {} findings unverified",
 					category.getSlug(), reviewType, candidates.size(), e);
-			return new CategoryCandidates(category, generated, ungrounded, List.of(), candidates, true);
+			return new CategoryCandidates(category, generated, ungrounded, List.of(), candidateFindings, true);
 		}
+	}
+
+	/**
+	 * A finding that reaches the model check, with the pages whose image has to show its quote.
+	 *
+	 * @param finding    the finding
+	 * @param imagePages 1-based pages whose quote is not in the extracted text and is checked against
+	 *                   the page image instead; empty when every quote is in the extracted text
+	 */
+	record Candidate(Finding finding, Set<Integer> imagePages) {
 	}
 
 	/**
 	 * Tier one: a finding whose quote is not in the document is dropped without a model call.
 	 *
+	 * <p>Extracted text is not the whole document when the review also saw page images: a scanned
+	 * page or the text inside a figure is visible to the reviewer but missing from the text. A quote
+	 * that is not in the text but cites a page with an image therefore goes on to the model check
+	 * with that image attached, rather than being dropped here. Without images, or without a usable
+	 * page number, the text is all there is, and such a quote is dropped.
+	 *
 	 * @param dropped receives the findings this tier drops
 	 */
-	private static List<Finding> groundedOnly(ReviewCategory category, List<Finding> findings, List<String> pages,
-			List<Finding> dropped) {
-		List<Finding> grounded = new ArrayList<>();
+	private static List<Candidate> groundedOnly(ReviewCategory category, List<Finding> findings, List<String> pages,
+			List<Media> images, List<Finding> dropped) {
+		List<Candidate> candidates = new ArrayList<>();
 		for (Finding finding : findings) {
-			if (hasUngroundedQuote(finding, pages)) {
+			Set<Integer> imagePages = new TreeSet<>();
+			boolean unverifiable = false;
+			for (Location location : finding.locations()) {
+				String quote = location.quote();
+				if (quote == null || quote.isBlank() || Grounding.isGrounded(pages, quote)) {
+					// A finding with no quote is kept: the prompts allow an empty location for
+					// something that is absent, and there is nothing to ground.
+					continue;
+				}
+				Integer page = location.page();
+				if (page == null || page < 1 || page > images.size()) {
+					unverifiable = true;
+					break;
+				}
+				imagePages.add(page);
+			}
+			if (unverifiable) {
 				log.debug("Dropped an ungrounded finding from category {}: {}", category.getSlug(), finding.title());
 				dropped.add(finding);
 				continue;
 			}
-			grounded.add(finding);
+			candidates.add(new Candidate(finding, imagePages));
 		}
-		if (grounded.size() < findings.size()) {
+		if (candidates.size() < findings.size()) {
 			log.info("Category {} lost {} of {} findings to the grounding check",
-					category.getSlug(), findings.size() - grounded.size(), findings.size());
+					category.getSlug(), findings.size() - candidates.size(), findings.size());
 		}
-		return grounded;
+		return candidates;
 	}
 
 	/**
-	 * Whether any location on this finding cites a quote that is not in the document. A finding
-	 * with no quote at all is kept: the prompts allow an empty location for something that is
-	 * absent, and there is nothing to ground.
-	 */
-	private static boolean hasUngroundedQuote(Finding finding, List<String> pages) {
-		for (Location location : finding.locations()) {
-			String quote = location.quote();
-			if (quote != null && !quote.isBlank() && !Grounding.isGrounded(pages, quote)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Tier two: one model call deciding which findings rest on a rule that actually exists.
+	 * Tier two: one model call deciding which findings rest on a rule that actually exists, and
+	 * whether a quote missing from the extracted text is visible on its page image.
 	 *
 	 * @param rejected receives the findings this tier drops, with the verifier's reason
 	 */
 	private List<Finding> keepVerified(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt,
-			List<Finding> candidates, List<CategoryCandidates.RejectedFinding> rejected) {
+			List<Candidate> candidates, List<Media> images, List<CategoryCandidates.RejectedFinding> rejected) {
 		// The check group was reviewed against its category's task rules as well as the group's own,
 		// and a group that leaves a category empty is told to apply only the task rules. Without them
 		// here, every finding resting on a built-in rule (a missing required section, say) would look
 		// invented and be dropped.
 		String taskRules = TASK_RULES_HEADING + Prompts.taskPromptFor(category, reviewType);
 		String systemPrompt = String.join("\n\n", Prompts.VERIFIER.getPrompt(reviewType), taskRules, guidelinesPrompt);
+		// Only the pages a quote has to be found on, so a text-grounded category costs no images.
+		Media[] pageImages = candidates.stream()
+				.flatMap(candidate -> candidate.imagePages().stream())
+				.distinct()
+				.sorted()
+				.map(page -> images.get(page - 1))
+				.toArray(Media[]::new);
 
 		ResponseEntity<ChatResponse, FindingVerdicts> response = chatClient.prompt()
+				.advisors(new MeteringAdvisor(meter))
 				.system(systemMessage -> systemMessage.text(systemPrompt))
-				.user(userMessage -> userMessage.text(buildVerificationPrompt(candidates)))
+				.user(userMessage -> {
+					userMessage.text(buildVerificationPrompt(candidates));
+					if (pageImages.length > 0) {
+						userMessage.media(pageImages);
+					}
+				})
 				.call()
 				.responseEntity(LenientOutputConverter.forType(FindingVerdicts.class));
-		meter.recordCall(response.getResponse());
-
 		// Number -> reason of every dropped finding. The first verdict for a number wins, so a model
 		// that repeats one cannot drop a finding twice.
 		Map<Integer, String> dropped = new java.util.HashMap<>();
@@ -192,11 +231,12 @@ public class FindingVerifier {
 
 		List<Finding> kept = new ArrayList<>();
 		for (int index = 0; index < candidates.size(); index++) {
+			Finding finding = candidates.get(index).finding();
 			if (dropped.containsKey(index + 1)) {
-				rejected.add(new CategoryCandidates.RejectedFinding(candidates.get(index), dropped.get(index + 1)));
+				rejected.add(new CategoryCandidates.RejectedFinding(finding, dropped.get(index + 1)));
 				continue;
 			}
-			kept.add(candidates.get(index));
+			kept.add(finding);
 		}
 
 		if (kept.size() < candidates.size()) {
@@ -214,10 +254,14 @@ public class FindingVerifier {
 	 * @param candidates the findings to verify
 	 * @return the fenced user message
 	 */
-	String buildVerificationPrompt(List<Finding> candidates) {
+	String buildVerificationPrompt(List<Candidate> candidates) {
 		List<Map<String, Object>> numbered = new ArrayList<>();
 		for (int index = 0; index < candidates.size(); index++) {
-			numbered.add(Map.of("finding", index + 1, "value", candidates.get(index)));
+			Candidate candidate = candidates.get(index);
+			numbered.add(candidate.imagePages().isEmpty()
+					? Map.of("finding", index + 1, "value", candidate.finding())
+					: Map.of("finding", index + 1, "value", candidate.finding(),
+							"quoteOnlyInPageImage", List.copyOf(candidate.imagePages())));
 		}
 		String json = objectMapper.writeValueAsString(numbered);
 		return "<" + FINDINGS_FENCE_TAG + ">\n" + json + "\n</" + FINDINGS_FENCE_TAG + ">\n";

@@ -56,9 +56,10 @@ public class CategoryReviewer {
 	 * @return the findings parsed from the LLM response
 	 */
 	public CategoryFindings review(List<String> pages, List<Media> images) {
-		// responseEntity rather than entity: the parsed findings are what the caller wants, but the
-		// raw response carries the token usage the run is measured by, and entity() discards it.
+		// The metering advisor records the call before the findings are parsed, so a response that
+		// fails conversion is still counted.
 		ResponseEntity<ChatResponse, CategoryFindings> response = chatClient.prompt()
+				.advisors(new MeteringAdvisor(meter))
 				.system(systemMessage -> systemMessage.text(systemPrompt))
 				.user(userMessage -> userMessage
 						.text(fencedPages(pages))
@@ -66,7 +67,6 @@ public class CategoryReviewer {
 				.call()
 				.responseEntity(LenientOutputConverter.forType(CategoryFindings.class));
 
-		meter.recordCall(response.getResponse());
 		return response.getEntity();
 	}
 

@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 class EvalPlanTest {
 
 	private static final String[] REQUIRED = {
@@ -21,7 +23,7 @@ class EvalPlanTest {
 	@Test
 	void everyApproachIsSweptUnlessNarrowed() {
 		// The default is the comparison itself; naming one arm is the special case.
-		assertThat(EvalPlan.parse(REQUIRED).approaches()).containsExactly(
+		assertThat(EvalPlan.parse(REQUIRED, Map.of()).approaches()).containsExactly(
 				"single-prompt", "category-fan-out-unverified", "category-fan-out-verified", "agentic");
 	}
 
@@ -37,14 +39,14 @@ class EvalPlanTest {
 
 	@Test
 	void aBareFanOutIsRejectedBecauseItWouldInheritTheVerificationDefault() {
-		assertThatThrownBy(() -> EvalPlan.parse(with("--approaches=category-fan-out")))
+		assertThatThrownBy(() -> EvalPlan.parse(with("--approaches=category-fan-out"), Map.of()))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("category-fan-out-verified");
 	}
 
 	@Test
 	void modelsAndApproachesAreCommaSeparatedAndKeepTheirOrder() {
-		EvalPlan plan = EvalPlan.parse(with("--models=a/one, b/two", "--approaches=agentic"));
+		EvalPlan plan = EvalPlan.parse(with("--models=a/one, b/two", "--approaches=agentic"), Map.of());
 
 		assertThat(plan.models()).containsExactly("a/one", "b/two");
 		assertThat(plan.approaches()).containsExactly("agentic");
@@ -54,14 +56,14 @@ class EvalPlanTest {
 	void aMisspelledApproachFailsBeforeAnythingIsBooted() {
 		// Otherwise the context comes up with no ThesisReviewer bean and the sweep dies hours in
 		// with a bean-not-found error that says nothing about the typo.
-		assertThatThrownBy(() -> EvalPlan.parse(with("--approaches=agentik")))
+		assertThatThrownBy(() -> EvalPlan.parse(with("--approaches=agentik"), Map.of()))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("agentik");
 	}
 
 	@Test
 	void aMissingRequiredValueNamesTheFlagAndItsEnvironmentVariable() {
-		assertThatThrownBy(() -> EvalPlan.parse(new String[]{"--models=a/one"}))
+		assertThatThrownBy(() -> EvalPlan.parse(new String[]{"--models=a/one"}, Map.of()))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("--corpus")
 				.hasMessageContaining("EVAL_CORPUS");
@@ -69,16 +71,35 @@ class EvalPlanTest {
 
 	@Test
 	void aMalformedArgumentIsRejectedRatherThanIgnored() {
-		assertThatThrownBy(() -> EvalPlan.parse(with("seeds", "3")))
+		assertThatThrownBy(() -> EvalPlan.parse(with("seeds", "3"), Map.of()))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("--key=value");
 	}
 
 	@Test
 	void theRunCountIsTheFullCrossProduct() {
-		EvalPlan plan = EvalPlan.parse(with("--models=a/one,b/two", "--seeds=3"));
+		EvalPlan plan = EvalPlan.parse(with("--models=a/one,b/two", "--seeds=3"), Map.of());
 
 		assertThat(plan.totalRuns(4)).isEqualTo(2 * 4 * 4 * 3);
+	}
+
+	@Test
+	void evaluationVariablesInTheEnvironmentFillOnlyWhatTheArgumentsLeaveOut() {
+		EvalPlan plan = EvalPlan.parse(new String[]{"--models=a/one", "--approaches=agentic"}, Map.of(
+				"EVAL_APPROACHES", "single-prompt", "EVAL_CORPUS", "/env/corpus",
+				"OPENAI_BASE_URL", "http://env", "OPENAI_API_KEY", "env-secret"));
+
+		assertThat(plan.approaches()).containsExactly("agentic");
+		assertThat(plan.corpus()).isEqualTo(java.nio.file.Path.of("/env/corpus"));
+	}
+
+	@Test
+	void twoModelsThatWouldShareAResultsDirectoryAreRejected() {
+		// Otherwise the second model's runs overwrite the first's under the same slug.
+		assertThatThrownBy(() -> EvalPlan.parse(with("--models=org/model,org_model"), Map.of()))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("org/model")
+				.hasMessageContaining("org_model");
 	}
 
 	@Test

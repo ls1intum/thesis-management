@@ -158,6 +158,23 @@ class AgenticReviewerTest {
 	}
 
 	@Test
+	void anAgentThatCoveredEveryCategoryButNeverFinishedIsReportedAsIncomplete() {
+		ReviewResult result = review(reviewerRunning((toolbox, meter) -> {
+			coverEveryCategory(toolbox);
+			call(toolbox, "record_finding", """
+					{"severity": "MINOR", "category": "WRITING", "title": "Wordy", "description": "Trim it."}""");
+			// Times out here, before finish_review: no verdict, no summary.
+		}));
+
+		// Returned unchanged, its empty summary would overwrite the previous one and read as a
+		// finished review.
+		assertThat(result.findings()).hasSize(1);
+		assertThat(result.assessment()).isNull();
+		assertThat(result.normalizedScore()).isNull();
+		assertThat(result.summary()).startsWith("Incomplete review: the review stopped before it finished");
+	}
+
+	@Test
 	void anAgentThatDidNothingAtAllIsAFailureRatherThanAnEmptyReview() {
 		AgenticReviewer reviewer = reviewerRunning((toolbox, meter) -> {
 			throw new IllegalStateException("401 Unauthorized");

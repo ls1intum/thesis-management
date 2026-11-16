@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.CategoryGuidelines;
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
+import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import de.tum.cit.aet.thesis.feedback.progress.ProgressReporter;
 import de.tum.cit.aet.thesis.feedback.service.PdfService;
@@ -39,14 +40,19 @@ class AgenticReviewerRequestTest {
 			"Group overview.",
 			List.of(new CategoryGuidelines("structure", List.of("Every proposal must contain an Abstract."))));
 
-	/** Records every prompt and answers with plain text, which ends the agent loop after one turn. */
+	/** Records every prompt and answers each with the same scripted response. */
 	private static final class RecordingChatModel implements ChatModel {
 		private final List<Prompt> prompts = new ArrayList<>();
+		private final AssistantMessage answer;
+
+		RecordingChatModel(AssistantMessage answer) {
+			this.answer = answer;
+		}
 
 		@Override
 		public ChatResponse call(Prompt prompt) {
 			prompts.add(prompt);
-			return new ChatResponse(List.of(new Generation(new AssistantMessage("Done."))));
+			return new ChatResponse(List.of(new Generation(answer)));
 		}
 
 		@Override
@@ -55,20 +61,29 @@ class AgenticReviewerRequestTest {
 		}
 	}
 
-	@Test
-	void everyToolboxToolIsSentToTheModel() {
-		RecordingChatModel model = new RecordingChatModel();
+	private static ReviewResult review(RecordingChatModel model, List<String> pages, int maxTurns) {
 		PdfService pdfService = mock(PdfService.class);
 		Resource document = new ByteArrayResource("pdf-content".getBytes());
-		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Abstract\nSome text."));
-
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(pages);
 		AgenticReviewer reviewer = new AgenticReviewer(pdfService, ChatClient.builder(model),
-				ToolCallingManager.builder().build(), metrics -> {}, 40);
+				ToolCallingManager.builder().build(), metrics -> {}, maxTurns);
+		return reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, document, mock(ProgressReporter.class)));
+	}
+
+	/** Runs a review whose model never calls a tool, so the run checks nothing; only the request matters. */
+	private static RecordingChatModel reviewIgnoringTheOutcome(List<String> pages) {
+		RecordingChatModel model = new RecordingChatModel(new AssistantMessage("Done."));
 		try {
-			reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, document, mock(ProgressReporter.class)));
+			review(model, pages, 40);
 		} catch (IllegalStateException expected) {
-			// The stub model never calls a tool, so the run checks nothing; only the request matters.
+			// Nothing was checked and nothing was found, which the reviewer reports as a failure.
 		}
+		return model;
+	}
+
+	@Test
+	void everyToolboxToolIsSentToTheModel() {
+		RecordingChatModel model = reviewIgnoringTheOutcome(List.of("Abstract\nSome text."));
 
 		assertThat(model.prompts).hasSize(1);
 		assertThat(model.prompts.getFirst().getOptions()).isInstanceOf(ToolCallingChatOptions.class);
@@ -79,5 +94,37 @@ class AgenticReviewerRequestTest {
 				.toList();
 		assertThat(toolNames).containsExactlyInAnyOrder("list_review_categories", "get_category_rules",
 				"get_page_text", "search_document", "record_finding", "finish_review");
+	}
+
+	@Test
+	void bracesInThePageTextReachTheModelVerbatim() {
+		// LaTeX, JSON and code listings are full of braces. ChatClient renders text as a template only
+		// when parameters are set, which no reviewer does, so they must arrive untouched.
+		String latex = "Let $\\frac{a}{b}$ hold for {x} and the config {\"key\": 1} with <tag>.";
+
+		RecordingChatModel model = reviewIgnoringTheOutcome(List.of("Abstract\n" + latex));
+
+		assertThat(model.prompts.getFirst().getUserMessage().getText()).contains(latex);
+	}
+
+	@Test
+	void theToolCallsOfTheTurnThatExhaustsTheBudgetStillRun() {
+		// With a budget of one turn, the first turn is also the last. Its findings and its verdict
+		// must count, rather than being skipped because the loop stops there.
+		AssistantMessage finalTurn = AssistantMessage.builder()
+				.content("")
+				.toolCalls(List.of(
+						new AssistantMessage.ToolCall("1", "function", "record_finding", """
+								{"severity": "MINOR", "category": "WRITING", "title": "Wordy", "description": "Trim it."}"""),
+						new AssistantMessage.ToolCall("2", "function", "finish_review",
+								"{\"assessment\": \"good\", \"score\": 80, \"summary\": \"Final verdict.\"}")))
+				.build();
+		RecordingChatModel model = new RecordingChatModel(finalTurn);
+
+		ReviewResult result = review(model, List.of("Abstract\nSome text."), 1);
+
+		assertThat(model.prompts).hasSize(1);
+		assertThat(result.findings()).singleElement().satisfies(finding -> assertThat(finding.title()).isEqualTo("Wordy"));
+		assertThat(result.summary()).endsWith("Final verdict.");
 	}
 }
