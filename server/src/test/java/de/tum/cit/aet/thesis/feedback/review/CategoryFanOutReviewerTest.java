@@ -29,6 +29,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.ResponseEntity;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.converter.StructuredOutputConverter;
 import org.springframework.core.io.ByteArrayResource;
@@ -37,6 +39,7 @@ import org.springframework.util.MimeTypeUtils;
 import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -71,6 +74,10 @@ public class CategoryFanOutReviewerTest {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
+	private final List<ReviewRunMetrics> recorded = new ArrayList<>();
+
+	private final ReviewMetricsRecorder metrics = recorded::add;
+
 	private CategoryFanOutReviewer reviewer;
 
 	private static final StructuredGuidelines GUIDELINES = new StructuredGuidelines(
@@ -80,9 +87,9 @@ public class CategoryFanOutReviewerTest {
 	@BeforeEach
 	void setUp() {
 		when(chatClientBuilder.build()).thenReturn(chatClient);
-		reviewer = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, true, "logos/openai/gpt-oss-120b") {
+		reviewer = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, metrics, false, true, "logos/openai/gpt-oss-120b") {
 			@Override
-			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt) {
+			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt, ReviewMeter meter) {
 				return categoryReviewer;
 			}
 		};
@@ -102,7 +109,7 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(anyReviewResultConverter())).thenReturn(expectedResult);
+		when(callResponseSpec.responseEntity(anyReviewResultConverter())).thenReturn(merged(expectedResult));
 
 		ReviewResult actualResult = reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource));
 
@@ -113,7 +120,7 @@ public class CategoryFanOutReviewerTest {
 		// waits for all futures before invoking the merger step.
 		verify(categoryReviewer, times(ReviewCategory.values().length)).review(extractedText, extractedImages);
 		verify(chatClient).prompt();
-		verify(callResponseSpec).entity(anyReviewResultConverter());
+		verify(callResponseSpec).responseEntity(anyReviewResultConverter());
 	}
 
 	@Test
@@ -128,8 +135,8 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(anyReviewResultConverter()))
-				.thenReturn(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of()));
+		when(callResponseSpec.responseEntity(anyReviewResultConverter()))
+				.thenReturn(merged(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of())));
 
 		reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter));
 
@@ -161,9 +168,9 @@ public class CategoryFanOutReviewerTest {
 		int total = ReviewCategory.values().length + 1;
 		ReviewResult expectedResult = new ReviewResult(AssessmentCategory.ACCEPTABLE, 60, "Partial review.", List.of());
 
-		CategoryFanOutReviewer partiallyFailing = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, false, "") {
+		CategoryFanOutReviewer partiallyFailing = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, metrics, false, false, "") {
 			@Override
-			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt) {
+			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt, ReviewMeter meter) {
 				return category == failingCategory ? failingCategoryReviewer : categoryReviewer;
 			}
 		};
@@ -175,7 +182,7 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(anyReviewResultConverter())).thenReturn(expectedResult);
+		when(callResponseSpec.responseEntity(anyReviewResultConverter())).thenReturn(merged(expectedResult));
 
 		ReviewResult actualResult = partiallyFailing.review(
 				new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter));
@@ -195,9 +202,9 @@ public class CategoryFanOutReviewerTest {
 		ReviewCategory failingCategory = ReviewCategory.values()[0];
 		Finding finding = new Finding("MINOR", "WRITING", "Run-on sentence", "Split it in two.", List.of());
 
-		CategoryFanOutReviewer partiallyFailing = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, false, "") {
+		CategoryFanOutReviewer partiallyFailing = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, metrics, false, false, "") {
 			@Override
-			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt) {
+			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt, ReviewMeter meter) {
 				return category == failingCategory ? failingCategoryReviewer : categoryReviewer;
 			}
 		};
@@ -211,8 +218,8 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
 		// The merger only ever saw the categories that answered, yet reads like a verdict on all of
 		// them — here, a clean bill of health that would otherwise be shown and persisted as one.
-		when(callResponseSpec.entity(anyReviewResultConverter()))
-				.thenReturn(new ReviewResult(AssessmentCategory.GOOD, 92, "A solid proposal.", List.of(finding)));
+		when(callResponseSpec.responseEntity(anyReviewResultConverter()))
+				.thenReturn(merged(new ReviewResult(AssessmentCategory.GOOD, 92, "A solid proposal.", List.of(finding))));
 
 		ReviewResult actualResult = partiallyFailing.review(
 				new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource, progressReporter));
@@ -243,7 +250,7 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(anyReviewResultConverter())).thenReturn(expectedResult);
+		when(callResponseSpec.responseEntity(anyReviewResultConverter())).thenReturn(merged(expectedResult));
 
 		ReviewResult actualResult = reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource));
 
@@ -312,9 +319,9 @@ public class CategoryFanOutReviewerTest {
 	@Test
 	void skipsImageExtractionWhenTheModelHasNoVision() {
 		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
-		CategoryFanOutReviewer textOnly = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, null, "openai/gpt-oss-120b") {
+		CategoryFanOutReviewer textOnly = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, metrics, false, null, "openai/gpt-oss-120b") {
 			@Override
-			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt) {
+			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt, ReviewMeter meter) {
 				return categoryReviewer;
 			}
 		};
@@ -325,8 +332,8 @@ public class CategoryFanOutReviewerTest {
 		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(anyReviewResultConverter()))
-				.thenReturn(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of()));
+		when(callResponseSpec.responseEntity(anyReviewResultConverter()))
+				.thenReturn(merged(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of())));
 
 		textOnly.review(new ReviewRequest(ReviewType.THESIS, GUIDELINES, pdfResource));
 
@@ -334,11 +341,107 @@ public class CategoryFanOutReviewerTest {
 		verify(categoryReviewer, times(ReviewCategory.values().length)).review(List.of("Page one."), List.of());
 	}
 
+	@Test
+	void everyCategoryIsVerifiedBeforeTheMergeWhenVerificationIsOn() {
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
+		Finding invented = new Finding("MINOR", "WRITING", "Avoid the first person", "Rewrite it.", List.of());
+		FindingVerifier verifier = org.mockito.Mockito.mock(FindingVerifier.class);
+		List<CategoryCandidates> traced = java.util.Collections.synchronizedList(new ArrayList<>());
+		ReviewMetricsRecorder tracing = new ReviewMetricsRecorder() {
+			@Override
+			public void record(ReviewRunMetrics runMetrics) {
+			}
+
+			@Override
+			public void recordCandidates(CategoryCandidates candidates) {
+				traced.add(candidates);
+			}
+		};
+
+		CategoryFanOutReviewer verifying = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, tracing, true, false, "") {
+			@Override
+			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt, ReviewMeter meter) {
+				return categoryReviewer;
+			}
+
+			@Override
+			protected FindingVerifier createVerifier(ReviewMeter meter) {
+				return verifier;
+			}
+		};
+
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
+		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of(invented)));
+		// Every category's candidate is rejected: a compliant document legitimately yields nothing.
+		when(verifier.check(any(), any(), any(), any(), anyList())).thenAnswer(invocation -> new CategoryCandidates(
+				invocation.getArgument(0), List.of(invented), List.of(),
+				List.of(new CategoryCandidates.RejectedFinding(invented, "No such rule.")), List.of(), false));
+		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
+		when(callResponseSpec.responseEntity(anyReviewResultConverter()))
+				.thenReturn(merged(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of())));
+
+		verifying.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource));
+
+		// One verification per category, and the merger therefore sees nothing invented.
+		verify(verifier, times(ReviewCategory.values().length)).check(any(), any(), any(), any(), anyList());
+		// The evaluation measures the stage by what it dropped, so every category's trace is recorded.
+		assertThat(traced).hasSize(ReviewCategory.values().length)
+				.allSatisfy(candidates -> assertThat(candidates.rejected()).singleElement()
+						.satisfies(rejected -> assertThat(rejected.reason()).isEqualTo("No such rule.")));
+		ArgumentCaptor<Consumer<ChatClient.PromptUserSpec>> userCaptor = org.mockito.ArgumentCaptor.forClass((Class) Consumer.class);
+		verify(chatClientRequestSpec).user(userCaptor.capture());
+	}
+
+	@Test
+	void verificationCanBeTurnedOffAndThenNothingIsFiltered() {
+		Resource pdfResource = new ByteArrayResource("pdf-content".getBytes());
+		FindingVerifier verifier = org.mockito.Mockito.mock(FindingVerifier.class);
+
+		CategoryFanOutReviewer unverified = new CategoryFanOutReviewer(pdfService, chatClientBuilder, objectMapper, metrics, false, false, "") {
+			@Override
+			protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt, ReviewMeter meter) {
+				return categoryReviewer;
+			}
+
+			@Override
+			protected FindingVerifier createVerifier(ReviewMeter meter) {
+				return verifier;
+			}
+		};
+
+		when(pdfService.extractTextFromPdf(any(Resource.class))).thenReturn(List.of("Extracted text"));
+		when(categoryReviewer.review(anyList(), anyList())).thenReturn(new CategoryFindings(List.of()));
+		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.system(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptSystemSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.user(org.mockito.ArgumentMatchers.<Consumer<ChatClient.PromptUserSpec>>any())).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
+		when(callResponseSpec.responseEntity(anyReviewResultConverter()))
+				.thenReturn(merged(new ReviewResult(AssessmentCategory.GOOD, 90, "Fine.", List.of())));
+
+		unverified.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource));
+
+		// The property has to actually disable the stage: it is the control condition when the two
+		// configurations are compared.
+		verify(verifier, org.mockito.Mockito.never()).check(any(), any(), any(), any(), anyList());
+	}
+
 	/**
-	 * Matches the structured-output converter the reviewer hands to {@code entity(...)}: a lenient
-	 * one built for {@link ReviewResult} rather than the plain class literal.
+	 * Matches the structured-output converter the reviewer hands to {@code responseEntity(...)}: a
+	 * lenient one built for {@link ReviewResult} rather than the plain class literal.
 	 */
 	private static StructuredOutputConverter<ReviewResult> anyReviewResultConverter() {
 		return any();
+	}
+
+	/**
+	 * Wraps a merged result the way {@code responseEntity(...)} returns it. The raw response is
+	 * null: the reviewer only reads it to meter token usage, which tolerates a response that
+	 * carries none.
+	 */
+	private static ResponseEntity<ChatResponse, ReviewResult> merged(ReviewResult result) {
+		return new ResponseEntity<>(null, result);
 	}
 }
