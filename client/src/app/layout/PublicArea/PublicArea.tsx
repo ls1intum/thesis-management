@@ -9,6 +9,10 @@ import EnvironmentBanner, {
   ENVIRONMENT_BANNER_HEIGHT,
   isEnvironmentBannerVisible,
 } from '@/core/components/EnvironmentBanner/EnvironmentBanner'
+import MaintenanceBanner, {
+  MAINTENANCE_BANNER_HEIGHT,
+  isMaintenanceBannerVisible,
+} from '@/core/components/MaintenanceBanner/MaintenanceBanner'
 
 interface IPublicAreaProps {
   size?: number | MantineSize | (string & {}) | undefined
@@ -21,12 +25,15 @@ const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
 
   const baseHeaderHeight = 50
   const HEADER_HEIGHT =
-    baseHeaderHeight + (isEnvironmentBannerVisible() ? ENVIRONMENT_BANNER_HEIGHT : 0)
+    baseHeaderHeight +
+    (isMaintenanceBannerVisible() ? MAINTENANCE_BANNER_HEIGHT : 0) +
+    (isEnvironmentBannerVisible() ? ENVIRONMENT_BANNER_HEIGHT : 0)
   const FOOTER_HEIGHT = 50
 
   return (
     <AppShell header={{ height: HEADER_HEIGHT }}>
       <AppShell.Header>
+        <MaintenanceBanner />
         <EnvironmentBanner />
         <Box h={baseHeaderHeight}>
           <Container size={size} fluid={!size} h='100%'>

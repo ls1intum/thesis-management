@@ -10,6 +10,8 @@ export interface IGlobalConfig {
 
   environment?: Environment
 
+  maintenance_message?: string
+
   allow_suggested_topics: boolean
 
   // Mirrors the server's AI_FEATURES_ENABLED flag. When false, the AI module is not registered
