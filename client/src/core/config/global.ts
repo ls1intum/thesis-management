@@ -49,6 +49,8 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
 
   environment: parseEnvironment(getEnvironmentVariable('ENVIRONMENT')),
 
+  maintenance_message: getEnvironmentVariable('MAINTENANCE_MESSAGE'),
+
   allow_suggested_topics: (getEnvironmentVariable('ALLOW_SUGGESTED_TOPICS') ?? 'true') === 'true',
 
   genders: getEnvironmentVariable<Record<string, string>>('GENDERS', true) ?? {

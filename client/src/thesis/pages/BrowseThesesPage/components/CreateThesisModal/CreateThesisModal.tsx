@@ -29,6 +29,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
 
   const [loading, setLoading] = useState(false)
   const [researchGroups, setResearchGroups] = useState<PaginationResponse<ILightResearchGroup>>()
+  const [researchGroupError, setResearchGroupError] = useState<string>()
   const [autoSelectedExaminers, setAutoSelectedExaminers] = useState<ILightUser[]>([])
   const hasAdminAccess = useHasGroupAccess('admin')
 
@@ -83,6 +84,7 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
       },
       (res) => {
         if (res.ok) {
+          setResearchGroupError(undefined)
           setResearchGroups({
             ...res.data,
             content: res.data.content,
@@ -97,7 +99,9 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             setAutoSelectedExaminers(onlyGroup.head ? [onlyGroup.head] : [])
           }
         } else {
-          showSimpleError(getApiResponseErrorMessage(res))
+          const errorMessage = getApiResponseErrorMessage(res)
+          showSimpleError(errorMessage)
+          setResearchGroupError(errorMessage)
 
           setResearchGroups({
             content: [],
@@ -199,12 +203,22 @@ const CreateThesisModal = (props: ICreateThesisModalProps) => {
             label='Research Group'
             required
             nothingFoundMessage={!loading ? 'Nothing found...' : 'Loading...'}
-            disabled={loading || !researchGroups || !hasAdminAccess}
+            disabled={
+              loading ||
+              !researchGroups ||
+              (!hasAdminAccess && (researchGroups.content ?? []).length <= 1)
+            }
             data={(researchGroups?.content ?? []).map((researchGroup: ILightResearchGroup) => ({
               label: researchGroup.name,
               value: researchGroup.id,
             }))}
             {...form.getInputProps('researchGroupId')}
+            error={
+              !loading && researchGroups && (researchGroups.content ?? []).length === 0
+                ? (researchGroupError ??
+                  'No research group available. Please ask an administrator to add you to a research group.')
+                : form.errors.researchGroupId
+            }
           />
           <Button type='submit' loading={loading} disabled={!form.isValid()}>
             Create Thesis

@@ -8,6 +8,8 @@ export interface IGlobalConfig {
 
   environment?: Environment
 
+  maintenance_message?: string
+
   allow_suggested_topics: boolean
 
   server_host: string
