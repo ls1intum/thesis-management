@@ -26,6 +26,8 @@ const ALLOWED_ENVIRONMENT_VARIABLES = [
   // Optional environment marker shown as a banner above the header and
   // suffixed onto the footer version (production / staging / test / dev).
   'ENVIRONMENT',
+  // Optional maintenance notice shown as a banner on every page when set.
+  'MAINTENANCE_MESSAGE',
 ]
 
 async function generateConfig() {
