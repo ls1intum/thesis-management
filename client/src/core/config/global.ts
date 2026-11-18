@@ -123,7 +123,7 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     },
     PRESENTATION_SOURCE: {
       label: 'Presentation Source',
-      description: 'Presentation Source (KEY, PPTX)',
+      description: 'Presentation Source (KEY, PPTX, ZIP)',
       accept: 'any',
       required: false,
     },
