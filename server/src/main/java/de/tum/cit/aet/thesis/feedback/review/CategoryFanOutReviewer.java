@@ -10,6 +10,8 @@ import de.tum.cit.aet.thesis.feedback.service.PdfService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.ResponseEntity;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.content.Media;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -36,15 +39,21 @@ import java.util.stream.Collectors;
  * consolidates the per-category findings into one ranked, deduplicated result. Control flow is
  * entirely in code — the model decides what to report, never what to do next.
  *
+ * <p>Each category's findings are checked against that category's own rules before the merge, by
+ * {@link FindingVerifier} — the structure hands every category a slot in the output, and a category
+ * with nothing to report tends to fill it anyway. Disable with
+ * {@code thesis-management.ai.verify-findings=false}.
+ *
  * <p>The fan-out is fault-tolerant: a category whose call fails is dropped and the merge runs on
  * the categories that answered, so one flaky LLM call costs a slice of the review rather than all
- * of it. Only a run in which every category failed aborts. Such a run is reported as incomplete —
- * findings but no overall score or assessment, and a summary naming the checks that are missing —
- * so reduced coverage is never passed off as a clean result.
+ * of it. Only a run in which every category failed aborts. A run that lost categories is reported
+ * as incomplete by {@link IncompleteCoverage}, so reduced coverage is never passed off as a clean
+ * result.
  *
- * <p>Selected by {@code thesis-management.ai.reviewer=category-fan-out}, which is also the default.
- * A different strategy replaces this bean by implementing {@link ThesisReviewer} and declaring its
- * own value for that property.
+ * <p>Selected by {@code thesis-management.ai.reviewer=category-fan-out}, which is also the default;
+ * {@link AgenticReviewer} is the model-driven alternative and {@link SinglePromptReviewer} the
+ * one-call baseline. A further strategy replaces this bean by
+ * implementing {@link ThesisReviewer} and declaring its own value for that property.
  */
 @Service
 @Conditional(AIFeaturesEnabled.class)
@@ -69,7 +78,9 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	private final PdfService pdfService;
 	private final ChatClient chatClient;
 	private final ObjectMapper objectMapper;
+	private final ReviewMetricsRecorder metricsRecorder;
 	private final boolean includeImages;
+	private final boolean verifyFindings;
 
 	/**
 	 * Dedicated executor for the concurrent per-category LLM calls. Virtual threads are ideal here
@@ -85,16 +96,23 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	 * @param chatClientBuilder     Spring AI builder used to construct the chat client
 	 * @param objectMapper          Spring-managed Jackson mapper used to serialize the per-category
 	 *                              findings as untrusted JSON for the merge step
+	 * @param metricsRecorder       where each finished run's measured cost goes
+	 * @param verifyFindings        whether each category's findings are checked against its own
+	 *                              rules before the merge; see {@link FindingVerifier}
 	 * @param includeImagesOverride when set, forces images on ({@code true}) or off ({@code false});
 	 *                              when unset, capability is inferred from the configured chat model
 	 * @param chatModel             configured chat model name, used to auto-detect vision support
 	 */
 	public CategoryFanOutReviewer(PdfService pdfService, ChatClient.Builder chatClientBuilder, ObjectMapper objectMapper,
+			ReviewMetricsRecorder metricsRecorder,
+			@Value("${thesis-management.ai.verify-findings:true}") boolean verifyFindings,
 			@Value("${thesis-management.ai.review-include-images:#{null}}") Boolean includeImagesOverride,
 			@Value("${spring.ai.openai.chat.model:}") String chatModel) {
 		this.pdfService = pdfService;
 		this.chatClient = chatClientBuilder.build();
 		this.objectMapper = objectMapper;
+		this.metricsRecorder = metricsRecorder;
+		this.verifyFindings = verifyFindings;
 		this.includeImages = includeImagesOverride != null
 				? includeImagesOverride
 				: VisionModels.supportsVision(chatModel);
@@ -115,11 +133,21 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	public ReviewResult review(ReviewRequest request) {
 		List<String> pages = pdfService.extractTextFromPdf(request.document());
 		List<Media> images = includeImages ? pdfService.extractImagesFromPdf(request.document()) : List.of();
+		ReviewMeter meter = new ReviewMeter();
 
-		CategoryOutcomes outcomes = reviewEachCategory(request, pages, images);
-		ReviewResult merged = merge(request.type(), outcomes.findings(), request.progress());
+		CategoryOutcomes outcomes = reviewEachCategory(request, pages, images, meter);
+		ReviewResult merged = merge(request.type(), outcomes.findings(), request.progress(), meter);
+		// A constant number of sequential stages however many categories there are: the fan-out is
+		// concurrent, each category verifies its own findings inside that same concurrent task, and
+		// the merge waits for all of them. Two stages, or three when any category made a verification
+		// call — still a constant, which is the point of comparison with AgenticReviewer, whose depth
+		// is one stage per model turn.
+		meter.addDepth(outcomes.verificationRan() ? 3 : 2);
 
-		return qualifyIncompleteCoverage(merged, outcomes.failed());
+		metricsRecorder.record(meter.snapshot(strategy(),
+				ReviewCategory.values().length - outcomes.failed().size(), ReviewCategory.values().length));
+
+		return IncompleteCoverage.qualify(merged, outcomes.failed());
 	}
 
 	/**
@@ -129,11 +157,12 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	 * @return what the categories that succeeded found, plus the ones that did not
 	 */
 	private CategoryOutcomes reviewEachCategory(ReviewRequest request, List<String> pages,
-			List<Media> images) {
+			List<Media> images, ReviewMeter meter) {
 		ProgressReporter progress = request.progress();
 		int total = ReviewCategory.values().length + 1;
 
 		Map<ReviewCategory, CompletableFuture<CategoryFindings>> futures = new EnumMap<>(ReviewCategory.class);
+		AtomicBoolean verificationRan = new AtomicBoolean();
 		int index = 0;
 		for (ReviewCategory category : ReviewCategory.values()) {
 			index++;
@@ -143,18 +172,32 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 			futures.put(category, CompletableFuture.supplyAsync(() -> {
 				log.debug("Reviewing category {} ({})", category.getSlug(), request.type());
 				try {
-					CategoryFindings findings = createReviewer(category, request.type(), guidelinesPrompt).review(pages, images);
+					CategoryFindings generated = createReviewer(category, request.type(), guidelinesPrompt, meter)
+							.review(pages, images);
+					// Verified here, inside the category's own task, rather than as a stage of its
+					// own after the fan-out: the checks run concurrently with the other categories'
+					// reviews, so the whole pass costs one extra latency instead of one per category.
+					CategoryCandidates candidates = verifyFindings
+							? createVerifier(meter).check(category, request.type(), guidelinesPrompt, generated, pages, images)
+							: CategoryCandidates.unverified(category, generated.findings());
+					// Only candidates that survive grounding reach the verification call; with none left,
+					// check() returns without calling the model.
+					if (verifyFindings && candidates.generated().size() > candidates.ungrounded().size()) {
+						verificationRan.set(true);
+					}
+					metricsRecorder.recordCandidates(candidates);
 					progress.stepCompleted(category.getSlug(), stepIndex, total);
-					return findings;
+					return new CategoryFindings(candidates.kept());
 				} catch (RuntimeException e) {
 					log.warn("AI review failed for category {} ({})", category.getSlug(), request.type(), e);
+					metricsRecorder.recordCategoryFailure(category, e);
 					progress.stepFailed(category.getSlug(), stepIndex, total, STEP_FAILURE_MESSAGE);
 					throw e;
 				}
 			}, reviewExecutor));
 		}
 
-		return collectSucceeded(futures);
+		return collectSucceeded(futures, verificationRan);
 	}
 
 	/**
@@ -169,11 +212,13 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	 * <p>Every category is awaited even once one has failed: they were all dispatched up front and
 	 * are already in flight, so there is nothing to save by abandoning them.
 	 *
-	 * @param futures the dispatched per-category calls, in {@link ReviewCategory} declaration order
+	 * @param futures         the dispatched per-category calls, in {@link ReviewCategory} declaration order
+	 * @param verificationRan set by any category whose verification called the model; read once all are done
 	 * @return the findings of the successful categories, keyed by category slug and in that same
 	 *         order, together with the categories that failed
 	 */
-	private CategoryOutcomes collectSucceeded(Map<ReviewCategory, CompletableFuture<CategoryFindings>> futures) {
+	private CategoryOutcomes collectSucceeded(Map<ReviewCategory, CompletableFuture<CategoryFindings>> futures,
+			AtomicBoolean verificationRan) {
 		Map<String, CategoryFindings> results = new LinkedHashMap<>();
 		List<ReviewCategory> failed = new ArrayList<>();
 		Throwable firstFailure = null;
@@ -204,57 +249,23 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 			log.warn("Continuing the review with {} of {} categories; {} failed and were dropped",
 					results.size(), futures.size(), slugsOf(failed));
 		}
-		return new CategoryOutcomes(results, List.copyOf(failed));
-	}
-
-	/**
-	 * Marks a result as incomplete when some categories never answered.
-	 *
-	 * <p>The merger only ever saw the categories that succeeded, so its verdict covers a subset of
-	 * the checks while reading like a verdict on all of them. Left alone, a run where eight of the
-	 * nine categories failed and the ninth happened to find nothing would be shown — and persisted
-	 * — as a clean bill of health. The live progress list does mark each failed call, but it is
-	 * gone the moment the review finishes and never reaches whoever opens the thesis later.
-	 *
-	 * <p>An incomplete run therefore keeps its findings, which are real, and gives up the two
-	 * claims it cannot support: the overall score and the assessment are dropped, and the summary
-	 * leads with which checks are missing. Both the supervisor's preview and the persisted summary
-	 * row read exactly those three fields, so the caveat travels with the result rather than living
-	 * in a log line.
-	 *
-	 * @param result the merged result, describing only the categories that answered
-	 * @param failed the categories that failed; empty for a complete run
-	 * @return {@code result} unchanged for a complete run, otherwise a qualified copy
-	 */
-	private static ReviewResult qualifyIncompleteCoverage(ReviewResult result, List<ReviewCategory> failed) {
-		if (failed.isEmpty() || result == null) {
-			return result;
-		}
-
-		String missing = failed.stream().map(ReviewCategory::getDisplayName).collect(Collectors.joining(", "));
-		String warning = ("Incomplete review: %d of %d checks could not be completed (%s). "
-				+ "The findings below cover only the checks that ran, so no overall score or assessment is given.")
-						.formatted(failed.size(), ReviewCategory.values().length, missing);
-		String summary = result.summary() == null || result.summary().isBlank()
-				? warning
-				: warning + "\n\n" + result.summary();
-
-		return new ReviewResult(null, null, summary, result.findings());
+		return new CategoryOutcomes(results, List.copyOf(failed), verificationRan.get());
 	}
 
 	private ReviewResult merge(ReviewType reviewType, Map<String, CategoryFindings> perCategory,
-			ProgressReporter progress) {
+			ProgressReporter progress, ReviewMeter meter) {
 		int total = ReviewCategory.values().length + 1;
 		progress.stepStarted(MERGE_STEP_ID, "Consolidating findings", total, total);
 		try {
 			String mergerSystemPrompt = Prompts.MERGER.getPrompt(reviewType);
-			ReviewResult result = chatClient.prompt()
+			ResponseEntity<ChatResponse, ReviewResult> response = chatClient.prompt()
+					.advisors(new MeteringAdvisor(meter))
 					.system(systemMessage -> systemMessage.text(mergerSystemPrompt))
 					.user(userMessage -> userMessage.text(buildMergePrompt(perCategory)))
 					.call()
-					.entity(LenientOutputConverter.forType(ReviewResult.class));
+					.responseEntity(LenientOutputConverter.forType(ReviewResult.class));
 			progress.stepCompleted(MERGE_STEP_ID, total, total);
-			return result;
+			return response.getEntity();
 		} catch (RuntimeException e) {
 			log.warn("AI review failed consolidating {} findings ({})", perCategory.size(), reviewType, e);
 			progress.stepFailed(MERGE_STEP_ID, total, total, STEP_FAILURE_MESSAGE);
@@ -272,13 +283,20 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 		return "<" + FINDINGS_FENCE_TAG + ">\n" + json + "\n</" + FINDINGS_FENCE_TAG + ">\n";
 	}
 
+	/** Overridable so tests can substitute the verification call. */
+	protected FindingVerifier createVerifier(ReviewMeter meter) {
+		return new FindingVerifier(chatClient, objectMapper, meter);
+	}
+
 	/** Overridable so tests can substitute the per-category LLM call. */
-	protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt) {
+	protected CategoryReviewer createReviewer(ReviewCategory category, ReviewType reviewType, String guidelinesPrompt,
+			ReviewMeter meter) {
 		return new CategoryReviewer(
 				Prompts.SHARED.getPrompt(reviewType),
 				Prompts.taskPromptFor(category, reviewType),
 				guidelinesPrompt,
-				chatClient);
+				chatClient,
+				meter);
 	}
 
 	private static String slugsOf(List<ReviewCategory> categories) {
@@ -290,8 +308,10 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	 * categories failed outright.
 	 *
 	 * @param findings the findings of the categories that answered
-	 * @param failed   the categories whose call failed; empty when every category answered
+	 * @param failed          the categories whose call failed; empty when every category answered
+	 * @param verificationRan whether any category made a verification call
 	 */
-	private record CategoryOutcomes(Map<String, CategoryFindings> findings, List<ReviewCategory> failed) {
+	private record CategoryOutcomes(Map<String, CategoryFindings> findings, List<ReviewCategory> failed,
+			boolean verificationRan) {
 	}
 }

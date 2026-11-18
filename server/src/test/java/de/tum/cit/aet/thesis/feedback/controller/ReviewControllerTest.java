@@ -1,5 +1,6 @@
 package de.tum.cit.aet.thesis.feedback.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,8 +15,10 @@ import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
 import de.tum.cit.aet.thesis.feedback.dto.AIPreviewResponseDTO;
 import de.tum.cit.aet.thesis.feedback.dto.FeedbackClassificationDTO;
 import de.tum.cit.aet.thesis.feedback.dto.ImportedNotesDTO;
+import de.tum.cit.aet.thesis.feedback.eval.EvalContext;
 import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
+import de.tum.cit.aet.thesis.feedback.review.ReviewMetricsRecorder;
 import de.tum.cit.aet.thesis.feedback.service.AIFeedbackService;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
@@ -24,6 +27,7 @@ import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -49,6 +53,19 @@ class ReviewControllerTest extends BaseIntegrationTest {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	private ApplicationContext applicationContext;
+
+	@Test
+	void evaluationConfigurationStaysOutOfTheApplicationContext() {
+		// EvalContext lives under the application's scan root. If component scanning picked it up,
+		// its collecting recorder would sit beside the logging default and the reviewers would no
+		// longer have a single ReviewMetricsRecorder to inject.
+		assertThat(applicationContext.getBeanNamesForType(EvalContext.class)).isEmpty();
+		assertThat(applicationContext.getBeanNamesForType(EvalContext.CollectingMetricsRecorder.class)).isEmpty();
+		assertThat(applicationContext.getBean(ReviewMetricsRecorder.class)).isSameAs(ReviewMetricsRecorder.LOGGING);
+	}
 
 	@Test
 	void preview_returnsMockedDraftsForSupervisor() throws Exception {

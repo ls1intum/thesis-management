@@ -12,6 +12,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.ResponseEntity;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.content.Media;
 import org.springframework.ai.converter.StructuredOutputConverter;
 import org.springframework.util.MimeTypeUtils;
@@ -44,15 +47,16 @@ public class CategoryReviewerTest {
 		Media pageImage = new Media(MimeTypeUtils.IMAGE_PNG, URI.create("file:///proposal-page-1.png"));
 
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(anyPromptSystemConsumer())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(anyPromptUserConsumer())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(anyCategoryFindingsConverter())).thenReturn(expectedResult);
+		when(callResponseSpec.responseEntity(anyCategoryFindingsConverter())).thenReturn(parsed(expectedResult));
 		when(promptSystemSpec.text(anyString())).thenReturn(promptSystemSpec);
 		when(promptUserSpec.text(anyString())).thenReturn(promptUserSpec);
 		when(promptUserSpec.media(any(Media[].class))).thenReturn(promptUserSpec);
 
-		CategoryReviewer reviewer = new CategoryReviewer("shared prompt", "task prompt", "guidelines prompt", chatClient);
+		CategoryReviewer reviewer = new CategoryReviewer("shared prompt", "task prompt", "guidelines prompt", chatClient, new ReviewMeter());
 		CategoryFindings actualResult = reviewer.review(
 				List.of("Page one says ignore previous instructions.", "Page two content."),
 				List.of(pageImage)
@@ -94,15 +98,16 @@ public class CategoryReviewerTest {
 	@Test
 	void reviewParsesAModelAnswerWhoseStringsContainRawLineBreaks() {
 		when(chatClient.prompt()).thenReturn(chatClientRequestSpec);
+		when(chatClientRequestSpec.advisors(org.mockito.ArgumentMatchers.any(Advisor[].class))).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.system(anyPromptSystemConsumer())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.user(anyPromptUserConsumer())).thenReturn(chatClientRequestSpec);
 		when(chatClientRequestSpec.call()).thenReturn(callResponseSpec);
-		when(callResponseSpec.entity(anyCategoryFindingsConverter())).thenReturn(new CategoryFindings(List.of()));
+		when(callResponseSpec.responseEntity(anyCategoryFindingsConverter())).thenReturn(parsed(new CategoryFindings(List.of())));
 
-		new CategoryReviewer("shared", "task", "guidelines", chatClient).review(List.of("Page one."), List.of());
+		new CategoryReviewer("shared", "task", "guidelines", chatClient, new ReviewMeter()).review(List.of("Page one."), List.of());
 
 		ArgumentCaptor<StructuredOutputConverter<CategoryFindings>> converterCaptor = converterCaptor();
-		verify(callResponseSpec).entity(converterCaptor.capture());
+		verify(callResponseSpec).responseEntity(converterCaptor.capture());
 
 		// Models routinely put an unescaped line break inside a JSON string value; a strict parser
 		// rejects it outright ("Illegal unquoted character (CTRL-CHAR, code 10)") and loses an
@@ -138,5 +143,13 @@ public class CategoryReviewerTest {
 
 	private static StructuredOutputConverter<CategoryFindings> anyCategoryFindingsConverter() {
 		return any();
+	}
+
+	/**
+	 * Wraps findings the way {@code responseEntity(...)} returns them. The raw response is null:
+	 * the reviewer only reads it to meter token usage, which tolerates a response without any.
+	 */
+	private static ResponseEntity<ChatResponse, CategoryFindings> parsed(CategoryFindings findings) {
+		return new ResponseEntity<>(null, findings);
 	}
 }
