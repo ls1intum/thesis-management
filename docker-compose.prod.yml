@@ -12,6 +12,13 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.letsencrypt.acme.email=admin@tum.de"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      # Incident mode: ./traefik-dynamic/incident.yml defines incident-gate and
+      # incident-gate-api, which the client and server routers always use. It is
+      # managed by aet-infrastructure (services/thesis_management): open to
+      # everyone normally, VPN-only during an incident. If the file is missing
+      # the routers are disabled, so the app fails closed, never open.
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
     restart: unless-stopped
     ports:
       - "80:80"
@@ -19,6 +26,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./letsencrypt:/letsencrypt
+      - ./traefik-dynamic:/etc/traefik/dynamic:ro
     networks:
       - thesis-management-network
 
@@ -39,7 +47,7 @@ services:
       # Each container defines its own middleware: Traefik drops a container's labels while it is down, and a
       # router that references a missing middleware is disabled, so the two routers must not share one.
       - "traefik.http.middlewares.server-hsts.headers.stsSeconds=31536000"
-      - "traefik.http.routers.server.middlewares=api-ratelimit,server-compress,server-hsts"
+      - "traefik.http.routers.server.middlewares=incident-gate-api@file,api-ratelimit,server-compress,server-hsts"
       - "traefik.http.routers.server.priority=10"
     depends_on:
       db:
@@ -95,9 +103,15 @@ services:
       - "traefik.http.routers.client.tls.certresolver=letsencrypt"
       - "traefik.http.middlewares.client-compress.compress=true"
       - "traefik.http.middlewares.client-hsts.headers.stsSeconds=31536000"
-      - "traefik.http.routers.client.middlewares=client-compress,client-hsts"
+      - "traefik.http.routers.client.middlewares=incident-gate@file,client-compress,client-hsts"
       - "traefik.http.routers.client.priority=1"
     restart: unless-stopped
+    # Maintenance banner (MAINTENANCE_MESSAGE), written by aet-infrastructure.
+    # Optional, and deliberately not listed under environment: a bare entry
+    # there would override this file with an empty value.
+    env_file:
+      - path: ./incident.env
+        required: false
     expose:
       - "80"
     environment:

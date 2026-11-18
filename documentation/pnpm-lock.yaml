@@ -175,15 +175,15 @@ overrides:
   qs@<6.16.0: 6.17.1
   body-parser@<1.20.9: 1.20.9
   compression@<1.8.2: 1.8.2
-  follow-redirects@<1.16.2: 1.16.2
+  follow-redirects@<1.16.2: 1.16.3
   joi@>=17.1.1 <17.13.9: 17.13.9
   launch-editor@<2.14.2: 2.14.2
-  postcss-selector-parser@<6.1.5: 6.1.5
+  postcss-selector-parser@<6.1.5: 6.1.6
   postcss-selector-parser@>=7.0.0 <7.1.7: 7.1.7
   proxy-addr@<2.0.8: 2.0.8
   shell-quote@<1.12.0: 1.12.0
   source-map-js@<1.2.2: 1.2.2
-  tinypool@<2.1.2: 2.1.2
+  tinypool@<2.1.2: 2.2.0
 
 importers:
 
@@ -3416,8 +3416,8 @@ packages:
     resolution: {integrity: sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==}
     hasBin: true
 
-  follow-redirects@1.16.2:
-    resolution: {integrity: sha512-/kVP2U8z596Ia0gwFrwyIeo74ta5aVmSeU1FfAUMAmcEP5EP7zydmag3SLiN64NaRKef3lxsq7i/g7ltJQDGow==}
+  follow-redirects@1.16.3:
+    resolution: {integrity: sha512-toOSoqN6d51Wjf1aOFJYcoVv1aND9rj/CwjLU0Vz40oDuSpWDayCeKe4JpL5NL0WdFvoOOCI3BRo69HahjbR1A==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -4966,8 +4966,8 @@ packages:
     peerDependencies:
       postcss: ^8.4
 
-  postcss-selector-parser@6.1.5:
-    resolution: {integrity: sha512-TEHFzb5KRDKaOgJ4TYE+0jyJtFbjLvkdVOu0fZ2b6MTWzoqZd4Le+61aEppWkvTlYePgOX4ATL1wsAIPMLTw6Q==}
+  postcss-selector-parser@6.1.6:
+    resolution: {integrity: sha512-BK87/Qgti3DIcgS2PaCVoteFIkjIFvCJBizZDIVSjdlFNg4Jv+SRqbN2JONb/qQUH4ZFqfXYF+izg15W2HVRvA==}
     engines: {node: '>=4'}
 
   postcss-selector-parser@7.1.7:
@@ -5618,8 +5618,8 @@ packages:
   tiny-warning@1.0.3:
     resolution: {integrity: sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==}
 
-  tinypool@2.1.2:
-    resolution: {integrity: sha512-9YodfrxS9g9IbFr/KOjE5bAeJ0p61n3bW6mqvy0jtoeKd1kTW1Cxm0oulm6KX2lyM9Gl6WIe8nEbY7LWv5ZJww==}
+  tinypool@2.2.0:
+    resolution: {integrity: sha512-jBrmx4lYmaC9k/mgPbylxs7kBUxHtD8256up+HjLaDFfXScKJQyil+SWXSvhAtT7XHo+yTVlpB81PGmHP8oLSQ==}
     engines: {node: ^20.0.0 || >=22.0.0}
 
   to-regex-range@5.0.1:
@@ -7298,7 +7298,7 @@ snapshots:
       react-router-dom: 5.3.4(react@19.3.1)
       semver: 7.8.5
       serve-handler: 6.1.7
-      tinypool: 2.1.2
+      tinypool: 2.2.0
       tslib: 2.8.1
       update-notifier: 6.0.2
       webpack: 5.109.2(@swc/core@1.15.47)(@swc/html@1.15.47)(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.25))(csso@5.0.5)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.25)
@@ -10260,7 +10260,7 @@ snapshots:
 
   flat@5.0.2: {}
 
-  follow-redirects@1.16.2(debug@4.4.3(supports-color@8.1.1)):
+  follow-redirects@1.16.3(debug@4.4.3(supports-color@8.1.1)):
     optionalDependencies:
       debug: 4.4.3(supports-color@8.1.1)
 
@@ -10601,7 +10601,7 @@ snapshots:
   http-proxy@1.18.1(debug@4.4.3(supports-color@8.1.1)):
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.16.2(debug@4.4.3(supports-color@8.1.1))
+      follow-redirects: 1.16.3(debug@4.4.3(supports-color@8.1.1))
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug
@@ -11732,7 +11732,7 @@ snapshots:
   postcss-calc@9.0.1(postcss@8.5.25):
     dependencies:
       postcss: 8.5.25
-      postcss-selector-parser: 6.1.5
+      postcss-selector-parser: 6.1.6
       postcss-value-parser: 4.2.0
 
   postcss-clamp@4.1.0(postcss@8.5.25):
@@ -11824,7 +11824,7 @@ snapshots:
   postcss-discard-unused@6.0.5(postcss@8.5.25):
     dependencies:
       postcss: 8.5.25
-      postcss-selector-parser: 6.1.5
+      postcss-selector-parser: 6.1.6
 
   postcss-double-position-gradients@6.0.4(postcss@8.5.25):
     dependencies:
@@ -11899,7 +11899,7 @@ snapshots:
       caniuse-api: 3.0.0
       cssnano-utils: 4.0.2(postcss@8.5.25)
       postcss: 8.5.25
-      postcss-selector-parser: 6.1.5
+      postcss-selector-parser: 6.1.6
 
   postcss-minify-font-values@6.1.0(postcss@8.5.25):
     dependencies:
@@ -11923,7 +11923,7 @@ snapshots:
   postcss-minify-selectors@6.0.4(postcss@8.5.25):
     dependencies:
       postcss: 8.5.25
-      postcss-selector-parser: 6.1.5
+      postcss-selector-parser: 6.1.6
 
   postcss-modules-extract-imports@3.1.0(postcss@8.5.25):
     dependencies:
@@ -12127,9 +12127,8 @@ snapshots:
       postcss: 8.5.25
       postcss-selector-parser: 7.1.7
 
-  postcss-selector-parser@6.1.5:
+  postcss-selector-parser@6.1.6:
     dependencies:
-      cssesc: 3.0.0
       util-deprecate: 1.0.2
 
   postcss-selector-parser@7.1.7:
@@ -12151,7 +12150,7 @@ snapshots:
   postcss-unique-selectors@6.0.4(postcss@8.5.25):
     dependencies:
       postcss: 8.5.25
-      postcss-selector-parser: 6.1.5
+      postcss-selector-parser: 6.1.6
 
   postcss-value-parser@4.2.0: {}
 
@@ -12800,7 +12799,7 @@ snapshots:
     dependencies:
       browserslist: 4.28.7
       postcss: 8.5.25
-      postcss-selector-parser: 6.1.5
+      postcss-selector-parser: 6.1.6
 
   supports-color@7.2.0:
     dependencies:
@@ -12866,7 +12865,7 @@ snapshots:
 
   tiny-warning@1.0.3: {}
 
-  tinypool@2.1.2: {}
+  tinypool@2.2.0: {}
 
   to-regex-range@5.0.1:
     dependencies:

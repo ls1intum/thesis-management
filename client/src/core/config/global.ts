@@ -50,6 +50,8 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
 
   environment: parseEnvironment(getEnvironmentVariable('ENVIRONMENT')),
 
+  maintenance_message: getEnvironmentVariable('MAINTENANCE_MESSAGE'),
+
   allow_suggested_topics: (getEnvironmentVariable('ALLOW_SUGGESTED_TOPICS') ?? 'true') === 'true',
 
   // Defaults to false to match the server's AI_FEATURES_ENABLED default, so AI buttons stay
@@ -121,7 +123,7 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
     },
     PRESENTATION_SOURCE: {
       label: 'Presentation Source',
-      description: 'Presentation Source (KEY, PPTX)',
+      description: 'Presentation Source (KEY, PPTX, ZIP)',
       accept: 'any',
       required: false,
     },
