@@ -16,9 +16,9 @@ import org.springframework.ai.retry.autoconfigure.SpringAiRetryAutoConfiguration
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import java.util.ArrayList;
@@ -43,8 +43,13 @@ import java.util.Map;
  *
  * <p>{@link ChatClientTimeoutConfig} comes along because without it every call reverts to Spring
  * AI's 60-second default and a full review is cut off mid-generation.
+ *
+ * <p>It is a {@link TestConfiguration} rather than a plain configuration because it sits under the
+ * application's component-scan root: a plain one would be picked up by every {@code @SpringBootTest}
+ * and put a second {@link ReviewMetricsRecorder} beside the logging default. Booting it as the
+ * primary source, as the sweep does, still works.
  */
-@Configuration(proxyBeanMethods = false)
+@TestConfiguration(proxyBeanMethods = false)
 @ImportAutoConfiguration({
 		RestClientAutoConfiguration.class,
 		WebClientAutoConfiguration.class,
