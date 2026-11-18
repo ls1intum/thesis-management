@@ -16,7 +16,7 @@ RUN pnpm install --frozen-lockfile
 COPY client/ ./
 RUN pnpm build
 
-FROM nginx:1.30.7-alpine
+FROM nginx:1.31.9-alpine
 
 # Install runtime libraries required by the node binary
 RUN apk add --no-cache libstdc++ libgcc
