@@ -154,7 +154,9 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v47
         with:
-          files: client/**
+          files: |
+            client/**
+            client.Dockerfile
 
       - name: Extract version from package.json
         id: version
