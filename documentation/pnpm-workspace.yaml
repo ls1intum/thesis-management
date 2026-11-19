@@ -23,7 +23,7 @@ overrides:
   # GHSA-3wwx-pv8p-q78v (+ more) (undici 7.x)
   undici@<7.29.1: 8.12.3
   # GHSA-2wm5-q62r-hmrv (colord, via cssnano)
-  colord@<2.9.4: 2.10.0
+  colord@<2.9.4: 2.14.0
   # GHSA-4mjr-xmp4-gh2g / GHSA-x5fp-wj9c-mxmx (qs, via express)
   qs@<6.16.0: 6.17.1
   # body-parser DoS via trailing bytes (CVE-2026-111181, via express)
