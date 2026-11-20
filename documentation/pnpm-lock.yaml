@@ -170,7 +170,7 @@ overrides:
   image-size@<2.0.3: 2.0.4
   js-yaml@>=4.0.0 <4.3.2: 5.5.0
   svgo@>=3.0.0 <3.3.5: 4.1.0
-  undici@<7.29.1: 8.12.3
+  undici@<7.29.1: 8.12.4
   colord@<2.9.4: 2.14.0
   qs@<6.16.0: 6.17.1
   body-parser@<1.20.9: 1.20.9
@@ -5679,8 +5679,8 @@ packages:
   undici-types@8.3.0:
     resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
 
-  undici@8.12.3:
-    resolution: {integrity: sha512-+fdndUTwBP86cVjihTp21hZHo7d6oj1c/47XPA3lL8mM0XHs+C4EkcjmgRsFnFk2f/UONGDy9ItBItmXsLOQHw==}
+  undici@8.12.4:
+    resolution: {integrity: sha512-8Mx+uNKKER2bA4AdtedkqRbwUCIJFr2nJckXRe5yrDqzePqwLP7VNcctN8/XdmDSbF7mS+jJKIszlL+vbam1VA==}
     engines: {node: '>=22.19.0'}
 
   unicode-canonical-property-names-ecmascript@2.0.1:
@@ -9556,7 +9556,7 @@ snapshots:
       parse5: 7.3.0
       parse5-htmlparser2-tree-adapter: 7.1.0
       parse5-parser-stream: 7.1.2
-      undici: 8.12.3
+      undici: 8.12.4
       whatwg-mimetype: 4.0.0
 
   chokidar@3.6.0:
@@ -12929,7 +12929,7 @@ snapshots:
 
   undici-types@8.3.0: {}
 
-  undici@8.12.3: {}
+  undici@8.12.4: {}
 
   unicode-canonical-property-names-ecmascript@2.0.1: {}
 
