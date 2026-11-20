@@ -5,7 +5,7 @@ plugins {
 	id "jacoco"
 	id "com.github.andygoossens.modernizer" version "1.15.0"
 	id "com.gorylenko.gradle-git-properties" version "4.0.1"
-	id "org.springframework.boot" version "4.1.2"
+	id "org.springframework.boot" version "4.2.0"
 	id "io.spring.dependency-management" version "1.1.7"
 	id "io.github.ben-manes.versions" version "0.67.0"
 	id "com.diffplug.spotless" version "8.11.0"
@@ -16,11 +16,10 @@ group = "de.tum.cit.aet.thesis"
 version = "4.12.1"
 description = "Thesis Management"
 
-// The explicit Tomcat (11.0.22) and Netty (4.2.13.Final) version overrides that
-// previously pulled security fixes ahead of the BOM are no longer needed: the
-// Spring Boot 4.1.0 BOM now manages Tomcat 11.0.22 and Netty 4.2.15.Final
-// (which supersedes the earlier netty-codec-http advisory fixes), so we let the
-// BOM manage both rather than risk pinning to an older Netty.
+// The explicit Tomcat and Netty version overrides that previously pulled security
+// fixes ahead of the BOM are no longer needed: the Spring Boot 4.2.0 BOM now manages
+// Tomcat 11.0.27 and Netty 4.2.20.Final, so we let the BOM manage both rather than
+// risk pinning to an older release.
 
 gitProperties {
     // The plugin walks up from the project dir to auto-detect the .git
@@ -46,16 +45,16 @@ repositories {
 	mavenCentral()
 }
 
-// Override Spring Boot's managed Jackson 2 BOM (default 2.21.4) up to 2.22.1.
-// iText 9.7.1 requests jackson-databind 2.22.1 to fix CVE-2026-54515, but the
-// Spring Boot 4.1.0 BOM otherwise constrains Jackson 2.x back down to the
-// vulnerable 2.21.4 on the runtime classpath. Bumping the BOM property lets the
+// Override Spring Boot's managed Jackson 2 BOM (default 2.21.8) up to 2.23.0.
+// iText requests a jackson-databind 2.22.x release to fix CVE-2026-54515, but the
+// Spring Boot 4.2.0 BOM otherwise constrains Jackson 2.x back down to the
+// vulnerable 2.21.x on the runtime classpath. Bumping the BOM property lets the
 // patched release resolve. Verify with:
 //   ./gradlew dependencyInsight --dependency jackson-databind --configuration runtimeClasspath
-ext['jackson-2-bom.version'] = '2.22.1'
+ext['jackson-2-bom.version'] = '2.23.0'
 
 // The Spring Boot BOM manages Logback 1.5.x; use the newer 1.6 line
-ext['logback.version'] = '1.6.6'
+ext['logback.version'] = '1.6.8'
 
 // Exclude Jackson 2.x databind from compile classpath to prevent accidental usage.
 // Jackson 3.x (tools.jackson) is the primary Jackson version in Spring Boot 4.x.
@@ -78,7 +77,7 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-actuator"
 	implementation "org.springframework.boot:spring-boot-starter-websocket"
 
-	implementation platform("org.springframework.ai:spring-ai-bom:2.0.2")
+	implementation platform("org.springframework.ai:spring-ai-bom:2.1.0")
 	implementation "org.springframework.ai:spring-ai-pdf-document-reader"
 	implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 
@@ -88,7 +87,7 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-envers"
 	
 	// Avoid outdated version to prevent security issues
-	implementation("net.minidev:json-smart") { version { 				strictly "2.6.0" } }
+	implementation("net.minidev:json-smart") { version { 				strictly "2.6.1" } }
 
 	implementation "org.springframework.boot:spring-boot-starter-liquibase"
 	implementation "org.postgresql:postgresql:42.7.14"
