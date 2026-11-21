@@ -61,53 +61,91 @@ re-import it with `pg_restore`.
 Starting with PostgreSQL 18, the official Docker image changed the default `PGDATA` from
 `/var/lib/postgresql/data` to `/var/lib/postgresql/18/docker`
 ([docker-library/postgres#1259](https://github.com/docker-library/postgres/pull/1259)).
+PostgreSQL 19 keeps that layout (`/var/lib/postgresql/19/docker`, `VOLUME /var/lib/postgresql`).
 Our production compose file explicitly sets `PGDATA=/var/lib/postgresql/data` to keep existing
-volume mounts working.
+volume mounts working, and that override stays in place for every later major version.
 
 ### Canonical PostgreSQL Version
 
-The PostgreSQL image tag is **`18.6-alpine`**. The committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) (`POSTGRES_IMAGE_TAG`)
+The PostgreSQL image tag is **`19.0-alpine`**. The committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) (`POSTGRES_IMAGE_TAG`)
 is the single source of truth: Docker Compose loads it automatically and the Gradle build parses it
 for the integration-test Testcontainers. Every consumer falls back to the same hard-coded default if
 the variable is unset, so the workspace builds even without `.env`:
 
 | Consumer | Reads the version from | Fallback default |
 |----------|------------------------|------------------|
-| `docker-compose.yml`, `docker-compose.prod.yml`, `docker-compose.showcase.yml` | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) (auto-loaded); `.env.prod` for production | the `${POSTGRES_IMAGE_TAG:-18.6-alpine}` inline fallback in each compose file |
-| Integration-test Testcontainers (`BaseIntegrationTest`, `BaseKeycloakIntegrationTest` via `TestContainerImages`) | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env), parsed in [`server/build.gradle`](https://github.com/ls1intum/thesis-management/blob/develop/server/build.gradle) (or a `POSTGRES_IMAGE_TAG` env var) | the `System.getProperty(…, "18.6-alpine")` fallback in `TestContainerImages` |
-| `.github/workflows/e2e_tests.yml` (CI service container) | `POSTGRES_IMAGE_TAG` repository variable (*Settings → Secrets and variables → Actions → Variables*) — the workflow `services.image` field cannot read `.env` | the `${{ vars.POSTGRES_IMAGE_TAG \|\| '18.6-alpine' }}` fallback in the workflow |
+| `docker-compose.yml`, `docker-compose.prod.yml`, `docker-compose.showcase.yml` | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) (auto-loaded); `.env.prod` for production | the `${POSTGRES_IMAGE_TAG:-19.0-alpine}` inline fallback in each compose file |
+| Integration-test Testcontainers (`BaseIntegrationTest`, `BaseKeycloakIntegrationTest` via `TestContainerImages`) | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env), parsed in [`server/build.gradle`](https://github.com/ls1intum/thesis-management/blob/develop/server/build.gradle) (or a `POSTGRES_IMAGE_TAG` env var) | the `.getOrElse("19.0-alpine")` fallback in `server/build.gradle`, and the `System.getProperty(…, "19.0-alpine")` fallback in `TestContainerImages` for IDE runs |
+| `.github/workflows/e2e_tests.yml` (CI service container) | `POSTGRES_IMAGE_TAG` repository variable (*Settings → Secrets and variables → Actions → Variables*) — the workflow `services.image` field cannot read `.env` | the `${{ vars.POSTGRES_IMAGE_TAG \|\| '19.0-alpine' }}` fallback in the workflow |
 
 `POSTGRES_IMAGE_TAG` is **not a secret** — the committed `.env` must hold non-secret config only.
 
 **To bump the version**, edit `POSTGRES_IMAGE_TAG` in the committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) — that updates
 both Docker Compose and the Gradle tests at once. For full reproducibility also update the matching
 hard-coded fallbacks (the `${POSTGRES_IMAGE_TAG:-…}` in the three compose files, the workflow's
-`|| '18.6-alpine'`, and the default in `TestContainerImages`), then run the major-upgrade procedure
-below for production. The GitHub repository variable is optional and only needed to override CI
+`|| '19.0-alpine'`, the `.getOrElse(…)` in `server/build.gradle`, and the default in `TestContainerImages`), then run the major-upgrade procedure
+below on Dev and Production. The GitHub repository variable is optional and only needed to override CI
 without a code change.
+
+### How deployments pick the PostgreSQL version
+
+`deploy_docker.yml` copies `docker-compose.prod.yml` to the VM, **regenerates `.env.prod` from scratch
+on every deploy** (it contains no `POSTGRES_IMAGE_TAG`) and runs `up -d --force-recreate`. The tag a
+deployed environment runs is therefore the `${POSTGRES_IMAGE_TAG:-…}` fallback inside
+`docker-compose.prod.yml`. A `POSTGRES_IMAGE_TAG` line added to `.env.prod` by hand only lasts until
+the next deploy.
+
+Consequence: **merging a PostgreSQL major bump to `develop` redeploys Dev with the new image against the
+old data directory, and the database container cannot start.** PostgreSQL refuses to open a data
+directory written by another major version. For that reason the database is upgraded first (below),
+and the release that carries the new tag is merged afterwards, when it is a no-op for the database.
 
 ### Upgrade Procedure
 
 > **Always test the upgrade on the dev environment first before applying to production.**
 
+Recommended order for every environment (Dev first, then Production):
+
+1. Merge nothing else to `develop` (Dev) or approve no Production deploy for the whole window. Any
+   deploy regenerates `.env.prod` and would start the old image tag again.
+2. Run the manual procedure below. The running release talks to the new PostgreSQL without code
+   changes; the PostgreSQL JDBC driver is version-agnostic across majors.
+3. Merge the release that bumps the tag. The deploy recreates the database container from the same
+   image and the same data directory, so nothing changes for the database.
+4. Production only: do this after Dev has run on the new version long enough to trust it.
+
+Expect downtime from step 1 of the procedure until step 10, proportional to the dump size.
+
 All commands must be run as the `thesistrack` user in `/home/thesistrack/` on the VM.
 SSH in, then switch to the correct user:
 
 ```bash
-sudo su
-su thesistrack
+sudo -iu thesistrack
 cd ~
 ```
+
+Use a **login shell** (`sudo -iu`, not `sudo -u` and not a plain `sudo su`): it sets `HOME` to
+`/home/thesistrack`, which `docker compose` needs to find its plugin and config. With `sudo -u` the
+shell keeps the caller's `HOME` and `docker compose -f …` fails with `unknown shorthand flag: 'f'`.
 
 Then run the upgrade
 
 ```bash
 
+# 0. BEFORE the downtime window: pre-pull the new image (about 120 MB; it otherwise happens inside
+#    the outage) and note the current version and size. Replace 19.0-alpine with the target tag.
+docker pull postgres:19.0-alpine
+docker exec thesis-management-db psql -U "thesistrack" -d "thesistrack" -tAc "select version(); select pg_size_pretty(pg_database_size(current_database()))"
+
 # 1. Stop the application server (keep DB running)
 docker compose -f docker-compose.prod.yml --env-file=.env.prod stop server client
 
-# 2. Create a full database dump
+# 2. Record exact per-table row counts, then create a full database dump
+mkdir -p pg-upgrade
+docker exec thesis-management-db psql -U "thesistrack" -d "thesistrack" -tA -F' ' -c "select table_name, (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from %I.%I', table_schema, table_name), false, true, '')))[1]::text::int from information_schema.tables where table_schema='public' and table_type='BASE TABLE' order by 1" > pg-upgrade/rowcounts_before.txt
 docker exec thesis-management-db pg_dump -Fc -U "thesistrack" "thesistrack" > thesis_dump.dump
+# sanity check: the dump must be readable and list its entries
+docker exec -i thesis-management-db pg_restore -l < thesis_dump.dump | wc -l
 
 # 3. Stop and remove the old DB container
 docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
@@ -115,11 +153,13 @@ docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
 # 4. Back up the old data directory (do NOT delete it yet)
 mv ./postgres_data ./postgres_data_backup
 
-# 5. Point the deployment at the new PostgreSQL image tag. All compose files read
-#    ${POSTGRES_IMAGE_TAG} (see "Canonical PostgreSQL Version" above), so set it once in .env.prod
-#    instead of editing the compose file. Replace 18.6-alpine with the target tag.
-echo 'POSTGRES_IMAGE_TAG=18.6-alpine' >> .env.prod
-#    (or edit the existing POSTGRES_IMAGE_TAG line if it is already present)
+# 5. Point this VM at the new PostgreSQL image tag for the duration of the manual upgrade.
+#    The compose file reads ${POSTGRES_IMAGE_TAG}; set it in .env.prod. Replace 19.0-alpine with the
+#    target tag. This line is wiped by the next deploy, which is fine: the release that follows
+#    carries the same tag as the fallback in docker-compose.prod.yml.
+grep -q '^POSTGRES_IMAGE_TAG=' .env.prod \
+  && sed -i 's/^POSTGRES_IMAGE_TAG=.*/POSTGRES_IMAGE_TAG=19.0-alpine/' .env.prod \
+  || echo 'POSTGRES_IMAGE_TAG=19.0-alpine' >> .env.prod
 
 # 6. Start only the database service
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d db
@@ -131,36 +171,97 @@ until docker exec thesis-management-db pg_isready -U "thesistrack"; do sleep 1; 
 docker cp thesis_dump.dump thesis-management-db:/tmp/thesis_dump.dump
 docker exec thesis-management-db pg_restore -U "thesistrack" -d "thesistrack" --no-owner --no-acl --exit-on-error /tmp/thesis_dump.dump
 
-# 9. Verify data integrity
-docker exec thesis-management-db psql -U "thesistrack" -d "thesistrack" -c "\dt+"
+# 9. Verify data integrity: the row counts must be identical to the ones taken before the dump
+docker exec thesis-management-db psql -U "thesistrack" -d "thesistrack" -tA -F' ' -c "select table_name, (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from %I.%I', table_schema, table_name), false, true, '')))[1]::text::int from information_schema.tables where table_schema='public' and table_type='BASE TABLE' order by 1" > pg-upgrade/rowcounts_after.txt
+diff pg-upgrade/rowcounts_before.txt pg-upgrade/rowcounts_after.txt && echo "ROW COUNTS IDENTICAL"
 
 # 10. Start the full application stack
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
 
-# 11. Verify Hibernate validation and Liquibase pass
-docker logs -f thesis-management-server  # check for errors
+# 11. Verify Hibernate validation and Liquibase pass. `docker logs` replays the PREVIOUS run's lines
+#     too, so only look at output since this start. Expect "Database is up to date, no changesets to
+#     execute" and "Started ThesisManagementApplication".
+docker logs --since "$(docker inspect -f '{{.State.StartedAt}}' thesis-management-server)" thesis-management-server 2>&1 | grep -E "liquibase|Started|ERROR|FAILED"
+curl -s https://<your-host>/api/actuator/health   # {"status":"UP"}
 
-# 12. After 1-2 weeks of stable operation, remove the old data directory and dump
-rm -rf ./postgres_data_backup thesis_dump.dump
+# 12. After 1-2 weeks of stable operation, remove the old data directory and dump.
+#     The data directory is owned by uid 70 (the postgres user inside the image) with mode 700, so
+#     the thesistrack user cannot list or delete it: use sudo.
+sudo rm -rf ./postgres_data_backup
+rm -rf thesis_dump.dump pg-upgrade
 ```
+
+### Learnings from the Dev rehearsal (PostgreSQL 18.6 → 19.0, 2026-11-21)
+
+- **Dump/restore is enough for small databases; `pg_upgrade` is not needed.** Dev held 10 MB
+  (35 tables, 1,501 rows, a 198 KB custom-format dump). Everything from stopping the server to a
+  healthy application took about a minute, plus the image pull if it is not done beforehand
+  (step 0). Production size is unknown: time step 2 and 8 against its real size before choosing a
+  window. For a database in the tens of GB, consider `pg_upgrade --link` instead.
+- **The old release runs unchanged on the new PostgreSQL.** Dev's existing server image (built
+  against PG 18) started on PG 19.0 with no code change: Liquibase reported "Database is up to
+  date" and Hibernate schema validation passed. That is what makes "database first, release second"
+  safe.
+- **The dump restored cleanly with `--no-owner --no-acl --exit-on-error`.** Only the `public`
+  schema and the `plpgsql` extension are in use, so there were no extension or collation surprises
+  (`en_US.utf8` in the new cluster as well).
+- **`PGDATA` stays `/var/lib/postgresql/data`.** The explicit override in `docker-compose.prod.yml`
+  worked unchanged on 19.0, and the mounted `./postgres_data` directory was initialized by the new
+  major version.
+- **Use `sudo -iu thesistrack`** (see above), and read server logs with `--since`, otherwise the
+  previous run's "Started …Application" line makes a wait loop exit immediately.
+- **Do not let a deploy run between the manual upgrade and the merge of the tag bump.** A deploy
+  regenerates `.env.prod` without `POSTGRES_IMAGE_TAG`, so the compose-file fallback applies: while
+  it still says the old version, the old image would be started against the new data directory.
+  The Dev environment requires reviewer approval, but *do not approve* any Dev deployment of this
+  PR's own workflow run until the database has been upgraded. Production deploys are approval-gated
+  as well.
+- **Backups keep working.** `thesis-track-backup.sh` runs `pg_dump` inside the running database
+  container, so it picks up the new version automatically.
+- **Production (2026-11-21, same day, Saturday morning):** 29 MB database, 35 tables, 36,260 rows,
+  prod runs the `:latest` release image. A pre-flight with the application still running proved
+  the plan before any outage: take the backup dump, check it with `pg_restore -l`, restore it into
+  a throwaway `postgres:19.0-alpine` container started with `--network none` and a random
+  password, and compare row counts with the live database (identical). The real swap then took
+  **9 seconds** from stopping the application to restarting it (a fresh dump after the stop, the
+  data-directory move, the restore and a row-count check), run as one script with an `ERR` trap that
+  moves `postgres_data_backup_pg18` back and restores `.env.prod` if anything fails before the
+  application is restarted. After the restart: Liquibase "up to date", 0 errors in the server log,
+  health endpoint `UP`, the application reconnected with its usual 11 connections, and `pg_dump`
+  from the PG 19 container works (the nightly backup path).
+- **Cleanup on Dev and Production is still open:** `postgres_data_backup_pg18` and `pg19-upgrade/` in
+  `/home/thesistrack/` (and, on Production, the `backups/pre-pg19_db_*.dump` files) are kept for 1–2
+  weeks as the rollback path.
 
 ### Rollback
 
-If the upgrade fails, restore the previous version:
+If the upgrade fails, restore the previous version. The old data directory is untouched until step 12,
+so this is a file move, not a restore:
 
 ```bash
 docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
-rm -rf ./postgres_data
+# Keep the failed attempt for inspection instead of deleting it
+mv ./postgres_data ./postgres_data_failed
 mv ./postgres_data_backup ./postgres_data
-# Revert docker-compose.prod.yml changes (PG image tag and PGDATA override)
+# Point back at the previous image tag (replace with the version you upgraded from)
+# Replace the line if present, append it if a deploy has removed it (deploys regenerate .env.prod
+# without it, and the compose fallback may already say the new version)
+grep -q '^POSTGRES_IMAGE_TAG=' .env.prod \
+  && sed -i 's/^POSTGRES_IMAGE_TAG=.*/POSTGRES_IMAGE_TAG=18.6-alpine/' .env.prod \
+  || echo 'POSTGRES_IMAGE_TAG=18.6-alpine' >> .env.prod
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
 ```
 
+Writes made after the upgrade are lost on rollback, because the old directory only contains data up
+to step 3. If the release carrying the new tag has already been deployed, also revert that commit;
+otherwise the next deploy starts the new image against the old data directory again.
+
 ### References
 
-- [PostgreSQL 18 Upgrading Guide](https://www.postgresql.org/docs/18/upgrading.html)
-- [pg_dump Documentation](https://www.postgresql.org/docs/18/app-pgdump.html)
-- [pg_restore Documentation](https://www.postgresql.org/docs/18/app-pg-restore.html)
+- [PostgreSQL 19 Upgrading Guide](https://www.postgresql.org/docs/19/upgrading.html)
+- [PostgreSQL 19 Release Notes](https://www.postgresql.org/docs/19/release-19.html)
+- [pg_dump Documentation](https://www.postgresql.org/docs/19/app-pgdump.html)
+- [pg_restore Documentation](https://www.postgresql.org/docs/19/app-pgrestore.html)
 - [PGDATA path change (docker-library/postgres#1259)](https://github.com/docker-library/postgres/pull/1259)
 
 ## 🗺️ Database Schema
