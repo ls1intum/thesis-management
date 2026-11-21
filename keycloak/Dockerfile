@@ -1,4 +1,4 @@
-FROM gradle:9.8.2-jdk25 AS provider-build
+FROM gradle:9.9.1-jdk25 AS provider-build
 
 WORKDIR /workspace
 COPY keycloak/provider-deps/gradlew keycloak/provider-deps/gradlew.bat ./
