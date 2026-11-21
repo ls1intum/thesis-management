@@ -59,6 +59,9 @@ const EmailSettingsCard = ({
         data: {
           emailSettings: {
             applicationNotificationEmail: form.values.applicationNotificationEmail.trim() || null,
+            // The server replaces emailSettings as a unit, so a missing signature would clear the
+            // one that is stored. This card does not edit it: send it back unchanged.
+            emailSignature: researchgroupEmailSettings?.emailSignature ?? null,
           },
         },
       },

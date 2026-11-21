@@ -140,16 +140,7 @@ public class MailVariablesBuilder {
 	}
 
 	private List<MailVariableDto> createGeneralVariables() {
-		List<MailVariableDto> mailVariables = new ArrayList<>( MailUser.templateVariables("recipient", "Recipient", "General"));
-
-		mailVariables.add(
-		new MailVariableDto(
-				"Notification URL Footer",
-				"</hr><div style=\"text-align: center;font-size: 10px\"> Manage your notification settings <a th:href=\"${config.clientHost + '/settings/notifications'}\">here</a></div>",
-				"</hr><div style=\"text-align: center;font-size: 10px\"> Manage your notification settings <a href=\"'/'\">here</a></div>",
-				"General"
-		));
-
-		return mailVariables;
+		// The notification-settings footer is appended by MailBuilder.send(); it is not a template variable.
+		return new ArrayList<>(MailUser.templateVariables("recipient", "Recipient", "General"));
 	}
 }

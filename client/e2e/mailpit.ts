@@ -138,6 +138,19 @@ export function assertBodyContains(message: MailpitMessage, expectedText: string
 }
 
 /**
+ * Assert that the email contains the standard footer with notification settings link.
+ */
+export function assertEmailFooter(message: MailpitMessage): void {
+  const body = getBody(message)
+  expect(body, 'Expected email to contain notification settings link').toContain(
+    'notification settings in Thesis Management',
+  )
+  expect(body, 'Expected email to contain /settings/notifications link').toContain(
+    '/settings/notifications',
+  )
+}
+
+/**
  * Assert that the email was sent from the application sender.
  * Verifies the From header matches the expected format: "ThesisManagement <...@...>"
  */
