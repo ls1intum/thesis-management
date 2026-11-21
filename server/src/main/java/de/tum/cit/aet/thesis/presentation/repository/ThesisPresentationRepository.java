@@ -1,0 +1,50 @@
+package de.tum.cit.aet.thesis.presentation.repository;
+
+import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationState;
+import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility;
+import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+@Repository
+public interface ThesisPresentationRepository extends JpaRepository<ThesisPresentation, UUID> {
+	@Query("""
+			SELECT p FROM ThesisPresentation p WHERE
+			p.scheduledAt >= :time AND
+			(:states IS NULL OR p.state IN :states) AND
+			(:visibilities IS NULL OR p.visibility IN :visibilities)
+			AND (:researchGroupId IS NULL OR p.thesis.researchGroup.id = :researchGroupId)
+			""")
+	Page<ThesisPresentation> findFuturePresentations(
+			@Param("time") Instant time,
+			@Param("states") Set<ThesisPresentationState> states,
+			@Param("visibilities") Set<ThesisPresentationVisibility> visibilities,
+			@Param("researchGroupId") UUID researchGroupId,
+			Pageable page
+	);
+
+	@Query("""
+	SELECT p FROM ThesisPresentation p
+	WHERE (:visibilities IS NULL OR p.visibility IN :visibilities)
+	AND (:researchGroupId IS NULL OR p.thesis.researchGroup.id = :researchGroupId)
+""")
+	List<ThesisPresentation> findAllPresentations(
+			@Param("researchGroupId") UUID researchGroupId,
+			@Param("visibilities") Set<ThesisPresentationVisibility> visibilities
+	);
+
+	@Modifying
+	@Transactional
+	void deleteAllByThesisId(UUID thesisId);
+}

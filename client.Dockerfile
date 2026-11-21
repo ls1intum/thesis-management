@@ -1,4 +1,4 @@
-FROM node:24.16.0-alpine AS build
+FROM node:24.22.3-alpine AS build
 WORKDIR /app
 ENV CI=1
 ENV HUSKY=0
@@ -16,7 +16,7 @@ RUN pnpm install --frozen-lockfile
 COPY client/ ./
 RUN pnpm build
 
-FROM nginx:stable-alpine
+FROM nginx:1.31.9-alpine
 
 # Install runtime libraries required by the node binary
 RUN apk add --no-cache libstdc++ libgcc

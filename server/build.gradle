@@ -3,25 +3,23 @@ plugins {
 	id "idea"
 	id "checkstyle"
 	id "jacoco"
-	id "com.github.andygoossens.modernizer" version "1.13.0"
-	id "com.gorylenko.gradle-git-properties" version "3.0.0"
-	id "org.springframework.boot" version "4.0.6"
+	id "com.github.andygoossens.modernizer" version "1.15.0"
+	id "com.gorylenko.gradle-git-properties" version "4.0.1"
+	id "org.springframework.boot" version "4.2.0"
 	id "io.spring.dependency-management" version "1.1.7"
-	id "com.github.ben-manes.versions" version "0.54.0"
-	id "com.diffplug.spotless" version "8.5.1"
-	id "org.cyclonedx.bom" version "3.2.4"
+	id "io.github.ben-manes.versions" version "0.67.0"
+	id "com.diffplug.spotless" version "8.11.0"
+	id "org.cyclonedx.bom" version "3.6.1"
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.11.1"
+version = "4.12.2"
 description = "Thesis Management"
 
-// Override Spring Boot-managed Tomcat to pull in security fixes ahead of the next BOM release.
-ext["tomcat.version"] = "11.0.22"
-// Override Spring Boot-managed Netty to pick up fixes for GHSA-mj4r-2hfc-f8p6,
-// GHSA-cm33-6792-r9fm, GHSA-2c5c-chwr-9hqw, GHSA-45q3-82m4-75jr, GHSA-rwm7-x88c-3g2p,
-// and the netty-codec-http advisories (GHSA-38f8-5428-x5cv, GHSA-57rv-r2g8-2cj3, GHSA-f6hv-jmp6-3vwv, ...).
-ext["netty.version"] = "4.2.13.Final"
+// The explicit Tomcat and Netty version overrides that previously pulled security
+// fixes ahead of the BOM are no longer needed: the Spring Boot 4.2.0 BOM now manages
+// Tomcat 11.0.27 and Netty 4.2.20.Final, so we let the BOM manage both rather than
+// risk pinning to an older release.
 
 gitProperties {
     // The plugin walks up from the project dir to auto-detect the .git
@@ -47,6 +45,17 @@ repositories {
 	mavenCentral()
 }
 
+// Override Spring Boot's managed Jackson 2 BOM (default 2.21.8) up to 2.23.0.
+// iText requests a jackson-databind 2.22.x release to fix CVE-2026-54515, but the
+// Spring Boot 4.2.0 BOM otherwise constrains Jackson 2.x back down to the
+// vulnerable 2.21.x on the runtime classpath. Bumping the BOM property lets the
+// patched release resolve. Verify with:
+//   ./gradlew dependencyInsight --dependency jackson-databind --configuration runtimeClasspath
+ext['jackson-2-bom.version'] = '2.23.0'
+
+// The Spring Boot BOM manages Logback 1.5.x; use the newer 1.6 line
+ext['logback.version'] = '1.6.8'
+
 // Exclude Jackson 2.x databind from compile classpath to prevent accidental usage.
 // Jackson 3.x (tools.jackson) is the primary Jackson version in Spring Boot 4.x.
 // Jackson 2.x remains on the runtime classpath for third-party libraries (java-jwt, itext).
@@ -63,10 +72,14 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-mail"
 	implementation "org.springframework.boot:spring-boot-starter-webflux"
 	implementation "org.springframework.boot:spring-boot-starter-security"
-	implementation "org.springframework.boot:spring-boot-starter-security-oauth2-client"
 	implementation "org.springframework.boot:spring-boot-starter-security-oauth2-resource-server"
 	implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
 	implementation "org.springframework.boot:spring-boot-starter-actuator"
+	implementation "org.springframework.boot:spring-boot-starter-websocket"
+
+	implementation platform("org.springframework.ai:spring-ai-bom:2.1.0")
+	implementation "org.springframework.ai:spring-ai-pdf-document-reader"
+	implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 
 	developmentOnly "org.springframework.boot:spring-boot-devtools"
 
@@ -74,16 +87,16 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-envers"
 	
 	// Avoid outdated version to prevent security issues
-	implementation("net.minidev:json-smart") { version { 				strictly "2.6.0" } }
+	implementation("net.minidev:json-smart") { version { 				strictly "2.6.1" } }
 
 	implementation "org.springframework.boot:spring-boot-starter-liquibase"
-	implementation "org.postgresql:postgresql:42.7.11"
+	implementation "org.postgresql:postgresql:42.7.14"
 
 	implementation "commons-io:commons-io:2.22.0"
-	implementation "org.mnode.ical4j:ical4j:4.2.5"
-	implementation "com.itextpdf:itext-core:9.6.0"
-	implementation "com.itextpdf:html2pdf:6.3.2"
-	implementation "com.auth0:java-jwt:4.5.2"
+	implementation "org.mnode.ical4j:ical4j:4.4.0"
+	implementation "com.itextpdf:itext-core:9.8.1"
+	implementation "com.itextpdf:html2pdf:6.3.4"
+	implementation "com.auth0:java-jwt:4.6.2"
 
 	// Use the latest version of commons-lang3 to avoid security issues
 	implementation "org.apache.commons:commons-lang3:${commons_lang3_version}"
@@ -97,8 +110,8 @@ dependencies {
 	// Semantic version comparison for SBOM vulnerability range matching
 	implementation "com.vdurmont:semver4j:3.1.0"
 
-	compileOnly "org.projectlombok:lombok:1.18.46"
-	annotationProcessor "org.projectlombok:lombok:1.18.46"
+	compileOnly "org.projectlombok:lombok:1.18.48"
+	annotationProcessor "org.projectlombok:lombok:1.18.48"
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude group: "org.junit.vintage", module: "junit-vintage-engine"
@@ -107,8 +120,8 @@ dependencies {
 	}
 	testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test"
 
-	testImplementation "org.mockito:mockito-core:5.23.0"
-	testImplementation "org.mockito:mockito-junit-jupiter:5.23.0"
+	testImplementation "org.mockito:mockito-core:5.24.0"
+	testImplementation "org.mockito:mockito-junit-jupiter:5.24.0"
 
 	testImplementation "org.testcontainers:testcontainers:${test_container_version}"
 	testImplementation "org.testcontainers:testcontainers-junit-jupiter:${test_container_version}"
@@ -116,9 +129,9 @@ dependencies {
 	testImplementation "org.testcontainers:testcontainers-database-commons:${test_container_version}"
 	testImplementation "org.testcontainers:testcontainers-postgresql:${test_container_version}"
 
-	testImplementation "com.github.dasniko:testcontainers-keycloak:4.2.1"
+	testImplementation "com.github.dasniko:testcontainers-keycloak:4.4.0"
 
-	testImplementation "com.icegreen:greenmail-junit5:2.1.8"
+	testImplementation "com.icegreen:greenmail-junit5:2.1.15"
 	testImplementation "org.wiremock:wiremock-standalone:3.13.2"
 
 	testImplementation "org.junit.jupiter:junit-jupiter:${junit_version}"
@@ -168,7 +181,7 @@ spotless {
 
 
 checkstyle {
-	toolVersion = "13.4.2"
+	toolVersion = "14.4.0"
 	configFile = file("config/checkstyle/checkstyle.xml")
 	maxWarnings = 0
 }
@@ -178,6 +191,46 @@ bootRun {
 	environment "LIQUIBASE_CONTEXTS", "dev,prod"
 	environment "SERVER_PORT", "8180"
 }
+
+// Review-strategy evaluation sweep. Boots the review pipeline once per model/approach/seed
+// combination and writes each review to disk; see feedback.eval.EvalApplication. Needs a reachable
+// OpenAI-compatible endpoint (OPENAI_BASE_URL / OPENAI_API_KEY) and a corpus directory outside the
+// repository. Never runs as part of `check`.
+//
+//   ./gradlew evalReview -Pmodels=openai/gpt-oss-120b,google/gemma-4-26B-A4B-it \
+//     -Pcorpus=/path/to/corpus -Pseeds=3
+// -Pkey=value on the command line becomes --key=value for EvalPlan; anything not given falls back
+// to the matching environment variable. Resolved through the provider API so the configuration
+// cache tracks these properties as inputs rather than reading `project` at execution time.
+def evalArguments = ["models", "approaches", "corpus", "out", "seeds", "temperature", "base-url", "api-key", "thinking-models", "anonymize"]
+	.collect { name -> providers.gradleProperty(name).map { "--$name=$it".toString() } }
+
+tasks.register("evalReview", JavaExec) {
+	group = "verification"
+	description = "Runs the AI review strategies over a fixed corpus across models and writes the results"
+	mainClass = "de.tum.cit.aet.thesis.feedback.eval.EvalApplication"
+	// Test source set, not main: @SpringBootApplication component-scans de.tum.cit.aet.thesis, so
+	// an @Configuration living under feedback.eval in src/main would be picked up by the real
+	// server and its beans would collide with the production ones. Evaluation tooling also has no
+	// business in the shipped jar.
+	classpath = sourceSets.test.runtimeClasspath
+	// devtools is on the runtime classpath and would otherwise restart main() on a new thread
+	// with no arguments, which fails the sweep immediately on its own argument validation.
+	systemProperty "spring.devtools.restart.enabled", "false"
+	argumentProviders.add({ evalArguments.findAll { it.present }.collect { it.get() } } as CommandLineArgumentProvider)
+}
+
+// PostgreSQL image tag for integration-test Testcontainers. Single source of truth is the repo-root
+// .env file (POSTGRES_IMAGE_TAG), shared with the docker-compose files. A POSTGRES_IMAGE_TAG shell/CI
+// environment variable overrides it, and 19.0-alpine is the final fallback so IDE/Gradle runs work
+// even without .env. Read via the provider API so the configuration cache tracks .env. See
+// documentation/docs/developer/database.mdx.
+def postgresImageTag = providers.environmentVariable("POSTGRES_IMAGE_TAG")
+	.orElse(providers.fileContents(layout.projectDirectory.dir("..").file(".env")).asText.map { content ->
+		def matcher = (content =~ /(?m)^\s*POSTGRES_IMAGE_TAG\s*=\s*(\S+)/)
+		matcher.find() ? matcher.group(1) : null
+	})
+	.getOrElse("19.0-alpine")
 
 test {
 	useJUnitPlatform()
@@ -195,6 +248,7 @@ test {
 		showStackTraces = true
 	}
 	systemProperty "spring.profiles.active", "test"
+	systemProperty "postgres.image.tag", postgresImageTag
 
 	afterSuite { desc, result ->
 		if (!desc.parent) {
@@ -209,6 +263,10 @@ test {
 			println "==============================================================="
 		}
 	}
+}
+
+jacoco {
+	toolVersion = "0.8.16"
 }
 
 jacocoTestReport {
@@ -268,7 +326,7 @@ tasks.withType(JavaCompile).configureEach {
 
 def isNonStable = { String version ->
 	def stableKeyword = ["RELEASE", "FINAL", "GA"].any { it -> version.toUpperCase().contains(it) }
-	def regex = /^[0-9,.v-]+(-r)?$/
+	def regex = /^[0-9,.v-]+(-r|-jre|-android)?$/
 	return !stableKeyword && !(version ==~ regex)
 }
 
@@ -282,10 +340,11 @@ tasks.named("dependencyUpdates").configure {
 	}
 }
 
-// Bundle the committed server + client SBOMs into the jar so the admin
-// dependency overview and weekly vulnerability scan have data to read at
-// runtime. Both files are kept in sync with their respective lockfiles
-// by the refresh_sbom workflow, so no build-time regeneration is needed.
+// Bundle the server + client SBOMs into the jar so the admin dependency
+// overview and weekly vulnerability scan have data to read at runtime.
+// SBOMs are generated at Docker-build time in CI (see build_docker.yml)
+// rather than being committed. When the files are absent (typical local
+// dev build), Gradle silently skips them and SbomService returns null.
 def serverSbomFile = file("sbom/bom.json")
 def clientSbomFile = file("../client/sbom/bom.json")
 
@@ -302,23 +361,9 @@ processResources {
 
 // CycloneDX SBOM
 //
-// Writes the SBOM to a tracked location (`sbom/`) so it can be committed and
-// reused without being regenerated on every build. Not hooked into `build` —
-// run `./gradlew cyclonedxBom` explicitly (or via CI) to refresh after
-// dependency changes. Gradle's UP-TO-DATE check makes this a no-op when the
-// runtime classpath hasn't changed.
-//
-// Files captured at configuration time so closures stay safe for the
-// configuration cache (calling `file()` inside a closure would tie it to
-// the live project instance).
-def bomJsonFile = file("sbom/bom.json")
-def sbomInputHashFile = file("sbom/.input-hash")
-// build.gradle + gradle.properties + settings.gradle is the complete set
-// of dep-defining inputs: pinned plugin versions, version vars, the root
-// project name (used as the SBOM component name), and the project group.
-// Order matches the shell `cat ... | shasum` in the CI verification step.
-def sbomInputs = [file("build.gradle"), file("gradle.properties"), file("settings.gradle")]
-
+// Writes the SBOM to `sbom/bom.json`. Not hooked into `build` — run
+// `./gradlew cyclonedxBom` explicitly (CI does this before the Docker
+// build). The output directory is gitignored.
 cyclonedxBom {
 	projectType = "application"
 	schemaVersion = org.cyclonedx.Version.VERSION_16
@@ -329,37 +374,7 @@ cyclonedxBom {
 	componentVersion = project.version.toString()
 	// Only emit JSON — Dependency-Track, Trivy, and Grype all read JSON
 	// natively and an XML twin would need its own timestamp-stripping.
-	jsonOutput = bomJsonFile
-
-	// Strip the generation timestamp so the committed bom.json is
-	// byte-stable when dependencies haven't changed.
-	doLast {
-		if (bomJsonFile.exists()) {
-			def json = new groovy.json.JsonSlurper().parse(bomJsonFile)
-			if (json.metadata instanceof Map) {
-				json.metadata.remove("timestamp")
-			}
-			bomJsonFile.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json)) + "\n"
-		}
-	}
-}
-
-// Always-running side task that refreshes the input hash next to the SBOM.
-// Kept separate from `cyclonedxBom` because that task is UP-TO-DATE when
-// the runtime classpath hasn't changed — and we want the hash to also
-// catch cosmetic edits to the dep-defining files, so CI's pure shell hash
-// comparison doesn't false-alarm. Cost: read 3 small files + SHA-256.
-tasks.register("writeSbomInputHash") {
-	outputs.upToDateWhen { false }
-	doLast {
-		def md = java.security.MessageDigest.getInstance("SHA-256")
-		sbomInputs.each { md.update(it.bytes) }
-		sbomInputHashFile.text = md.digest().encodeHex().toString() + "\n"
-	}
-}
-
-tasks.named("cyclonedxBom").configure {
-	finalizedBy("writeSbomInputHash")
+	jsonOutput = file("sbom/bom.json")
 }
 
 // Available commands:

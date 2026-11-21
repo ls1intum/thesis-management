@@ -1,0 +1,225 @@
+package de.tum.cit.aet.thesis.core.admin.service;
+
+import de.tum.cit.aet.thesis.core.application.repository.ApplicationRepository;
+import de.tum.cit.aet.thesis.core.dto.TaskDto;
+import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.core.group.entity.ResearchGroupSettings;
+import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.core.topic.repository.TopicRepository;
+import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationState;
+import de.tum.cit.aet.thesis.presentation.entity.ThesisPresentation;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
+import de.tum.cit.aet.thesis.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisRepository;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+/** Generates prioritized task lists for the user dashboard based on thesis states and role assignments. */
+@Service
+public class DashboardService {
+	private final ThesisRepository thesisRepository;
+	private final ApplicationRepository applicationRepository;
+	private final TopicRepository topicRepository;
+	private final CurrentUserProvider currentUserProvider;
+
+	/**
+	 * Injects the thesis, application, and topic repositories.
+	 *
+	 * @param thesisRepository the thesis repository
+	 * @param applicationRepository the application repository
+	 * @param topicRepository the topic repository
+	 * @param currentUserProvider the current user provider
+	 */
+	public DashboardService(
+			ThesisRepository thesisRepository,
+			ApplicationRepository applicationRepository,
+			TopicRepository topicRepository,
+			CurrentUserProvider currentUserProvider
+	) {
+		this.thesisRepository = thesisRepository;
+		this.applicationRepository = applicationRepository;
+		this.topicRepository = topicRepository;
+		this.currentUserProvider = currentUserProvider;
+	}
+
+	/**
+	 * Collects and returns all pending tasks for the given user, sorted by priority in descending order.
+	 *
+	 * @param user the user to collect tasks for
+	 * @return the list of tasks sorted by priority
+	 */
+	public List<TaskDto> getTasks(User user) {
+		List<TaskDto> tasks = new ArrayList<>();
+		UUID researchGroupId = user.getResearchGroup() != null ? user.getResearchGroup().getId() : null;
+
+		ResearchGroup researchGroup = user.getResearchGroup();
+		if (user.hasAnyGroup("student") && researchGroup != null) {
+			ResearchGroupSettings settings = researchGroup.getResearchGroupSettings();
+			if (settings != null && settings.getScientificWritingGuideLink() != null && !settings.getScientificWritingGuideLink().isBlank()) {
+				tasks.add(new TaskDto(
+						"Please make yourself familiar with scientific writing",
+						settings.getScientificWritingGuideLink(),
+						50
+				));
+			}
+		}
+
+		// general student tasks
+		for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.STUDENT), null)) {
+			if (thesis.getAbstractField().isBlank() || thesis.getInfo().isBlank()) {
+				tasks.add(new TaskDto(
+						"Add the abstract and additional information to thesis \"" + thesis.getTitle() + "\"",
+						getThesisLink(thesis),
+						50
+				));
+			}
+		}
+
+		// general supervisor tasks
+		for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.SUPERVISOR), null)) {
+			if (thesis.getState().equals(ThesisState.PROPOSAL)) {
+				continue;
+			}
+
+			if (thesis.getStartDate() == null || thesis.getEndDate() == null) {
+				tasks.add(new TaskDto(
+						"Add start and end date to thesis \"" + thesis.getTitle() + "\"",
+						getThesisLink(thesis),
+						50
+				));
+			}
+
+			for (ThesisPresentation presentation : thesis.getPresentations()) {
+				if (presentation.getState() == ThesisPresentationState.DRAFTED) {
+					tasks.add(new TaskDto(
+							"There is a presentation draft for thesis \"" + thesis.getTitle() + "\". Please review and confirm it.",
+							getThesisLink(thesis),
+							80
+					));
+				}
+			}
+		}
+
+		// proposal task
+		for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.STUDENT), Set.of(ThesisState.PROPOSAL))) {
+			if (!thesis.getProposals().isEmpty()) {
+				continue;
+			}
+
+			tasks.add(new TaskDto(
+					"Add a proposal to thesis \"" + thesis.getTitle() + "\"",
+					getThesisLink(thesis),
+					100
+			));
+		}
+
+		for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.SUPERVISOR), Set.of(ThesisState.PROPOSAL))) {
+			if (thesis.getProposals().isEmpty()) {
+				continue;
+			}
+
+			tasks.add(new TaskDto(
+					"A proposal was submitted to thesis \"" + thesis.getTitle() + "\". Please review and accept it or send feedback to the student.",
+					getThesisLink(thesis),
+					100
+			));
+		}
+
+		// thesis submission task
+		for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.STUDENT), Set.of(ThesisState.WRITING))) {
+			tasks.add(new TaskDto(
+					"Submit your final thesis and presentation. You can check your submission deadline on the thesis page.",
+					getThesisLink(thesis),
+					80
+			));
+		}
+
+		// presentation tasks
+		for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId,
+				Set.of(ThesisRoleName.STUDENT, ThesisRoleName.SUPERVISOR),
+				Set.of(ThesisState.WRITING, ThesisState.SUBMITTED))) {
+			if (!thesis.getPresentations().isEmpty() || thesis.getEndDate() == null) {
+				continue;
+			}
+
+			if (thesis.getEndDate().minus(30, ChronoUnit.DAYS).isAfter(Instant.now())) {
+				continue;
+			}
+
+			tasks.add(new TaskDto(
+					"Schedule a presentation date for thesis \"" + thesis.getTitle() + "\" with the supervisor.",
+					getThesisLink(thesis),
+					40
+			));
+		}
+
+		// thesis assessment task
+		for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.SUPERVISOR), Set.of(ThesisState.SUBMITTED))) {
+			tasks.add(new TaskDto(
+					"Thesis \"" + thesis.getTitle() + "\" was submitted. Please review the thesis and add an assessment.",
+					getThesisLink(thesis),
+					100
+			));
+		}
+
+		// grade thesis task
+		for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(),researchGroupId,  Set.of(ThesisRoleName.EXAMINER), Set.of(ThesisState.ASSESSED))) {
+			tasks.add(new TaskDto(
+					"Review assessment of thesis \"" + thesis.getTitle() + "\" and add a final grade.",
+					getThesisLink(thesis),
+					100
+			));
+		}
+
+		// close thesis task
+		for (Thesis thesis : thesisRepository.findActiveThesesForRole(user.getId(), researchGroupId, Set.of(ThesisRoleName.EXAMINER), Set.of(ThesisState.GRADED))) {
+			tasks.add(new TaskDto(
+					"Thesis \"" + thesis.getTitle() + "\" is graded but not completed yet.",
+					getThesisLink(thesis),
+					20
+			));
+		}
+
+		if (user.hasAnyGroup("admin", "supervisor", "advisor")) {
+			// review application task
+			long unreviewedApplications =
+				applicationRepository.countUnreviewedApplications(user.getId(), researchGroupId);
+
+			if (unreviewedApplications > 0) {
+				tasks.add(new TaskDto(
+						"You have " + unreviewedApplications + " unreviewed applications.",
+						"/applications",
+						10
+				));
+			}
+
+			// no open topic task
+			long openTopics = topicRepository.countOpenTopics(researchGroupId);
+
+			if (openTopics == 0) {
+				tasks.add(new TaskDto(
+						"There are currently no open Topics. Please create a topic.",
+						"/topics",
+						10
+				));
+			}
+		}
+
+		tasks.sort(Comparator.comparingInt(a -> a.priority().intValue()));
+
+		return tasks.reversed();
+	}
+
+	private String getThesisLink(Thesis thesis) {
+		return "/theses/" + thesis.getId();
+	}
+}

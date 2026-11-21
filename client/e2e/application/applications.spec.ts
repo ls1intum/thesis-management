@@ -1,0 +1,168 @@
+import { test, expect } from '@playwright/test'
+import { authStatePath, navigateTo, navigateToDetail } from '../helpers'
+
+test.describe('Applications - Student', () => {
+  test('submit application page shows stepper form with topic selection', async ({ page }) => {
+    await navigateTo(page, '/submit-application')
+
+    await expect(page).toHaveURL(/\/submit-application/)
+    // The multi-step stepper form should be visible
+    await expect(page.locator('.mantine-Stepper-root')).toBeVisible({ timeout: 15_000 })
+
+    // Should show the heading
+    await expect(
+      page.getByRole('heading', { name: 'Submit Application', exact: true }),
+    ).toBeVisible()
+
+    // Should show available open topics from seed data
+    await expect(page.getByText(/Continuous Integration/i).first()).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByText(/Anomaly Detection/i).first()).toBeVisible({ timeout: 5_000 })
+
+    // Should NOT show draft topics (Gamification is DRAFT state)
+    await expect(page.getByText(/Gamification/i)).toBeHidden({ timeout: 2_000 })
+
+    // Should NOT show closed topics (Migration Strategies is CLOSED)
+    await expect(page.getByText(/Migration Strategies from Monolith/i)).toBeHidden({
+      timeout: 2_000,
+    })
+  })
+
+  test('submit application with pre-selected topic navigates to correct URL', async ({ page }) => {
+    // Navigate with topic pre-selected (CI Pipeline Optimization)
+    await navigateTo(page, '/submit-application/00000000-0000-4000-b000-000000000002')
+
+    await expect(page).toHaveURL(/\/submit-application\/00000000/)
+
+    // Should show the stepper form (topic already selected, may be on step 2)
+    await expect(page.locator('.mantine-Stepper-root')).toBeVisible({ timeout: 15_000 })
+  })
+
+  test('dashboard shows student applications section with data', async ({ page }) => {
+    await navigateTo(page, '/dashboard')
+
+    await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible({ timeout: 30_000 })
+    // Student should see My Applications section
+    await expect(page.getByRole('heading', { name: /my applications/i })).toBeVisible({
+      timeout: 15_000,
+    })
+
+    // Student has a seeded application (ACCEPTED) — should show application data
+    await expect(page.getByText(/accepted/i).first()).toBeVisible({ timeout: 10_000 })
+  })
+})
+
+test.describe('Applications - Supervisor review', () => {
+  test.use({ storageState: authStatePath('supervisor') })
+
+  test('review page loads with application sidebar and search', async ({ page }) => {
+    await navigateTo(page, '/applications')
+
+    await expect(page).toHaveURL(/\/applications/)
+    // The page should show the application filter sidebar
+    const searchInput = page.getByPlaceholder(/search applications/i)
+    await expect(searchInput).toBeVisible({ timeout: 15_000 })
+
+    // Should show application data from seed — supervisor reviewed apps 1, 2
+    await expect(page.getByText(/Student/i).first()).toBeVisible({ timeout: 10_000 })
+
+    // Supervisor should NOT see Submit Application link (not a student)
+    await expect(page.getByRole('link', { name: 'Submit Application' })).toBeHidden()
+  })
+
+  // Regression for #1136: typing into the search field after deselecting the
+  // default filters used to throw "e.currentTarget is null" because the
+  // setState updater read currentTarget after the browser had released the
+  // synthetic event. The page would white-screen until reload.
+  test('search field does not crash when filters are cleared (#1136)', async ({ page }) => {
+    const pageErrors: Error[] = []
+    page.on('pageerror', (error) => pageErrors.push(error))
+
+    await navigateTo(page, '/applications')
+
+    const searchInput = page.getByPlaceholder(/search applications/i)
+    await expect(searchInput).toBeVisible({ timeout: 15_000 })
+
+    // Remove every selected pill from the topic / type / states MultiSelects.
+    // The supervisor lands on the page with a default state ("Not Assessed")
+    // and assigned-topic pills already populated.
+    const removeButtons = page.locator(
+      '.mantine-MultiSelect-root .mantine-Pill-remove, .mantine-MultiSelect-root [data-pill-remove]',
+    )
+    // Loop with a re-query each iteration: each click triggers a re-render so
+    // stale handles would detach.
+    for (let safety = 0; safety < 50; safety++) {
+      const remaining = await removeButtons.count()
+      if (remaining === 0) break
+      await removeButtons.first().click()
+    }
+    await expect(removeButtons).toHaveCount(0)
+
+    // Type into the search input — this is what crashed the app pre-fix.
+    await searchInput.click()
+    await searchInput.fill('alice')
+    await expect(searchInput).toHaveValue('alice')
+
+    // The sidebar (and search input) must still be mounted — i.e. no white
+    // screen — and no unhandled exception should have reached the page.
+    await expect(searchInput).toBeVisible()
+    expect(pageErrors, pageErrors.map((e) => e.message).join('\n')).toHaveLength(0)
+  })
+})
+
+test.describe('Applications - Examiner review', () => {
+  test.use({ storageState: authStatePath('examiner') })
+
+  test('review page shows search and application list', async ({ page }) => {
+    await navigateTo(page, '/applications')
+
+    await expect(page).toHaveURL(/\/applications/)
+    await expect(page.getByPlaceholder(/search applications/i)).toBeVisible({ timeout: 15_000 })
+
+    // Should show applications from seed data
+    await expect(page.getByText(/Student/i).first()).toBeVisible({ timeout: 10_000 })
+
+    // Examiner should NOT see Submit Application link (not a student)
+    await expect(page.getByRole('link', { name: 'Submit Application' })).toBeHidden()
+  })
+
+  test('application detail shows student data and topic information', async ({ page }) => {
+    test.setTimeout(120_000)
+    // Navigate to ACCEPTED application: student on topic 1 (stable across re-runs)
+    const heading = page.getByRole('heading', { name: 'Student User' })
+    await navigateToDetail(page, '/applications/00000000-0000-4000-c000-000000000001', heading)
+
+    // Topic accordion button with topic title
+    await expect(
+      page.getByRole('button', { name: 'Automated Code Review Using Large Language Models' }),
+    ).toBeVisible()
+
+    // Motivation section with actual content from seed data
+    await expect(page.getByText('Motivation')).toBeVisible()
+    await expect(page.getByText(/passionate about LLMs/)).toBeVisible()
+
+    // Student detail values from seed data
+    await expect(page.getByText('student@test.local')).toBeVisible()
+    await expect(page.getByText('Computer Science')).toBeVisible()
+
+    // Application state
+    await expect(page.getByText('Accepted').first()).toBeVisible()
+  })
+
+  test('NOT_ASSESSED application detail shows pending state', async ({ page }) => {
+    test.setTimeout(90_000)
+    // App 4: student4 on topic 1, NOT_ASSESSED
+    const heading = page.getByRole('heading', { name: 'Student4 User' })
+    await navigateToDetail(page, '/applications/00000000-0000-4000-c000-000000000004', heading)
+
+    // Should show student4's email
+    await expect(page.getByText('student4@test.local')).toBeVisible()
+
+    // Topic should be LLM Code Review
+    await expect(
+      page.getByRole('button', { name: 'Automated Code Review Using Large Language Models' }),
+    ).toBeVisible()
+
+    // Application state should be NOT_ASSESSED (displayed as "Not Assessed")
+    await expect(page.getByText(/not assessed/i).first()).toBeVisible({ timeout: 5_000 })
+  })
+})

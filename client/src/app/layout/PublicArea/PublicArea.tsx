@@ -1,35 +1,46 @@
 import type { PropsWithChildren } from 'react'
-import Footer from '../../../components/Footer/Footer'
+import Footer from '@/core/components/Footer/Footer'
 import type { MantineSize } from '@mantine/core'
 import { AppShell, Box, Container, Divider, Flex, Stack } from '@mantine/core'
-import ScrollToTop from '../ScrollToTop/ScrollToTop'
-import Header from '../../../components/Header/Header'
-import ContentContainer from '../ContentContainer/ContentContainer'
+import ScrollToTop from '@/app/layout/ScrollToTop/ScrollToTop'
+import Header from '@/core/components/Header/Header'
+import ContentContainer from '@/app/layout/ContentContainer/ContentContainer'
 import EnvironmentBanner, {
   ENVIRONMENT_BANNER_HEIGHT,
   isEnvironmentBannerVisible,
-} from '../../../components/EnvironmentBanner/EnvironmentBanner'
+} from '@/core/components/EnvironmentBanner/EnvironmentBanner'
+import MaintenanceBanner, {
+  MAINTENANCE_BANNER_HEIGHT,
+  isMaintenanceBannerVisible,
+} from '@/core/components/MaintenanceBanner/MaintenanceBanner'
 
 interface IPublicAreaProps {
   size?: number | MantineSize | (string & {}) | undefined
   handleScrollInView?: boolean
+  hideUnauthenticatedActions?: boolean
 }
 
 const PublicArea = (props: PropsWithChildren<IPublicAreaProps>) => {
-  const { size = 'md', children } = props
+  const { size = 'md', children, hideUnauthenticatedActions = false } = props
 
   const baseHeaderHeight = 50
   const HEADER_HEIGHT =
-    baseHeaderHeight + (isEnvironmentBannerVisible() ? ENVIRONMENT_BANNER_HEIGHT : 0)
+    baseHeaderHeight +
+    (isMaintenanceBannerVisible() ? MAINTENANCE_BANNER_HEIGHT : 0) +
+    (isEnvironmentBannerVisible() ? ENVIRONMENT_BANNER_HEIGHT : 0)
   const FOOTER_HEIGHT = 50
 
   return (
     <AppShell header={{ height: HEADER_HEIGHT }}>
       <AppShell.Header>
+        <MaintenanceBanner />
         <EnvironmentBanner />
         <Box h={baseHeaderHeight}>
           <Container size={size} fluid={!size} h='100%'>
-            <Header authenticatedArea={false}></Header>
+            <Header
+              authenticatedArea={false}
+              hideUnauthenticatedActions={hideUnauthenticatedActions}
+            ></Header>
           </Container>
         </Box>
       </AppShell.Header>

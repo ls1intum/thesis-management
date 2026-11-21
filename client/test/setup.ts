@@ -41,6 +41,11 @@ if (typeof Element !== 'undefined' && typeof Element.prototype.scrollTo !== 'fun
   Element.prototype.scrollTo = () => {}
 }
 
+// 3b) scrollIntoView — Mantine's Select/Combobox scrolls the active option into view.
+if (typeof Element !== 'undefined' && typeof Element.prototype.scrollIntoView !== 'function') {
+  Element.prototype.scrollIntoView = () => {}
+}
+
 // 4) document.fonts (FontFaceSet) — Mantine v9 Textarea autosize subscribes
 // to font loading events; jsdom does not implement the CSS Font Loading API.
 if (typeof document !== 'undefined' && !('fonts' in document)) {

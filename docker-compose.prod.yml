@@ -12,6 +12,13 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
       - "--certificatesresolvers.letsencrypt.acme.email=admin@tum.de"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      # Incident mode: ./traefik-dynamic/incident.yml defines incident-gate and
+      # incident-gate-api, which the client and server routers always use. It is
+      # managed by aet-infrastructure (services/thesis_management): open to
+      # everyone normally, VPN-only during an incident. If the file is missing
+      # the routers are disabled, so the app fails closed, never open.
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
     restart: unless-stopped
     ports:
       - "80:80"
@@ -19,6 +26,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./letsencrypt:/letsencrypt
+      - ./traefik-dynamic:/etc/traefik/dynamic:ro
     networks:
       - thesis-management-network
 
@@ -34,7 +42,12 @@ services:
       - "traefik.http.middlewares.api-ratelimit.ratelimit.average=300"
       - "traefik.http.middlewares.api-ratelimit.ratelimit.burst=100"
       - "traefik.http.middlewares.server-compress.compress=true"
-      - "traefik.http.routers.server.middlewares=api-ratelimit,server-compress"
+      # Tell browsers to use https only for this host (sent on https responses only). Deliberately without
+      # includeSubdomains and preload: the parent domain hosts other services this project does not own.
+      # Each container defines its own middleware: Traefik drops a container's labels while it is down, and a
+      # router that references a missing middleware is disabled, so the two routers must not share one.
+      - "traefik.http.middlewares.server-hsts.headers.stsSeconds=31536000"
+      - "traefik.http.routers.server.middlewares=incident-gate-api@file,api-ratelimit,server-compress,server-hsts"
       - "traefik.http.routers.server.priority=10"
     depends_on:
       db:
@@ -61,10 +74,22 @@ services:
       - CLIENT_HOST
       - KEYCLOAK_HOST
       - KEYCLOAK_REALM_NAME
-      - KEYCLOAK_CLIENT_ID
       - KEYCLOAK_SERVICE_CLIENT_ID
       - KEYCLOAK_SERVICE_CLIENT_SECRET
       - MAIL_SENDER
+      # Pre-fills schools, departments and study programs on first start (e.g. `tum`); empty for none
+      - REFERENCE_DATA_PRESET
+      # Shared with the client below: gates the AI feedback module. Both services must agree,
+      # otherwise the client shows AI buttons the server answers with 404 (or vice versa).
+      - AI_FEATURES_ENABLED
+      # LLM backend for the AI feedback module. Only consulted when AI_FEATURES_ENABLED=true;
+      # each is optional and falls back to the application.yml default when unset.
+      - OPENAI_API_KEY
+      - OPENAI_BASE_URL
+      - OPENAI_CHAT_MODEL
+      - OPENAI_CHAT_TEMPERATURE
+      - OPENAI_TIMEOUT
+      - AI_REVIEW_INCLUDE_IMAGES
     networks:
       - thesis-management-network
 
@@ -77,9 +102,16 @@ services:
       - "traefik.http.routers.client.entrypoints=websecure"
       - "traefik.http.routers.client.tls.certresolver=letsencrypt"
       - "traefik.http.middlewares.client-compress.compress=true"
-      - "traefik.http.routers.client.middlewares=client-compress"
+      - "traefik.http.middlewares.client-hsts.headers.stsSeconds=31536000"
+      - "traefik.http.routers.client.middlewares=incident-gate@file,client-compress,client-hsts"
       - "traefik.http.routers.client.priority=1"
     restart: unless-stopped
+    # Maintenance banner (MAINTENANCE_MESSAGE), written by aet-infrastructure.
+    # Optional, and deliberately not listed under environment: a bare entry
+    # there would override this file with an empty value.
+    env_file:
+      - path: ./incident.env
+        required: false
     expose:
       - "80"
     environment:
@@ -87,9 +119,15 @@ services:
       - KEYCLOAK_HOST
       - KEYCLOAK_REALM_NAME
       - KEYCLOAK_CLIENT_ID
+      - PASSKEY_RP_ID
+      - PASSKEY_RP_NAME
+      - PASSKEY_PROMPT_APPS
       - ALLOW_SUGGESTED_TOPICS
+      # Shared with the server above: must match so AI buttons are only shown when the
+      # server actually serves the /v2/ai-review endpoints.
+      - AI_FEATURES_ENABLED
       - THESIS_TYPES
-      - STUDY_PROGRAMS
+      - THESIS_PORTAL_URL
       - STUDY_DEGREES
       - GENDERS
       - LANGUAGES
@@ -104,7 +142,7 @@ services:
       - thesis-management-network
 
   db:
-    image: "postgres:18.4-alpine"
+    image: "postgres:${POSTGRES_IMAGE_TAG:-19.0-alpine}"
     container_name: thesis-management-db
     environment:
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}

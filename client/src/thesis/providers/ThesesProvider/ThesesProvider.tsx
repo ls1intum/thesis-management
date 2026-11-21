@@ -1,0 +1,125 @@
+import type { PropsWithChildren } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import type {
+  IThesesContext,
+  IThesesFilters,
+  IThesesSort,
+} from '@/thesis/providers/ThesesProvider/context'
+import { ThesesContext } from '@/thesis/providers/ThesesProvider/context'
+import type { IThesisOverview, ThesisState } from '@/thesis/requests/responses/thesis'
+import { doRequest } from '@/core/requests/request'
+import type { PaginationResponse } from '@/core/requests/responses/pagination'
+import { useDebouncedValue } from '@mantine/hooks'
+import { showSimpleError } from '@/core/utils/notification'
+import { getApiResponseErrorMessage } from '@/core/requests/handler'
+
+interface IThesesProviderProps {
+  fetchAll?: boolean
+  limit: number
+  defaultStates?: ThesisState[]
+  hideIfEmpty?: boolean
+}
+
+const ThesesProvider = (props: PropsWithChildren<IThesesProviderProps>) => {
+  const { children, fetchAll = false, limit, hideIfEmpty = false, defaultStates } = props
+
+  const [theses, setTheses] = useState<PaginationResponse<IThesisOverview>>()
+  const [page, setPage] = useState(0)
+
+  const [filters, setFilters] = useState<IThesesFilters>({
+    states: defaultStates,
+  })
+  const [sort, setSort] = useState<IThesesSort>({
+    column: 'startDate',
+    direction: 'asc',
+  })
+
+  const [debouncedSearch] = useDebouncedValue(filters.search ?? '', 500)
+
+  const filterStatesKey = filters.states?.join(',')
+  const filterTypesKey = filters.types?.join(',')
+
+  useEffect(() => {
+    setTheses(undefined)
+
+    return doRequest<PaginationResponse<IThesisOverview>>(
+      `/v2/theses`,
+      {
+        method: 'GET',
+        requiresAuth: true,
+        params: {
+          fetchAll: fetchAll ? 'true' : 'false',
+          search: debouncedSearch,
+          state: filters.states?.join(',') ?? '',
+          type: filters.types?.join(',') ?? '',
+          page,
+          limit,
+          sortBy: sort.column,
+          sortOrder: sort.direction,
+        },
+      },
+      (res) => {
+        if (!res.ok) {
+          showSimpleError(getApiResponseErrorMessage(res))
+
+          return setTheses({
+            content: [],
+            totalPages: 0,
+            totalElements: 0,
+            last: true,
+            pageNumber: 0,
+            pageSize: limit,
+          })
+        }
+
+        setTheses(res.data)
+      },
+    )
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- filters.states/types are tracked via joined keys below to avoid identity-based reruns
+  }, [fetchAll, page, limit, sort, filterStatesKey, filterTypesKey, debouncedSearch])
+
+  const contextState = useMemo<IThesesContext>(() => {
+    return {
+      theses,
+      filters,
+      setFilters: (value) => {
+        setPage(0)
+        setFilters(value)
+      },
+      sort,
+      setSort: (value) => {
+        setPage(0)
+        setSort(value)
+      },
+      page,
+      setPage,
+      limit,
+      updateThesis: (newThesis) => {
+        setTheses((prev) => {
+          if (!prev) {
+            return undefined
+          }
+
+          const index = (prev.content ?? []).findIndex((x) => x.thesisId === newThesis.thesisId)
+
+          if (index >= 0) {
+            const content = prev.content ?? []
+            content[index] = newThesis
+
+            return { ...prev, content }
+          }
+
+          return { ...prev }
+        })
+      },
+    }
+  }, [theses, filters, sort, page, limit])
+
+  if (hideIfEmpty && page === 0 && (!theses || (theses.content ?? []).length === 0)) {
+    return <></>
+  }
+
+  return <ThesesContext value={contextState}>{children}</ThesesContext>
+}
+
+export default ThesesProvider

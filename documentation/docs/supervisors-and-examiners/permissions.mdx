@@ -1,0 +1,89 @@
+---
+title: Permissions
+sidebar_position: 3
+description: Role-by-role permission matrix for the thesis page and research group actions.
+---
+
+# Permissions
+
+This page lists exactly which actions each role can perform on the thesis
+page and inside a research group.
+
+Admins can view and edit **all** theses on the platform. For every other
+role, the tables below apply.
+
+## Thesis Page Permissions
+
+The columns represent the four ways a user can reach a thesis page:
+
+- **Examiner / Supervisor / Student** — the user is directly assigned to
+  the thesis with that thesis role (see the `thesis_roles` table). These
+  are *per-thesis* roles, not global Keycloak groups.
+- **Viewer** — anyone else who can read the thesis based on its
+  `visibility` setting. This is the **default permission set for any
+  logged-in user (and, for finished public theses, even unauthenticated
+  visitors) who is not assigned to the thesis**:
+
+  | Thesis visibility     | Who qualifies as Viewer                                                   |
+  |-----------------------|---------------------------------------------------------------------------|
+  | `PUBLIC` + `FINISHED` | Everyone, including unauthenticated visitors                              |
+  | `PUBLIC` (any state)  | Any authenticated user                                                    |
+  | `INTERNAL`            | Any authenticated user in the `advisor` or `supervisor` Keycloak group    |
+  | `STUDENT`             | Any authenticated user in the `student`, `advisor`, or `supervisor` group |
+  | `PRIVATE`             | Nobody — only directly assigned Examiner / Supervisor / Student           |
+
+  An authenticated user who does not match any of the rows above for a
+  given thesis has **no permissions on it at all** (not even the Viewer
+  column) — every action and read in the table below is denied.
+
+| Permission                     | Examiner | Supervisor | Student | Viewer |
+| ------------------------------ | -------- | ---------- | ------- | ------ |
+| Configure Thesis               | ✅       | ✅         | ❌      | ❌     |
+| View Student Information       | ✅       | ✅         | ❌      | ❌     |
+| Update Thesis Credits          | ✅       | ✅         | ❌      | ❌     |
+| View Thesis Info               | ✅       | ✅         | ✅      | ✅     |
+| Add Abstract / Links           | ✅       | ✅         | ✅      | ❌     |
+| Edit Thesis Titles             | ✅       | ✅         | ✅      | ❌     |
+| Upload Proposal                | ✅       | ✅         | ✅      | ❌     |
+| View Proposal                  | ✅       | ✅         | ✅      | ✅     |
+| View Proposal History          | ✅       | ✅         | ✅      | ❌     |
+| Delete Proposal                | ✅       | ✅         | ❌      | ❌     |
+| Request Proposal Changes       | ✅       | ✅         | ❌      | ❌     |
+| Accept Proposal                | ✅       | ✅         | ❌      | ❌     |
+| Upload Thesis Files            | ✅       | ✅         | ✅      | ❌     |
+| View Thesis Files              | ✅       | ✅         | ✅      | ✅     |
+| View Thesis File History       | ✅       | ✅         | ✅      | ❌     |
+| Delete Thesis File             | ✅       | ✅         | ❌      | ❌     |
+| Create Presentation Draft      | ✅       | ✅         | ✅      | ❌     |
+| Schedule Presentation          | ✅       | ✅         | ❌      | ❌     |
+| Post / View Student Comment    | ✅       | ✅         | ✅      | ❌     |
+| Post / View Supervisor Comment | ✅       | ✅         | ❌      | ❌     |
+| Submit Thesis                  | ✅       | ✅         | ✅      | ❌     |
+| Add Assessment                 | ✅       | ✅         | ❌      | ❌     |
+| View Assessment                | ✅       | ✅         | ❌      | ❌     |
+| Add Final Grade                | ✅       | ❌         | ❌      | ❌     |
+| View Final Grade               | ✅       | ✅         | ✅      | ❌     |
+| Complete Thesis                | ✅       | ❌         | ❌      | ❌     |
+| Create Interview Process       | ✅       | ✅         | ❌      | ❌     |
+| Add Interviewee                | ✅       | ✅         | ❌      | ❌     |
+| Create Interview Slots         | ✅       | ✅         | ❌      | ❌     |
+| Send Invitation                | ✅       | ✅         | ❌      | ❌     |
+| Schedule Interview             | ✅       | ✅         | ✅      | ❌     |
+| Cancel Interview               | ✅       | ✅         | ✅      | ❌     |
+| Assess Interviewee             | ✅       | ✅         | ❌      | ❌     |
+
+## Research Group Permissions
+
+Supervisors and Examiners who are **not** Group Admins do not have any of
+the permissions below. Group heads have the Group Admin role for their
+group by default (this cannot be changed).
+
+| Permission                        | Admins | Group Admins |
+| --------------------------------- | ------ | ------------ |
+| Create Research Group             | ✅     | ❌           |
+| Browse Research Groups            | ✅     | ❌           |
+| Update Research Group Details     | ✅     | ✅           |
+| Update Research Group Settings    | ✅     | ✅           |
+| Add Member to Research Group      | ✅     | ✅           |
+| Remove Member from Research Group | ✅     | ✅           |
+| Assign Group Admin role to Member | ✅     | ✅           |

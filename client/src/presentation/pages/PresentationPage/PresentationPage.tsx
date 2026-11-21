@@ -1,0 +1,109 @@
+import { Link, useParams } from 'react-router'
+import React, { useEffect, useState } from 'react'
+import type { IPublishedPresentation } from '@/thesis/requests/responses/thesis'
+import { doRequest } from '@/core/requests/request'
+import ThesisData from '@/thesis/components/ThesisData/ThesisData'
+import { showSimpleError } from '@/core/utils/notification'
+import { getApiResponseErrorMessage } from '@/core/requests/handler'
+import NotFound from '@/core/components/NotFound/NotFound'
+import PageLoader from '@/core/components/PageLoader/PageLoader'
+import { Anchor, Button, Divider, Grid, Stack, Title } from '@mantine/core'
+import LabeledItem from '@/core/components/LabeledItem/LabeledItem'
+import { formatDate, formatPresentationType } from '@/core/utils/format'
+import { GLOBAL_CONFIG } from '@/core/config/global'
+import { usePageTitle } from '@/core/hooks/theme'
+import { useUser } from '@/core/hooks/authentication'
+
+const PresentationPage = () => {
+  const { presentationId } = useParams<{ presentationId: string }>()
+
+  const [presentation, setPresentation] = useState<IPublishedPresentation | false>()
+
+  usePageTitle(presentation ? presentation.thesis.title : 'Presentation')
+
+  const user = useUser()
+
+  useEffect(() => {
+    setPresentation(undefined)
+
+    if (presentationId) {
+      return doRequest<IPublishedPresentation>(
+        `/v2/published-presentations/${presentationId}`,
+        {
+          method: 'GET',
+          requiresAuth: false,
+        },
+        (res) => {
+          if (res.ok) {
+            setPresentation(res.data)
+          } else {
+            setPresentation(false)
+
+            showSimpleError(getApiResponseErrorMessage(res))
+          }
+        },
+      )
+    }
+  }, [presentationId])
+
+  if (presentation === false) {
+    return <NotFound />
+  }
+
+  if (!presentation) {
+    return <PageLoader />
+  }
+
+  return (
+    <Stack gap='md'>
+      <Title>{presentation.thesis.title}</Title>
+      <Grid>
+        <Grid.Col span={{ md: 4 }}>
+          <LabeledItem label='Presentation Date' value={formatDate(presentation.scheduledAt)} />
+        </Grid.Col>
+        <Grid.Col span={{ md: 4 }}>
+          <LabeledItem label='Location' value={presentation.location ?? 'Not available'} />
+        </Grid.Col>
+        <Grid.Col span={{ md: 4 }}>
+          <LabeledItem
+            label='Stream URL'
+            value={
+              presentation.streamUrl ? (
+                <Anchor target='_blank' href={presentation.streamUrl}>
+                  {presentation.streamUrl}
+                </Anchor>
+              ) : (
+                'Not available'
+              )
+            }
+          />
+        </Grid.Col>
+        <Grid.Col span={{ md: 4 }}>
+          <LabeledItem
+            label='Language'
+            value={GLOBAL_CONFIG.languages[presentation.language] ?? presentation.language}
+          />
+        </Grid.Col>
+        <Grid.Col span={{ md: 4 }}>
+          <LabeledItem label='Type' value={formatPresentationType(presentation.type)} />
+        </Grid.Col>
+      </Grid>
+      <Divider />
+      <ThesisData thesis={presentation.thesis} additionalInformation={['abstract']} />
+      {
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `false` must fall through to the next check
+        (user?.groups?.includes('admin') ||
+          user?.researchGroupId === presentation.thesis.researchGroup.id ||
+          (presentation.thesis.students ?? []).some(
+            (student) => student.userId === user?.userId,
+          )) && (
+          <Button component={Link} to={`/theses/${presentation.thesis.thesisId}`}>
+            View Thesis Page
+          </Button>
+        )
+      }
+    </Stack>
+  )
+}
+
+export default PresentationPage

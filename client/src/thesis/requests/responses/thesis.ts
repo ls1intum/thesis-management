@@ -1,0 +1,225 @@
+import type {
+  ILightResearchGroup,
+  IMinimalResearchGroup,
+} from '@/core/group/requests/responses/researchGroup'
+import type { ILightUser, IMinimalUser } from '@/core/user/requests/responses/user'
+import type { IStudyProgram } from '@/core/organization/requests/responses/organization'
+
+export enum ThesisState {
+  PROPOSAL = 'PROPOSAL',
+  WRITING = 'WRITING',
+  SUBMITTED = 'SUBMITTED',
+  ASSESSED = 'ASSESSED',
+  GRADED = 'GRADED',
+  FINISHED = 'FINISHED',
+  DROPPED_OUT = 'DROPPED_OUT',
+}
+
+export enum ThesisFeedbackCategory {
+  FORMATTING = 'FORMATTING',
+  STRUCTURE = 'STRUCTURE',
+  CITATION = 'CITATION',
+  METHODOLOGY = 'METHODOLOGY',
+  WRITING = 'WRITING',
+  FIGURES = 'FIGURES',
+  LOGIC = 'LOGIC',
+  COMPLETENESS = 'COMPLETENESS',
+  OTHER = 'OTHER',
+}
+
+export enum ThesisFeedbackSeverity {
+  CRITICAL = 'CRITICAL',
+  MAJOR = 'MAJOR',
+  MINOR = 'MINOR',
+  SUGGESTION = 'SUGGESTION',
+}
+
+export enum ThesisFeedbackSource {
+  AI = 'AI',
+  HUMAN = 'HUMAN',
+  AI_REVIEWED_BY_HUMAN = 'AI_REVIEWED_BY_HUMAN',
+}
+
+export interface IThesisPresentationOverview {
+  presentationId: string
+  type: string
+  scheduledAt: string
+}
+
+export interface IThesisPresentation {
+  thesisId: string
+  presentationId: string
+  state: string
+  type: string
+  visibility: string
+  location: string | null
+  streamUrl: string | null
+  language: string
+  presentationNoteHtml: string | null
+  scheduledAt: string
+  createdAt: string
+  createdBy: IMinimalUser
+}
+
+export interface IThesisOverview {
+  thesisId: string
+  title: string
+  type: string
+  state: ThesisState
+  startDate: string | null
+  endDate: string | null
+  createdAt: string
+  keywords?: string[]
+  students?: IMinimalUser[]
+  supervisors?: IMinimalUser[]
+  examiners?: IMinimalUser[]
+  researchGroup?: IMinimalResearchGroup
+  states?: Array<{
+    state: ThesisState
+    startedAt: string
+    endedAt: string
+  }>
+  presentations?: IThesisPresentationOverview[]
+}
+
+export interface IThesis extends IThesisOverview {
+  language: string
+  metadata: {
+    credits: Record<string, number>
+    titles: Record<string, string>
+  }
+  visibility: string
+  infoText?: string
+  abstractText?: string
+  abstractSource?: 'MANUAL' | 'EXTRACTED'
+  abstractSuggestion?: string
+  applicationId: string | null
+  anonymized?: boolean
+  anonymizedAt?: string
+  researchGroup: ILightResearchGroup
+  studyProgram?: IStudyProgram
+  // Portal of the school of the study program (or research group); the instance default applies if missing
+  submissionPortalUrl?: string
+  students?: ILightUser[]
+  supervisors?: ILightUser[]
+  examiners?: ILightUser[]
+  files?: Array<{
+    fileId: string
+    type: string
+    filename: string
+    uploadName: string
+    uploadedAt: string
+    uploadedBy: IMinimalUser
+  }>
+  assessment: null | {
+    summary: string
+    positives: string
+    negatives: string
+    gradeSuggestion: string
+    createdAt: string
+    createdBy: IMinimalUser
+    gradeComponents?: Array<{
+      gradeComponentId: string
+      name: string
+      weight: number
+      isBonus: boolean
+      grade: number
+      position: number
+    }>
+  }
+  proposals?: Array<{
+    proposalId: string
+    filename: string
+    createdAt: string
+    createdBy: IMinimalUser
+    approvedAt: string | null
+    approvedBy: IMinimalUser | null
+  }>
+  feedback?: Array<{
+    feedbackId: string
+    type: string
+    feedback: string
+    requestedBy: IMinimalUser
+    requestedAt: string
+    completedAt: string | null
+    category?: ThesisFeedbackCategory | null
+    severity?: ThesisFeedbackSeverity | null
+    generationSource?: ThesisFeedbackSource
+    // Points at a proposalId (PROPOSAL feedback) or a thesis fileId (THESIS feedback). The
+    // client resolves it to a "v{n}" label by matching against thesis.proposals / thesis.files.
+    documentVersionId?: string | null
+  }>
+  // The AI review pipeline's latest read on the proposal/thesis document — persisted on every
+  // auto-review run, independent of which findings (if any) were saved.
+  aiReviewSummaries?: Array<{
+    type: 'PROPOSAL' | 'THESIS'
+    score?: number | null
+    assessment?: 'GOOD' | 'ACCEPTABLE' | 'NEEDS_WORK' | null
+    summary?: string | null
+    // The proposalId (PROPOSAL) or thesis fileId (THESIS) the review ran against. A summary
+    // whose version is not the latest upload describes a superseded document and is hidden.
+    documentVersionId?: string | null
+    updatedAt: string
+  }>
+  grade: null | {
+    finalGrade: string
+    feedback: string
+  }
+  presentations?: IThesisPresentation[]
+}
+
+export interface IThesisComment {
+  commentId: string
+  message: string
+  filename: string | null
+  uploadName: string | null
+  createdAt: string
+  createdBy: IMinimalUser
+}
+
+export interface IPublishedThesis {
+  thesisId: string
+  state: ThesisState
+  title: string
+  type: string
+  startDate: string | null
+  endDate: string | null
+  abstractText?: string
+  students?: IMinimalUser[]
+  supervisors?: IMinimalUser[]
+  examiners?: IMinimalUser[]
+  researchGroup: ILightResearchGroup
+}
+
+export interface IPublishedPresentation {
+  thesisId: string
+  presentationId: string
+  state: string
+  type: string
+  visibility: string
+  location: string | null
+  streamUrl: string | null
+  language: string
+  scheduledAt: string
+  thesis: IPublishedThesis
+}
+
+export function isThesis(thesis: unknown): thesis is IThesis {
+  if (!thesis || typeof thesis !== 'object') return false
+  const obj = thesis as Record<string, unknown>
+  return !!obj.thesisId && !!obj.states && 'language' in obj
+}
+
+export function isThesisPresentation(presentation: unknown): presentation is IThesisPresentation {
+  if (!presentation || typeof presentation !== 'object') return false
+  const obj = presentation as Record<string, unknown>
+  return !!obj.presentationId && !obj.thesis
+}
+
+export function isPublishedPresentation(
+  presentation: unknown,
+): presentation is IPublishedPresentation {
+  if (!presentation || typeof presentation !== 'object') return false
+  const obj = presentation as Record<string, unknown>
+  return !!obj.presentationId && !!obj.thesis
+}
