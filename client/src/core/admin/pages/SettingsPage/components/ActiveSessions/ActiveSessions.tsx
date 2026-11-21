@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { doRequest } from '@/core/requests/request'
 import { showSimpleError, showSimpleSuccess } from '@/core/utils/notification'
 import { getApiResponseErrorMessage } from '@/core/requests/handler'
+import { formatDateTime } from '@/core/utils/format'
 
 interface IUserSession {
   id: string
@@ -13,7 +14,7 @@ interface IUserSession {
   current?: boolean
 }
 
-const formatDate = (value?: string) => (value ? new Date(value).toLocaleString() : 'unknown')
+const formatSessionTimestamp = (value?: string) => (value ? formatDateTime(value) : 'unknown')
 
 const ActiveSessions = () => {
   const [sessions, setSessions] = useState<IUserSession[]>([])
@@ -111,8 +112,9 @@ const ActiveSessions = () => {
                 {session.current && <Badge variant='light'>This device</Badge>}
               </Group>
               <Text size='sm' c='dimmed'>
-                {session.ip ? `IP ${session.ip} · ` : ''}Signed in {formatDate(session.createdAt)} ·
-                Last active {formatDate(session.lastUsedAt)}
+                {session.ip ? `IP ${session.ip} · ` : ''}Signed in{' '}
+                {formatSessionTimestamp(session.createdAt)} · Last active{' '}
+                {formatSessionTimestamp(session.lastUsedAt)}
               </Text>
             </Stack>
             {!session.current && (

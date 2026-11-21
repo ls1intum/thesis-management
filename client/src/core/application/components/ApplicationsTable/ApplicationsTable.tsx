@@ -3,7 +3,7 @@ import type { IApplication } from '@/core/application/requests/responses/applica
 import type { DataTableColumn } from 'mantine-datatable'
 import { DataTable } from 'mantine-datatable'
 import { Badge, Center } from '@mantine/core'
-import { formatApplicationState, formatDate, formatThesisType } from '@/core/utils/format'
+import { formatApplicationState, formatDateTime, formatThesisType } from '@/core/utils/format'
 import { useApplicationsContext } from '@/core/application/providers/ApplicationsProvider/hooks'
 import type { IApplicationsSort } from '@/core/application/providers/ApplicationsProvider/context'
 import { ApplicationStateColor } from '@/core/config/colors'
@@ -80,14 +80,14 @@ const ApplicationsTable = (props: IApplicationsTableProps) => {
       title: 'Reviewed At',
       sortable: true,
       width: 150,
-      render: (application) => formatDate(application.reviewedAt),
+      render: (application) => formatDateTime(application.reviewedAt),
     },
     created_at: {
       accessor: 'createdAt',
       title: 'Created At',
       sortable: true,
       width: 150,
-      render: (application) => formatDate(application.createdAt),
+      render: (application) => formatDateTime(application.createdAt),
     },
     ...extraColumns,
   }

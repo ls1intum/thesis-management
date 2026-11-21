@@ -2,6 +2,7 @@ import { Button, Group, Loader, Paper, Stack, Text, Title } from '@mantine/core'
 import { useCallback, useEffect, useState } from 'react'
 import { useAuthenticationContext } from '@/core/hooks/authentication'
 import { showSimpleError, showSimpleSuccess } from '@/core/utils/notification'
+import { formatDateTime } from '@/core/utils/format'
 import type { IKeycloakCredential } from '@/core/providers/AuthenticationContext/context'
 import {
   getPasskeyErrorMessage,
@@ -14,7 +15,7 @@ const formatCreatedDate = (createdDate?: number) => {
     return 'Creation time unknown'
   }
 
-  return `Created ${new Date(createdDate).toLocaleString()}`
+  return `Created ${formatDateTime(new Date(createdDate))}`
 }
 
 const PasskeySettings = () => {

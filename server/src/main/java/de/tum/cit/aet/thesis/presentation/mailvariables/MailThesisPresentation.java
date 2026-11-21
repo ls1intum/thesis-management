@@ -51,7 +51,7 @@ public record MailThesisPresentation(
 				new MailVariableDto("Presentation Creator First Name", "[[${presentation.creatorFirstName}]]", "Max", "Presentation"),
 				new MailVariableDto("Presentation Creator Last Name", "[[${presentation.creatorLastName}]]", "Mustermann", "Presentation"),
 				new MailVariableDto("Presentation Type", "[[${presentation.type}]]", "Final Presentation", "Presentation"),
-				new MailVariableDto("Presentation Date", "[[${presentation.scheduledAt}]]", "01.10.2024 14:00:00 CET", "Presentation"),
+				new MailVariableDto("Presentation Date", "[[${presentation.scheduledAt}]]", "2024-10-01 14:00 (CET)", "Presentation"),
 				new MailVariableDto("Presentation Location", "[[${presentation.location}]]", "Room 101", "Presentation"),
 				new MailVariableDto("Presentation Stream URL", "[[${presentation.streamUrl}]]", "https://video.example.com", "Presentation"),
 				new MailVariableDto("Presentation Language", "[[${presentation.language}]]", "English", "Presentation"),

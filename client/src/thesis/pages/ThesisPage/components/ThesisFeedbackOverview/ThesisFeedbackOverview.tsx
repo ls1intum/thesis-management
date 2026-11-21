@@ -22,7 +22,7 @@ import type { IThesis } from '@/thesis/requests/responses/thesis'
 import { ThesisFeedbackSource } from '@/thesis/requests/responses/thesis'
 import React from 'react'
 import AvatarUser from '@/core/components/AvatarUser/AvatarUser'
-import { formatDate } from '@/core/utils/format'
+import { formatDate, formatDateTime } from '@/core/utils/format'
 import { doRequest } from '@/core/requests/request'
 import { ApiError } from '@/core/requests/handler'
 import { MagnifyingGlass, Trash } from '@phosphor-icons/react'
@@ -209,7 +209,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
     : undefined
   const summaryProvenance = [
     summaryVersionLabel ? `AI review of ${summaryVersionLabel}` : 'AI review',
-    reviewSummary?.updatedAt ? formatDate(reviewSummary.updatedAt, { withTime: false }) : '',
+    reviewSummary?.updatedAt ? formatDate(reviewSummary.updatedAt) : '',
   ]
     .filter(Boolean)
     .join(' · ')
@@ -396,7 +396,7 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
                   <Table.Td width={200}>
                     <AvatarUser user={item.requestedBy} />
                   </Table.Td>
-                  <Table.Td width={170}>{formatDate(item.requestedAt)}</Table.Td>
+                  <Table.Td width={170}>{formatDateTime(item.requestedAt)}</Table.Td>
                   <Table.Td width={80}>
                     {access.supervisor && (
                       <Center>

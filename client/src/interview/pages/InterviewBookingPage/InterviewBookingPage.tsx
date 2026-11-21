@@ -34,6 +34,7 @@ import AvatarUserList from '@/core/components/AvatarUserList/AvatarUserList'
 import InterviewProcessProvider from '@/interview/providers/InterviewProcessProvider/InterviewProcessProvider'
 import SelectSlotCarousel from '@/interview/pages/InterviewBookingPage/components/SelectSlotCarousel'
 import CancelSlotConfirmationModal from '@/interview/pages/InterviewTopicOverviewPage/components/CancelSlotConfirmationModal'
+import { formatDate, formatTime } from '@/core/utils/format'
 
 interface ISlotInformationProps {
   slot: IInterviewSlot
@@ -48,7 +49,7 @@ const SlotInformation = ({ slot, title }: ISlotInformationProps) => (
         title: 'Date',
         content: (
           <Text size='xs' pl={'xs'}>
-            {slot.startDate.toLocaleDateString()}
+            {formatDate(slot.startDate)}
           </Text>
         ),
         icon: <CalendarDotsIcon />,
@@ -57,8 +58,8 @@ const SlotInformation = ({ slot, title }: ISlotInformationProps) => (
         title: 'Time',
         content: (
           <Text size='xs' pl={'xs'}>
-            {`${slot.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` +
-              ` - ${slot.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` +
+            {`${formatTime(slot.startDate)}` +
+              ` - ${formatTime(slot.endDate)}` +
               `, ${Math.round((slot.endDate.getTime() - slot.startDate.getTime()) / 60000)} min`}
           </Text>
         ),

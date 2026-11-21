@@ -45,6 +45,7 @@ import type {
 } from '@/core/admin/requests/responses/dependencyOverview'
 import { getApiResponseErrorMessage } from '@/core/requests/handler'
 import { showSimpleError, showSimpleSuccess } from '@/core/utils/notification'
+import { formatDateTime } from '@/core/utils/format'
 import {
   buildComponentKey,
   downloadJson,
@@ -538,11 +539,7 @@ const DependencyOverviewPage = () => {
           <Text size='xs' c='dimmed'>
             Showing {filteredRows.length} of {totalCount} components
             {vulnerabilities?.lastChecked && (
-              <>
-                {' '}
-                · vulnerability data last checked{' '}
-                {new Date(vulnerabilities.lastChecked).toLocaleString()}
-              </>
+              <> · vulnerability data last checked {formatDateTime(vulnerabilities.lastChecked)}</>
             )}
           </Text>
           <DataTable

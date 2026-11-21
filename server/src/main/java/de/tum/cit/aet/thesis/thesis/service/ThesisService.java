@@ -999,7 +999,7 @@ public class ThesisService {
 		}
 
 		if (presentation != null) {
-			builder.addOverviewItem("Presentation Date", DataFormatter.formatDate(presentation.getScheduledAt()));
+			builder.addOverviewItem("Presentation Date", DataFormatter.formatDateTimeWithoutZone(presentation.getScheduledAt()));
 		}
 
 		builder.addSection("Summary", assessment.getSummary())
