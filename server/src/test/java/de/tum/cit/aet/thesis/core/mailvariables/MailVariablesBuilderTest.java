@@ -243,10 +243,13 @@ class MailVariablesBuilderTest {
 		}
 
 		@Test
-		void allCases_IncludeNotificationUrlFooter() {
+		void allCases_DoNotOfferNotificationUrlFooter() {
+			// MailBuilder.send() appends the notification-settings footer itself, so offering it as an
+			// insertable snippet would put a second footer into the email.
 			List<MailVariableDto> variables = builder.getMailVariables("APPLICATION_ACCEPTED");
 
-			assertThat(variables).anyMatch(v -> v.label().equals("Notification URL Footer"));
+			assertThat(variables).noneMatch(v -> v.label().equals("Notification URL Footer"));
+			assertThat(variables).noneMatch(v -> v.templateVariable().contains("settings/notifications"));
 		}
 	}
 }
