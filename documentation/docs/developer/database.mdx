@@ -120,20 +120,32 @@ All commands must be run as the `thesistrack` user in `/home/thesistrack/` on th
 SSH in, then switch to the correct user:
 
 ```bash
-sudo su
-su thesistrack
+sudo -iu thesistrack
 cd ~
 ```
+
+Use a **login shell** (`sudo -iu`, not `sudo -u` and not a plain `sudo su`): it sets `HOME` to
+`/home/thesistrack`, which `docker compose` needs to find its plugin and config. With `sudo -u` the
+shell keeps the caller's `HOME` and `docker compose -f …` fails with `unknown shorthand flag: 'f'`.
 
 Then run the upgrade
 
 ```bash
 
+# 0. BEFORE the downtime window: pre-pull the new image (about 120 MB; it otherwise happens inside
+#    the outage) and note the current version and size. Replace 19.0-alpine with the target tag.
+docker pull postgres:19.0-alpine
+docker exec thesis-management-db psql -U "thesistrack" -d "thesistrack" -tAc "select version(); select pg_size_pretty(pg_database_size(current_database()))"
+
 # 1. Stop the application server (keep DB running)
 docker compose -f docker-compose.prod.yml --env-file=.env.prod stop server client
 
-# 2. Create a full database dump
+# 2. Record exact per-table row counts, then create a full database dump
+mkdir -p pg-upgrade
+docker exec thesis-management-db psql -U "thesistrack" -d "thesistrack" -tA -F' ' -c "select table_name, (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from %I.%I', table_schema, table_name), false, true, '')))[1]::text::int from information_schema.tables where table_schema='public' and table_type='BASE TABLE' order by 1" > pg-upgrade/rowcounts_before.txt
 docker exec thesis-management-db pg_dump -Fc -U "thesistrack" "thesistrack" > thesis_dump.dump
+# sanity check: the dump must be readable and list its entries
+docker exec -i thesis-management-db pg_restore -l < thesis_dump.dump | wc -l
 
 # 3. Stop and remove the old DB container
 docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
@@ -159,18 +171,55 @@ until docker exec thesis-management-db pg_isready -U "thesistrack"; do sleep 1; 
 docker cp thesis_dump.dump thesis-management-db:/tmp/thesis_dump.dump
 docker exec thesis-management-db pg_restore -U "thesistrack" -d "thesistrack" --no-owner --no-acl --exit-on-error /tmp/thesis_dump.dump
 
-# 9. Verify data integrity
-docker exec thesis-management-db psql -U "thesistrack" -d "thesistrack" -c "\dt+"
+# 9. Verify data integrity: the row counts must be identical to the ones taken before the dump
+docker exec thesis-management-db psql -U "thesistrack" -d "thesistrack" -tA -F' ' -c "select table_name, (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from %I.%I', table_schema, table_name), false, true, '')))[1]::text::int from information_schema.tables where table_schema='public' and table_type='BASE TABLE' order by 1" > pg-upgrade/rowcounts_after.txt
+diff pg-upgrade/rowcounts_before.txt pg-upgrade/rowcounts_after.txt && echo "ROW COUNTS IDENTICAL"
 
 # 10. Start the full application stack
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
 
-# 11. Verify Hibernate validation and Liquibase pass
-docker logs -f thesis-management-server  # check for errors
+# 11. Verify Hibernate validation and Liquibase pass. `docker logs` replays the PREVIOUS run's lines
+#     too, so only look at output since this start. Expect "Database is up to date, no changesets to
+#     execute" and "Started ThesisManagementApplication".
+docker logs --since "$(docker inspect -f '{{.State.StartedAt}}' thesis-management-server)" thesis-management-server 2>&1 | grep -E "liquibase|Started|ERROR|FAILED"
+curl -s https://<your-host>/api/actuator/health   # {"status":"UP"}
 
-# 12. After 1-2 weeks of stable operation, remove the old data directory and dump
-rm -rf ./postgres_data_backup thesis_dump.dump
+# 12. After 1-2 weeks of stable operation, remove the old data directory and dump.
+#     The data directory is owned by uid 70 (the postgres user inside the image) with mode 700, so
+#     the thesistrack user cannot list or delete it: use sudo.
+sudo rm -rf ./postgres_data_backup
+rm -rf thesis_dump.dump pg-upgrade
 ```
+
+### Learnings from the Dev rehearsal (PostgreSQL 18.6 → 19.0, 2026-11-21)
+
+- **Dump/restore is enough for small databases; `pg_upgrade` is not needed.** Dev held 10 MB
+  (35 tables, 1,501 rows, a 198 KB custom-format dump). Everything from stopping the server to a
+  healthy application took about a minute, plus the image pull if it is not done beforehand
+  (step 0). Production size is unknown: time step 2 and 8 against its real size before choosing a
+  window. For a database in the tens of GB, consider `pg_upgrade --link` instead.
+- **The old release runs unchanged on the new PostgreSQL.** Dev's existing server image (built
+  against PG 18) started on PG 19.0 with no code change: Liquibase reported "Database is up to
+  date" and Hibernate schema validation passed. That is what makes "database first, release second"
+  safe.
+- **The dump restored cleanly with `--no-owner --no-acl --exit-on-error`.** Only the `public`
+  schema and the `plpgsql` extension are in use, so there were no extension or collation surprises
+  (`en_US.utf8` in the new cluster as well).
+- **`PGDATA` stays `/var/lib/postgresql/data`.** The explicit override in `docker-compose.prod.yml`
+  worked unchanged on 19.0, and the mounted `./postgres_data` directory was initialized by the new
+  major version.
+- **Use `sudo -iu thesistrack`** (see above), and read server logs with `--since`, otherwise the
+  previous run's "Started …Application" line makes a wait loop exit immediately.
+- **Do not let a deploy run between the manual upgrade and the merge of the tag bump.** A deploy
+  regenerates `.env.prod` without `POSTGRES_IMAGE_TAG`, so the compose-file fallback applies: while
+  it still says the old version, the old image would be started against the new data directory.
+  The Dev environment requires reviewer approval, but *do not approve* any Dev deployment of this
+  PR's own workflow run until the database has been upgraded. Production deploys are approval-gated
+  as well.
+- **Backups keep working.** `thesis-track-backup.sh` runs `pg_dump` inside the running database
+  container, so it picks up the new version automatically.
+- **Cleanup on Dev is still open:** `postgres_data_backup_pg18` and `pg19-upgrade/` in
+  `/home/thesistrack/` are kept for 1–2 weeks as the rollback path.
 
 ### Rollback
 
