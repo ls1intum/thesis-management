@@ -192,7 +192,7 @@ overrides:
   undici@>=8.0.0 <8.10.2: 8.12.4
   browserslist@<4.28.7: 4.29.6
   baseline-browser-mapping@<2.11.0: 2.11.39
-  webpack-dev-middleware@<8.3.0: 8.6.1
+  webpack-dev-middleware@<8.3.0: 8.6.2
   compression@<1.8.2: 1.8.2
   proxy-addr@<2.0.8: 2.0.8
   postcss-selector-parser@<7.1.7: 7.2.1

@@ -55,7 +55,7 @@ overrides:
   # GHSA-w5vr-8v7q-w6rv (baseline-browser-mapping)
   baseline-browser-mapping@<2.11.0: 2.11.39
   # GHSA-g84c-rxfj-3j2c (webpack-dev-middleware, via webpack-dev-server)
-  webpack-dev-middleware@<8.3.0: 8.6.1
+  webpack-dev-middleware@<8.3.0: 8.6.2
   # compression memory-leak DoS on premature close (GHSA-vc2v-76pw-4v95, via webpack-dev-server)
   compression@<1.8.2: 1.8.2
   # proxy-addr IPv4-mapped IPv6 trust-subnet spoofing (via express in webpack-dev-server)
