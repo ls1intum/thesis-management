@@ -1,0 +1,276 @@
+package de.tum.cit.aet.thesis.core.user.service;
+
+import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.core.notification.entity.NotificationSetting;
+import de.tum.cit.aet.thesis.core.notification.entity.key.NotificationSettingId;
+import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.organization.entity.StudyProgram;
+import de.tum.cit.aet.thesis.core.upload.constants.UploadFileType;
+import de.tum.cit.aet.thesis.core.upload.service.UploadService;
+import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+
+/** Manages user authentication, profile synchronization, and notification settings based on JWT tokens. */
+@Service
+public class AuthenticationService {
+	private final UserRepository userRepository;
+	private final UploadService uploadService;
+	private final NotificationSettingRepository notificationSettingRepository;
+	private final AccessManagementService accessManagementService;
+
+	/**
+	 * Constructs the authentication service with the required dependencies.
+	 *
+	 * @param userRepository the user repository
+	 * @param uploadService the upload service
+	 * @param notificationSettingRepository the notification setting repository
+	 * @param accessManagementService the access management service for default group assignment
+	 */
+	@Autowired
+	public AuthenticationService(UserRepository userRepository, UploadService uploadService,
+			NotificationSettingRepository notificationSettingRepository,
+			AccessManagementService accessManagementService) {
+		this.userRepository = userRepository;
+		this.uploadService = uploadService;
+		this.notificationSettingRepository = notificationSettingRepository;
+		this.accessManagementService = accessManagementService;
+	}
+
+	/**
+	 * Returns the authenticated user identified by the university ID of the authentication.
+	 *
+	 * @param authentication the authentication of the current request
+	 * @return the authenticated user
+	 */
+	public User getAuthenticatedUser(Authentication authentication) {
+		return userRepository.findByUniversityId(getUniversityId(authentication))
+				.orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+	}
+
+	/**
+	 * Returns the authenticated user with their research group eagerly loaded.
+	 *
+	 * @param authentication the authentication of the current request
+	 * @return the authenticated user with research group loaded
+	 */
+	public User getAuthenticatedUserWithResearchGroup(Authentication authentication) {
+		return userRepository.findByUniversityIdWithResearchGroup(getUniversityId(authentication))
+				.orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+	}
+
+	/**
+	 * Creates or updates the local user from the Keycloak token's profile claims. This runs when a session is
+	 * created, the only moment Keycloak's claims are available; the session endpoints and every later request
+	 * read the stored user. Assigns the default student group to new users with no existing groups.
+	 *
+	 * @param jwt the JWT authentication token
+	 * @return the created or updated user
+	 */
+	public User updateAuthenticatedUser(JwtAuthenticationToken jwt) {
+		Map<String, Object> attributes = jwt.getTokenAttributes();
+		String universityId = getUniversityId(jwt);
+
+		String email = (String) attributes.get("email");
+		String firstName = (String) attributes.get("given_name");
+		String lastName = (String) attributes.get("family_name");
+		String matriculationNumber = (String) attributes.get("matrikelnr");
+
+		User user = userRepository.findByUniversityId(universityId).orElseGet(() -> {
+			User newUser = new User();
+			Instant currentTime = Instant.now();
+
+			newUser.setJoinedAt(currentTime);
+			newUser.setUpdatedAt(currentTime);
+
+			return newUser;
+		});
+
+		if (user.isAnonymized() || user.getDeletionRequestedAt() != null) {
+			throw new de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException(
+					"This account has been deleted and can no longer be used");
+		}
+
+		user.setUniversityId(universityId);
+
+		if (email != null && !email.isEmpty()) {
+			user.setEmail(email);
+		}
+
+		if (firstName != null && !firstName.isEmpty()) {
+			user.setFirstName(firstName);
+		}
+
+		if (lastName != null && !lastName.isEmpty()) {
+			user.setLastName(lastName);
+		}
+
+		if (matriculationNumber != null && !matriculationNumber.isEmpty()) {
+			user.setMatriculationNumber(matriculationNumber);
+		}
+
+		user.setLastLoginAt(Instant.now());
+
+		if (user.isDisabled()) {
+			user.setDisabled(false);
+		}
+
+		user = userRepository.save(user);
+
+		if (user.hasNoGroup()) {
+			accessManagementService.addStudentGroup(user);
+		}
+
+		return user;
+	}
+
+	/**
+	 * Updates the user's profile information, including personal details and uploaded documents.
+	 *
+	 * @param user the user to update
+	 * @param firstName the user's first name
+	 * @param lastName the user's last name
+	 * @param gender the user's gender
+	 * @param nationality the user's nationality
+	 * @param studyDegree the user's study degree
+	 * @param studyProgram the user's study program, may be {@code null}
+	 * @param enrolledAt the enrollment date
+	 * @param specialSkills the user's special skills
+	 * @param interests the user's interests
+	 * @param projects the user's projects
+	 * @param customData additional custom data fields
+	 * @param avatar the new avatar image file, {@code null} or empty keeps the current one
+	 * @param examinationReport the examination report file
+	 * @param cv the CV file
+	 * @param degreeReport the degree report file
+	 * @return the updated user
+	 */
+	public User updateUserInformation(
+			User user,
+			String firstName,
+			String lastName,
+			String gender,
+			String nationality,
+			String studyDegree,
+			StudyProgram studyProgram,
+			Instant enrolledAt,
+			String specialSkills,
+			String interests,
+			String projects,
+			Map<String, String> customData,
+			MultipartFile avatar,
+			MultipartFile examinationReport,
+			MultipartFile cv,
+			MultipartFile degreeReport
+	) {
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
+		user.setGender(gender);
+		user.setNationality(nationality);
+		user.setStudyDegree(studyDegree);
+		user.setStudyProgram(studyProgram);
+		user.setEnrolledAt(enrolledAt);
+		user.setSpecialSkills(specialSkills);
+		user.setInterests(interests);
+		user.setProjects(projects);
+		user.setCustomData(customData);
+
+		// An empty upload (for example a browser that could not render a large picture) must never delete the current
+		// picture; there is no way to remove it through this endpoint.
+		if (avatar != null && !avatar.isEmpty()) {
+			user.setAvatar(uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE));
+		}
+
+		user.setExaminationFilename(examinationReport == null ? null : uploadService.store(examinationReport, 3 * 1024 * 1024, UploadFileType.PDF));
+		user.setCvFilename(cv == null ? null : uploadService.store(cv, 3 * 1024 * 1024, UploadFileType.PDF));
+		user.setDegreeFilename(degreeReport == null ? null : uploadService.store(degreeReport, 3 * 1024 * 1024, UploadFileType.PDF));
+
+		return userRepository.save(user);
+	}
+
+	/**
+	 * Replaces the user's profile picture. The previous file is kept because uploads are stored by content hash
+	 * and may also be referenced by other entities (e.g. thesis files or comment attachments).
+	 *
+	 * @param user the user to update
+	 * @param avatar the new avatar image file
+	 * @return the updated user
+	 */
+	public User updateAvatar(User user, MultipartFile avatar) {
+		user.setAvatar(uploadService.store(avatar, 1024 * 1024, UploadFileType.IMAGE));
+
+		return userRepository.save(user);
+	}
+
+	/**
+	 * Records that the user dismissed the "add a profile picture" prompt so they are not asked again.
+	 * Does nothing if the prompt was already dismissed.
+	 *
+	 * @param user the user who dismissed the prompt
+	 * @return the updated user
+	 */
+	public User dismissAvatarPrompt(User user) {
+		if (user.isAvatarPromptDismissed()) {
+			return user;
+		}
+
+		user.setAvatarPromptDismissedAt(Instant.now());
+		return userRepository.save(user);
+	}
+
+	/**
+	 * Returns the notification settings for the given user.
+	 *
+	 * @param user the user whose notification settings to retrieve
+	 * @return the list of notification settings
+	 */
+	public List<NotificationSetting> getNotificationSettings(User user) {
+		return user.getNotificationSettings();
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public List<NotificationSetting> updateNotificationSettings(User user, String name, String email) {
+		List<NotificationSetting> settings = user.getNotificationSettings();
+
+		for (NotificationSetting setting : settings) {
+			if (setting.getId().getName().equals(name)) {
+				setting.setEmail(email);
+				setting.setUpdatedAt(Instant.now());
+
+				notificationSettingRepository.save(setting);
+
+				return settings;
+			}
+		}
+
+		NotificationSettingId entityId = new NotificationSettingId();
+		entityId.setName(name);
+		entityId.setUserId(user.getId());
+
+		NotificationSetting entity = new NotificationSetting();
+		entity.setId(entityId);
+		entity.setUpdatedAt(Instant.now());
+		entity.setEmail(email);
+		entity.setUser(user);
+
+		settings.add(notificationSettingRepository.save(entity));
+
+		user.setNotificationSettings(settings);
+
+		return settings;
+	}
+
+	private String getUniversityId(Authentication authentication) {
+		return authentication.getName();
+	}
+}

@@ -1,0 +1,67 @@
+export type Environment = 'production' | 'staging' | 'test' | 'dev'
+
+export interface IGlobalConfig {
+  title: string
+
+  chair_name: string
+  chair_url: string
+  // Portal students submit their final thesis to, unless the school of the thesis defines its own
+  thesis_portal_url: string
+
+  environment?: Environment
+
+  maintenance_message?: string
+
+  allow_suggested_topics: boolean
+
+  // Mirrors the server's AI_FEATURES_ENABLED flag. When false, the AI module is not registered
+  // on the server (its /v2/ai-review/** endpoints 404), so the AI feedback buttons are hidden.
+  ai_enabled: boolean
+
+  server_host: string
+  passkey_rp_id: string
+  passkey_rp_name: string
+  passkey_prompt_apps: string[]
+
+  genders: Record<string, string>
+  study_degrees: Record<string, string>
+  languages: Record<string, string>
+
+  topic_views_options: Record<string, string>
+
+  research_groups_location: Record<string, string>
+
+  thesis_types: Record<
+    string,
+    {
+      long: string
+      short: string
+    }
+  >
+
+  custom_data: Record<
+    string,
+    {
+      label: string
+      required: boolean
+    }
+  >
+
+  thesis_files: Record<
+    string,
+    {
+      label: string
+      description: string
+      accept: UploadFileType
+      required: boolean
+    }
+  >
+
+  keycloak: {
+    client_id: string
+    realm: string
+    host: string
+  }
+}
+
+export type UploadFileType = 'pdf' | 'image' | 'any'

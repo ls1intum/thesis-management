@@ -189,6 +189,9 @@ if is_port_open 3100; then
   kill_pid "client"
   wait_for_port_release 3100
 fi
+# The dev server profile enables AI features (thesis-management.ai.enabled=true), so mirror
+# that on the client bundle to keep the AI feedback buttons visible for ai-feedback.spec.ts.
+export AI_FEATURES_ENABLED=true
 log "Building client (production)..."
 (cd "$CLIENT_DIR" && pnpm build > "$ROOT_DIR/.e2e-client-build.log" 2>&1) || {
   err "Client build failed. See $ROOT_DIR/.e2e-client-build.log"
@@ -197,7 +200,14 @@ log "Building client (production)..."
 log "Generating runtime-env.js..."
 (cd "$CLIENT_DIR/build" && node ../public/generate-runtime-env.js)
 log "Starting static client server (serve)..."
-(cd "$CLIENT_DIR" && exec pnpm dlx serve@14 -s build -l 3100 --no-clipboard --no-port-switching \
+# Serve with serve.e2e.json (cleanUrls:false), matching the CI e2e job. Without
+# this config, serve's default cleanUrls strips the ".html" from requests and
+# the SPA fallback returns index.html for the Keycloak silent-check-sso iframe
+# (/silent-check-sso.html). The iframe then loads the full app instead of the
+# tiny postMessage page, keycloak-js init never completes, and the header
+# "Login" button never redirects to Keycloak — which made every auth-dependent
+# e2e test (all of auth.setup) fail locally while passing in CI.
+(cd "$CLIENT_DIR" && exec pnpm dlx serve@14 -s build -l 3100 -c ../serve.e2e.json --no-clipboard --no-port-switching \
   > "$ROOT_DIR/.e2e-client.log" 2>&1) &
 save_pid "client" $!
 

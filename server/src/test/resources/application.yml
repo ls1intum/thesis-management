@@ -39,6 +39,10 @@ spring:
         smtp:
           starttls:
             enable: true
+  ai:
+    openai:
+      api-key: test-placeholder
+      base-url: http://unreachable
 
 server:
   servlet:

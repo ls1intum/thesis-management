@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from '@playwright/test'
+import { BrowserContext, Locator, Page, expect } from '@playwright/test'
 
 /**
  * Navigate to a page and wait for it to fully load.
@@ -36,6 +36,17 @@ export async function navigateToDetail(
 }
 
 /**
+ * Navigate to the standalone Configuration page for a thesis and wait for the
+ * "Update" button to become visible so tests can start interacting with the
+ * form. Only supervisors/examiners/admins reach this page; students are
+ * redirected to /theses/:id by the page component itself.
+ */
+export async function navigateToThesisConfig(page: Page, thesisId: string) {
+  await navigateTo(page, `/theses/${thesisId}/configuration`)
+  await expect(page.getByRole('button', { name: 'Update' })).toBeVisible({ timeout: 15_000 })
+}
+
+/**
  * Use a specific auth state file for a test.
  */
 export function authStatePath(
@@ -45,6 +56,7 @@ export function authStatePath(
     | 'student3'
     | 'student4'
     | 'student5'
+    | 'passkey_user'
     | 'supervisor'
     | 'supervisor2'
     | 'examiner'
@@ -155,16 +167,21 @@ export async function searchAndSelectMultiSelect(page: Page, label: string, opti
  * click sometimes doesn't register, so this helper retries up to
  * {@link maxAttempts} times.
  *
+ * Pass a string `section` to locate the accordion by its label text, or pass
+ * a `Locator` when the caller has already resolved the specific item (useful
+ * when multiple accordions share the same label — e.g. the Overview and
+ * Writing sections each expose a "Comments" accordion).
+ *
  * @param contentLocator  A locator for an element inside the accordion panel
  *                        that becomes visible only when the panel is expanded.
  */
 export async function expandAccordion(
   page: Page,
-  sectionLabel: string,
+  section: string | Locator,
   contentLocator: Locator,
   maxAttempts = 3,
 ) {
-  const item = getAccordionItem(page, sectionLabel)
+  const item = typeof section === 'string' ? getAccordionItem(page, section) : section
   const control = item.locator('.mantine-Accordion-control').first()
   await control.waitFor({ state: 'visible', timeout: 10_000 })
 
@@ -196,6 +213,20 @@ export function getAccordionItem(page: Page, sectionLabel: string) {
         has: page.getByText(sectionLabel, { exact: true }),
       }),
     })
+    .first()
+}
+
+/**
+ * Locate the "Comments" accordion inside the merged Overview section (the
+ * supervisor-only one that carries the "Not visible to student" badge). This
+ * disambiguates from the WRITING section's separate "Comments" accordion,
+ * which uses the same label but has no badge.
+ */
+export function getSupervisorCommentsAccordion(page: Page) {
+  return page
+    .locator('.mantine-Accordion-item')
+    .filter({ hasText: 'Comments' })
+    .filter({ hasText: 'Not visible to student' })
     .first()
 }
 
@@ -233,4 +264,103 @@ export function createTestPdfBuffer(): Buffer {
       'xref\n0 4\n0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \n0000000115 00000 n \n' +
       'trailer\n<< /Size 4 /Root 1 0 R >>\nstartxref\n206\n%%EOF',
   )
+}
+
+// KEYCLOAK_HOST is the variable the CI workflow exports (server, client build and tests share it)
+const KEYCLOAK_ORIGIN = process.env.KEYCLOAK_HOST ?? 'http://localhost:8181'
+const SERVER_ORIGIN = process.env.SERVER_URL ?? 'http://localhost:8180'
+
+export { KEYCLOAK_ORIGIN, SERVER_ORIGIN }
+
+/**
+ * Logs a test user in without the user interface: takes a Keycloak access token (the dev realm allows the
+ * password grant, and every seed user's password is its username) and exchanges it for an application
+ * session. The session cookie lands in the context's cookie jar, so pages of that context are logged in
+ * with a session of their own that no other test shares.
+ */
+export async function loginWithApi(context: BrowserContext, username: string) {
+  // A fresh context has none of the "do not ask again" flags that the shared login setup stores, so the passkey
+  // and profile picture prompts would open modals that cover the page under test.
+  await context.addInitScript((keys: string[]) => {
+    keys.forEach((key) => localStorage.setItem(key, 'true'))
+  }, ['passkey_prompt_disabled', 'profile_picture_prompt_disabled'])
+
+  const tokenResponse = await context.request.post(
+    `${KEYCLOAK_ORIGIN}/realms/thesis-management/protocol/openid-connect/token`,
+    {
+      form: {
+        grant_type: 'password',
+        client_id: 'thesis-management-app',
+        username,
+        password: username,
+      },
+    },
+  )
+  expect(tokenResponse.ok()).toBe(true)
+  const { access_token: accessToken } = (await tokenResponse.json()) as { access_token: string }
+
+  const sessionResponse = await context.request.post(`${SERVER_ORIGIN}/api/v2/auth/session`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  expect(sessionResponse.ok()).toBe(true)
+}
+
+/** Finds the application session cookie of a context (`__Host-sid` over https, `sid` over plain http). */
+export async function getSessionCookie(context: BrowserContext) {
+  return (await context.cookies()).find(
+    (cookie) => cookie.name === 'sid' || cookie.name === '__Host-sid',
+  )
+}
+
+/** Ends the context's own session on the server, so tests do not pile up sessions of the seed users. */
+export async function logoutWithApi(context: BrowserContext) {
+  const session = await context.request.get(`${SERVER_ORIGIN}/api/v2/auth/session`)
+
+  if (!session.ok()) {
+    return
+  }
+
+  const { csrfToken } = (await session.json()) as { csrfToken: string }
+  await context.request.delete(`${SERVER_ORIGIN}/api/v2/auth/session`, {
+    headers: { 'X-CSRF-Token': csrfToken },
+  })
+}
+
+/**
+ * Create a valid PDF buffer with a real "Abstract" section so the server's abstract
+ * extractor can confidently extract it. The body contains a line-end hyphenation
+ * ("com-" / "prehensive") that must be rejoined into "comprehensive", and a
+ * "1 Introduction" heading that bounds the abstract.
+ */
+export function createAbstractTestPdfBuffer(): Buffer {
+  const content =
+    'BT /F1 14 Tf 72 720 Td (Abstract) Tj ET\n' +
+    'BT /F1 10 Tf 72 695 Td (This thesis presents a com-) Tj ET\n' +
+    'BT /F1 10 Tf 72 680 Td (prehensive evaluation of automated review systems.) Tj ET\n' +
+    'BT /F1 14 Tf 72 650 Td (1 Introduction) Tj ET\n' +
+    'BT /F1 10 Tf 72 625 Td (The introduction begins here with more detail.) Tj ET\n'
+
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+    `<< /Length ${Buffer.byteLength(content)} >>\nstream\n${content}endstream`,
+  ]
+
+  let pdf = '%PDF-1.4\n'
+  const offsets: number[] = []
+  objects.forEach((body, index) => {
+    offsets.push(Buffer.byteLength(pdf))
+    pdf += `${index + 1} 0 obj\n${body}\nendobj\n`
+  })
+
+  const xrefOffset = Buffer.byteLength(pdf)
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`
+  offsets.forEach((offset) => {
+    pdf += `${String(offset).padStart(10, '0')} 00000 n \n`
+  })
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`
+
+  return Buffer.from(pdf, 'latin1')
 }

@@ -29,15 +29,6 @@ spring:
       max-request-size: 25MB
   security:
     oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: ${KEYCLOAK_CLIENT_ID:thesis-management-app}
-            scope: openid
-        provider:
-          keycloak:
-            issuer-uri: ${KEYCLOAK_HOST:http://localhost:8181}/realms/${KEYCLOAK_REALM_NAME:thesis-management}
-            user-name-attribute: preferred_username
       resourceserver:
         jwt:
           jwk-set-uri: ${KEYCLOAK_HOST:http://localhost:8181}/realms/${KEYCLOAK_REALM_NAME:thesis-management}/protocol/openid-connect/certs
@@ -56,6 +47,23 @@ spring:
             enable: ${MAIL_STARTTLS_ENABLE:false}
             required: ${MAIL_STARTTLS_REQUIRED:false}
 
+  ai:
+    openai:
+      base-url: ${OPENAI_BASE_URL:https://gpu.aet.cit.tum.de/api}
+      api-key: ${OPENAI_API_KEY:**********}
+      # Whole-request timeout for OpenAI calls. Spring AI defaults to 60s, which is far too short
+      # for a full thesis PDF review: the model streams for minutes and the client hangs up
+      # mid-generation (the provider logs "client disconnected"), then retries.
+      #
+      # This property alone is NOT enough. Since Spring AI 2.0.1 every request carries its own
+      # timeout derived from the chat options, which overrides whatever the shared client was
+      # built with, and no spring.ai.openai.* property feeds that option — it is hard-coded to 60s.
+      # ChatClientTimeoutConfig resolves this value again and applies it there.
+      timeout: ${OPENAI_TIMEOUT:10m}
+      chat:
+        model: ${OPENAI_CHAT_MODEL:google/gemma-4-26B-A4B-it}
+        temperature: ${OPENAI_CHAT_TEMPERATURE:1.0}
+
 management:
   endpoints:
     web:
@@ -72,10 +80,37 @@ management:
 
 server:
   port: ${SERVER_PORT:8080}
+  # The server runs behind Traefik: use the forwarded protocol and client address (for secure redirects and
+  # for the per-IP detection of guessed session cookies) instead of the proxy's address.
+  # "native" (Tomcat's RemoteIpValve) reads only X-Forwarded-For / X-Forwarded-Proto, and only from a peer in
+  # server.tomcat.remoteip.internal-proxies (by default the private and Docker network ranges). "framework"
+  # would also honour the RFC 7239 "Forwarded" header, which Traefik passes through from the client unchanged,
+  # so a client could choose the address the server sees. The server port must only be reachable by the proxy
+  # (production publishes only Traefik's ports and merely exposes 8080 inside the Docker network), and a proxy
+  # in front of Traefik has to overwrite, not append to, X-Forwarded-For.
+  forward-headers-strategy: native
   servlet:
     context-path: /api
 
 thesis-management:
+  reference-data:
+    # Pre-fills schools, departments and study programs on first start (e.g. `tum`); empty for none
+    preset: ${REFERENCE_DATA_PRESET:}
+  ai:
+    enabled: ${AI_FEATURES_ENABLED:false}
+    # Review strategy: `category-fan-out` (default) runs one LLM call per review category and
+    # merges them; `agentic` lets a single agent drive its own tool calls and decide its own depth;
+    # `single-prompt` checks every category in one call, the baseline the other two are measured by.
+    reviewer: ${AI_REVIEWER:category-fan-out}
+    # Hard cap on the model turns one agentic review may take. Ignored by the fan-out strategy.
+    agent-max-turns: ${AI_AGENT_MAX_TURNS:40}
+    # Check each category's findings against that category's own rules before consolidating them,
+    # dropping ungrounded quotes and findings that enforce a rule the guidelines do not state.
+    # Costs one extra LLM call per category that found something. Fan-out strategy only.
+    verify-findings: ${AI_VERIFY_FINDINGS:true}
+    # Force per-page image rendering on/off. Left blank (unset) so the pipeline auto-detects
+    # vision support from the configured chat model; an empty value binds to a null Boolean.
+    review-include-images: ${AI_REVIEW_INCLUDE_IMAGES:}
   keycloak:
     host: ${KEYCLOAK_HOST:http://localhost:8181}
     realm-name: ${KEYCLOAK_REALM_NAME:thesis-management}
@@ -84,6 +119,11 @@ thesis-management:
       secret: ${KEYCLOAK_SERVICE_CLIENT_SECRET:**********}
   client:
     host: ${CLIENT_HOST:http://localhost:3100}
+  session:
+    idle-timeout: ${SESSION_IDLE_TIMEOUT:P14D}
+    absolute-timeout: ${SESSION_ABSOLUTE_TIMEOUT:P30D}
+    max-per-user: ${SESSION_MAX_PER_USER:10}
+    ended-retention: ${SESSION_ENDED_RETENTION:P30D}
   mail:
     enabled: ${MAIL_ENABLED:false}
     sender: ${MAIL_SENDER:thesis-dev@test.aet.cit.tum.de}

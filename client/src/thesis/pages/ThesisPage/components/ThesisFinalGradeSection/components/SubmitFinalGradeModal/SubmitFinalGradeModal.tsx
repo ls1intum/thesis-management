@@ -1,0 +1,106 @@
+import type { IThesis } from '@/thesis/requests/responses/thesis'
+import { Alert, Button, Modal, Stack, Text, TextInput } from '@mantine/core'
+import { doRequest } from '@/core/requests/request'
+import { useEffect, useState } from 'react'
+import DocumentEditor from '@/core/components/DocumentEditor/DocumentEditor'
+import {
+  useLoadedThesisContext,
+  useThesisUpdateAction,
+} from '@/thesis/providers/ThesisProvider/hooks'
+import { ApiError } from '@/core/requests/handler'
+import ThesisVisibilitySelect from '@/thesis/pages/ThesisPage/components/ThesisVisibilitySelect/ThesisVisibilitySelect'
+import { calculateGradeFromComponents } from '@/thesis/utils/grade'
+
+interface ISubmitFinalGradeModalProps {
+  opened: boolean
+  onClose: () => unknown
+}
+
+const SubmitFinalGradeModal = (props: ISubmitFinalGradeModalProps) => {
+  const { opened, onClose } = props
+
+  const { thesis } = useLoadedThesisContext()
+
+  const [finalGrade, setFinalGrade] = useState('')
+  const [feedback, setFeedback] = useState('')
+  const [visibility, setVisibility] = useState(thesis.visibility)
+
+  useEffect(() => {
+    setFinalGrade(thesis.grade?.finalGrade ?? '')
+    setFeedback(thesis.grade?.feedback ?? '')
+    setVisibility(thesis.visibility)
+  }, [thesis])
+
+  const gradeComponents = thesis.assessment?.gradeComponents ?? []
+  const calculatedGrade =
+    gradeComponents.length > 0 ? calculateGradeFromComponents(gradeComponents) : null
+
+  const finalGradeNum = parseFloat(finalGrade)
+  const deviationWarning =
+    calculatedGrade !== null &&
+    !isNaN(finalGradeNum) &&
+    Math.abs(finalGradeNum - calculatedGrade) > 0.3
+
+  const isEmpty = !finalGrade
+
+  const [submitting, onGradeSubmit] = useThesisUpdateAction(async () => {
+    const response = await doRequest<IThesis>(`/v2/theses/${thesis.thesisId}/grade`, {
+      method: 'POST',
+      requiresAuth: true,
+      data: {
+        finalGrade,
+        finalFeedback: feedback,
+        visibility: visibility,
+      },
+    })
+
+    if (response.ok) {
+      onClose()
+
+      return response.data
+    } else {
+      throw new ApiError(response)
+    }
+  }, 'Final Grade submitted successfully')
+
+  return (
+    <Modal opened={opened} onClose={onClose} size='xl' title='Submit Final Grade'>
+      <Stack gap='md'>
+        <ThesisVisibilitySelect
+          required
+          label='Thesis Visibility'
+          value={visibility}
+          onChange={(e) => e && setVisibility(e)}
+        />
+        {calculatedGrade !== null && (
+          <Text size='sm' c='dimmed'>
+            Calculated from assessment components: {calculatedGrade?.toFixed(1)}
+          </Text>
+        )}
+        <TextInput
+          required
+          label='Final Grade'
+          value={finalGrade}
+          onChange={(e) => setFinalGrade(e.target.value)}
+        />
+        {deviationWarning && (
+          <Alert color='orange' title='Grade Deviation'>
+            The final grade ({finalGrade}) deviates from the calculated assessment grade (
+            {calculatedGrade?.toFixed(1)}) by more than 0.3.
+          </Alert>
+        )}
+        <DocumentEditor
+          label='Feedback (Visible to student)'
+          value={feedback}
+          onChange={(e) => setFeedback(e.target.value)}
+          editMode={true}
+        />
+        <Button loading={submitting} onClick={onGradeSubmit} disabled={isEmpty}>
+          Submit Grade
+        </Button>
+      </Stack>
+    </Modal>
+  )
+}
+
+export default SubmitFinalGradeModal

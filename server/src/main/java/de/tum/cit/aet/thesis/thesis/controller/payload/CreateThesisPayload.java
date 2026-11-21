@@ -1,0 +1,48 @@
+package de.tum.cit.aet.thesis.thesis.controller.payload;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+public record CreateThesisPayload(
+		String thesisTitle,
+		String thesisType,
+		String language,
+		List<UUID> studentIds,
+		List<String> additionalStudentUsernames,
+		List<UUID> supervisorIds,
+		List<UUID> examinerIds,
+		UUID researchGroupId,
+		UUID studyProgramId
+) {
+	public CreateThesisPayload {
+		additionalStudentUsernames = additionalStudentUsernames == null
+				? List.of()
+				: additionalStudentUsernames.stream().filter(Objects::nonNull).toList();
+	}
+
+	public CreateThesisPayload(
+			String thesisTitle,
+			String thesisType,
+			String language,
+			List<UUID> studentIds,
+			List<UUID> supervisorIds,
+			List<UUID> examinerIds,
+			UUID researchGroupId
+	) {
+		this(thesisTitle, thesisType, language, studentIds, List.of(), supervisorIds, examinerIds, researchGroupId, null);
+	}
+
+	public CreateThesisPayload(
+			String thesisTitle,
+			String thesisType,
+			String language,
+			List<UUID> studentIds,
+			List<String> additionalStudentUsernames,
+			List<UUID> supervisorIds,
+			List<UUID> examinerIds,
+			UUID researchGroupId
+	) {
+		this(thesisTitle, thesisType, language, studentIds, additionalStudentUsernames, supervisorIds, examinerIds, researchGroupId, null);
+	}
+}

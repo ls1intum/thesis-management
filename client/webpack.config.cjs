@@ -124,6 +124,13 @@ const config = (env) => {
         process: {
           env: {
             SERVER_HOST: JSON.stringify(getVariable('SERVER_HOST')),
+            // Default AI features on in dev so `pnpm dev` mirrors the server's `dev` profile
+            // (application-dev.yml sets thesis-management.ai.enabled=true). An explicit env var
+            // still wins, so it can be turned off locally. Prod builds leave it undefined and
+            // rely on the runtime-env.js value injected in the container.
+            AI_FEATURES_ENABLED: JSON.stringify(
+              getVariable('AI_FEATURES_ENABLED') ?? (IS_DEV ? 'true' : undefined)
+            ),
             KEYCLOAK_HOST: JSON.stringify(getVariable('KEYCLOAK_HOST')),
             KEYCLOAK_REALM_NAME: JSON.stringify(getVariable('KEYCLOAK_REALM_NAME')),
             KEYCLOAK_CLIENT_ID: JSON.stringify(getVariable('KEYCLOAK_CLIENT_ID'))

@@ -1,9 +1,9 @@
 import React from 'react'
 import { Button, createTheme, MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
-import '../../public/favicon.svg'
-import AppRoutes from './Routes'
-import AuthenticationProvider from '../providers/AuthenticationContext/AuthenticationProvider'
+import '@/../public/favicon.svg'
+import AppRoutes from '@/app/Routes'
+import AuthenticationProvider from '@/core/providers/AuthenticationContext/AuthenticationProvider'
 
 import '@mantine/core/styles.layer.css'
 import '@mantine/dates/styles.layer.css'
@@ -13,7 +13,7 @@ import '@mantine/dropzone/styles.css'
 import 'mantine-datatable/styles.layer.css'
 import '@mantine/carousel/styles.css'
 
-import * as buttonClasses from './styles/Buttons.module.css'
+import * as buttonClasses from '@/app/styles/Buttons.module.css'
 
 const theme = createTheme({
   respectReducedMotion: false,

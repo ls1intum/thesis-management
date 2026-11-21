@@ -148,7 +148,7 @@ export default [
     // ColorSchemeToggleButton is the only legitimate consumer of `useMantineColorScheme`:
     // it needs `toggleColorScheme` / `clearColorScheme`, and it handles the 'auto' value
     // explicitly via the `prefers-color-scheme` media query.
-    files: ['src/components/ColorSchemeToggleButton/ColorSchemeToggleButton.tsx'],
+    files: ['src/core/components/ColorSchemeToggleButton/ColorSchemeToggleButton.tsx'],
     rules: {
       'no-restricted-imports': 'off',
     },

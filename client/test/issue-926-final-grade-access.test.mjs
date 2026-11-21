@@ -23,7 +23,7 @@ import { dirname, resolve } from 'node:path'
 const here = dirname(fileURLToPath(import.meta.url))
 const sectionPath = resolve(
   here,
-  '../src/pages/ThesisPage/components/ThesisFinalGradeSection/ThesisFinalGradeSection.tsx',
+  '../src/thesis/pages/ThesisPage/components/ThesisFinalGradeSection/ThesisFinalGradeSection.tsx',
 )
 const source = readFileSync(sectionPath, 'utf8')
 

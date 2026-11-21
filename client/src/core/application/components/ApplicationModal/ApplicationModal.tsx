@@ -1,0 +1,68 @@
+import type { IApplication } from '@/core/application/requests/responses/application'
+import { ApplicationState } from '@/core/application/requests/responses/application'
+import { Button, Divider, Modal, Stack } from '@mantine/core'
+import React from 'react'
+import ApplicationReviewForm from '@/core/application/components/ApplicationReviewForm/ApplicationReviewForm'
+import ApplicationData from '@/core/application/components/ApplicationData/ApplicationData'
+import { Link } from 'react-router'
+
+interface IApplicationModalProps {
+  application: IApplication | undefined
+  onClose: () => unknown
+  allowReviews?: boolean
+  allowEdit?: boolean
+  onUpdate?: (application: IApplication) => unknown
+}
+
+const ApplicationModal = (props: IApplicationModalProps) => {
+  const {
+    application,
+    onUpdate = () => undefined,
+    onClose,
+    allowReviews = false,
+    allowEdit = false,
+  } = props
+
+  return (
+    <Modal centered size='100vw' opened={Boolean(application)} onClose={onClose}>
+      <Stack>
+        {application && (
+          <ApplicationData
+            application={application}
+            rightTitleSection={
+              allowEdit && application.state === ApplicationState.NOT_ASSESSED ? (
+                <Button
+                  ml='auto'
+                  mt='sm'
+                  size='sm'
+                  component={Link}
+                  to={`/edit-application/${application.applicationId}`}
+                  variant='outline'
+                  color='green'
+                >
+                  Edit
+                </Button>
+              ) : undefined
+            }
+            bottomSection={
+              allowReviews ? (
+                <Stack>
+                  <Divider />
+                  <ApplicationReviewForm
+                    application={application}
+                    onUpdate={(newApplication) => {
+                      onUpdate(newApplication)
+                      onClose()
+                    }}
+                  />
+                </Stack>
+              ) : undefined
+            }
+          />
+        )}
+      </Stack>
+    </Modal>
+  )
+}
+
+export default ApplicationModal

@@ -1,10 +1,11 @@
 import type { ComponentType, PropsWithChildren } from 'react'
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import type { MantineSize } from '@mantine/core'
 import {
   ActionIcon,
   AppShell,
   Box,
+  Button,
   Center,
   Container,
   Divider,
@@ -14,41 +15,46 @@ import {
   Text,
   Tooltip,
 } from '@mantine/core'
-import * as classes from './AuthenticatedArea.module.css'
-import { Link, useLocation } from 'react-router'
+import * as classes from '@/app/layout/AuthenticatedArea/AuthenticatedArea.module.css'
+import { Link, useLocation, useNavigationType } from 'react-router'
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks'
 import {
-  CaretDoubleLeft,
-  CaretDoubleRight,
-  NewspaperClipping,
-  SignOut,
-  Gear,
-  GearSix,
-  PresentationIcon,
-  PaperPlaneTiltIcon,
-  ScrollIcon,
+  BuildingsIcon,
+  CaretDoubleLeftIcon,
+  CaretDoubleRightIcon,
+  ChatsCircleIcon,
   FolderSimplePlusIcon,
+  GearIcon,
+  GearSixIcon,
   KanbanIcon,
+  NewspaperClippingIcon,
+  PaperPlaneTiltIcon,
+  PresentationIcon,
+  ScrollIcon,
+  ShieldCheckIcon,
+  SignOutIcon,
   TableIcon,
   UsersThreeIcon,
-  ChatsCircleIcon,
-  ShieldCheckIcon,
 } from '@phosphor-icons/react'
-import { useAuthenticationContext, useUser } from '../../../hooks/authentication'
-import { useNavigationType } from 'react-router'
-import ScrollToTop from '../ScrollToTop/ScrollToTop'
-import PageLoader from '../../../components/PageLoader/PageLoader'
-import { useLocalStorage } from '../../../hooks/local-storage'
-import { CustomAvatar } from '../../../components/CustomAvatar/CustomAvatar'
-import { formatUser } from '../../../utils/format'
-import ContentContainer from '../ContentContainer/ContentContainer'
-import Footer from '../../../components/Footer/Footer'
+import { useAuthenticationContext, useUser } from '@/core/hooks/authentication'
+import ScrollToTop from '@/app/layout/ScrollToTop/ScrollToTop'
+import PageLoader from '@/core/components/PageLoader/PageLoader'
+import { useLocalStorage } from '@/core/hooks/local-storage'
+import { CustomAvatar } from '@/core/components/CustomAvatar/CustomAvatar'
+import { formatUser } from '@/core/utils/format'
+import ContentContainer from '@/app/layout/ContentContainer/ContentContainer'
+import Footer from '@/core/components/Footer/Footer'
 import EnvironmentBanner, {
   ENVIRONMENT_BANNER_HEIGHT,
   isEnvironmentBannerVisible,
-} from '../../../components/EnvironmentBanner/EnvironmentBanner'
-import Header from '../../../components/Header/Header'
-import { useIsSmallerBreakpoint } from '../../../hooks/theme'
+} from '@/core/components/EnvironmentBanner/EnvironmentBanner'
+import MaintenanceBanner, {
+  MAINTENANCE_BANNER_HEIGHT,
+  isMaintenanceBannerVisible,
+} from '@/core/components/MaintenanceBanner/MaintenanceBanner'
+import Header from '@/core/components/Header/Header'
+import { useIsSmallerBreakpoint } from '@/core/hooks/theme'
+import ProfilePicturePrompt from '@/core/user/components/ProfilePicturePrompt/ProfilePicturePrompt'
 
 export interface IAuthenticatedAreaProps {
   size?: MantineSize
@@ -56,7 +62,6 @@ export interface IAuthenticatedAreaProps {
   requiredGroups?: string[]
   handleScrollInView?: boolean
 }
-
 const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) => {
   const { children, size, collapseNavigation = false, requiredGroups, handleScrollInView } = props
 
@@ -68,7 +73,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     hideFromGroups?: string[]
     display?: boolean
   }> = [
-    { link: '/dashboard', label: 'Dashboard', icon: NewspaperClipping, groups: undefined },
+    { link: '/dashboard', label: 'Dashboard', icon: NewspaperClippingIcon, groups: undefined },
     {
       link: '/presentations',
       label: 'Presentations',
@@ -122,7 +127,13 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     {
       link: '/admin',
       label: 'Administration',
-      icon: GearSix,
+      icon: GearSixIcon,
+      groups: ['admin'],
+    },
+    {
+      link: '/admin/organization',
+      label: 'Organization',
+      icon: BuildingsIcon,
       groups: ['admin'],
     },
     {
@@ -152,26 +163,27 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
   const navigationType = useNavigationType()
 
   const auth = useAuthenticationContext()
+  const isAuthenticated = auth.isAuthenticated
+  const isPasskeySupported = auth.isPasskeySupported
+  const login = auth.login
+  const hasTriggeredFallbackLogin = useRef(false)
+  // The fallback login only returns without leaving the page when no login was possible (Keycloak is down, or the
+  // server refused the login): say so instead of showing a loader that never ends.
+  const [loginFailed, setLoginFailed] = useState(false)
+  const loginFailedTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+
+  useEffect(() => () => clearTimeout(loginFailedTimer.current), [])
 
   const baseHeaderHeight = 50
   const HEADER_HEIGHT =
-    baseHeaderHeight + (isEnvironmentBannerVisible() ? ENVIRONMENT_BANNER_HEIGHT : 0)
+    baseHeaderHeight +
+    (isMaintenanceBannerVisible() ? MAINTENANCE_BANNER_HEIGHT : 0) +
+    (isEnvironmentBannerVisible() ? ENVIRONMENT_BANNER_HEIGHT : 0)
   const FOOTER_HEIGHT = 50
 
   const isSmallerBreakpoint = useIsSmallerBreakpoint('md')
-
-  useEffect(() => {
-    if (!auth.isAuthenticated && location.pathname !== '/logout') {
-      auth.login()
-
-      const interval = setInterval(() => {
-        auth.login()
-      }, 1000)
-
-      return () => clearInterval(interval)
-    }
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- auth object is stable from react-oidc-context; only re-run on auth state or path change
-  }, [auth.isAuthenticated, location.pathname])
+  const isWaitingForPasskeyProbe =
+    !isAuthenticated && isPasskeySupported === undefined && location.pathname !== '/logout'
 
   useEffect(() => {
     if (navigationType === 'POP') {
@@ -182,7 +194,40 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- close is a stable disclosure handler; effect intentionally tracks navigation only
   }, [location.pathname, navigationType])
 
-  // Filtered navigation entries — extracted out of JSX so it isn't an IIFE.
+  useEffect(() => {
+    if (isPasskeySupported === undefined) {
+      return
+    }
+
+    if (isAuthenticated || isPasskeySupported) {
+      hasTriggeredFallbackLogin.current = false
+      return
+    }
+
+    if (location.pathname === '/logout' || hasTriggeredFallbackLogin.current) {
+      return
+    }
+
+    hasTriggeredFallbackLogin.current = true
+    void login(`${location.pathname}${location.search}${location.hash}`)
+      // a redirect to the login page unloads the page; only when it did not, the user needs an explanation
+      .then(() => {
+        loginFailedTimer.current = setTimeout(() => setLoginFailed(true), 3000)
+      })
+      .catch((error) => {
+        console.error('Fallback login failed', error)
+        hasTriggeredFallbackLogin.current = false
+        setLoginFailed(true)
+      })
+  }, [
+    isAuthenticated,
+    isPasskeySupported,
+    login,
+    location.hash,
+    location.pathname,
+    location.search,
+  ])
+
   const visibleLinks = links
     .filter((item) => !item.groups || item.groups.some((role) => auth.user?.groups?.includes(role)))
     .filter((item) => item.display === undefined || item.display === true)
@@ -225,10 +270,18 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
       padding={0}
     >
       <AppShell.Header>
+        <MaintenanceBanner />
         <EnvironmentBanner />
         <Box h={baseHeaderHeight}>
           <Container size={size} fluid={!size} h='100%'>
-            <Header opened={opened} toggle={toggle} authenticatedArea={true} />
+            <Header
+              opened={opened}
+              toggle={toggle}
+              authenticatedArea={true}
+              openLoginModal={
+                !isAuthenticated && isPasskeySupported === true && location.pathname !== '/logout'
+              }
+            />
           </Container>
         </Box>
       </AppShell.Header>
@@ -278,7 +331,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
               <Link to='/logout' className={minimized ? classes.minimizedLink : classes.fullLink}>
                 <Group gap={5} align='center'>
                   <Tooltip label='Logout' disabled={!minimized} position='right' offset={15}>
-                    <SignOut className={classes.linkIcon} size={25} />
+                    <SignOutIcon className={classes.linkIcon} size={25} />
                   </Tooltip>
                   {!minimized && <span>Logout</span>}
                 </Group>
@@ -298,7 +351,7 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                     position='right'
                     offset={15}
                   >
-                    <Gear className={classes.linkIcon} size={25} />
+                    <GearIcon className={classes.linkIcon} size={25} />
                   </Tooltip>
                   {!minimized && <span>Group Settings</span>}
                 </Link>
@@ -311,13 +364,15 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                   variant='transparent'
                   onClick={() => setMinimized((prev) => !prev)}
                 >
-                  {minimized ? <CaretDoubleRight /> : <CaretDoubleLeft />}
+                  {minimized ? <CaretDoubleRightIcon /> : <CaretDoubleLeftIcon />}
                 </ActionIcon>
               )}
             </Group>
           </AppShell.Section>
         )}
       </AppShell.Navbar>
+
+      <ProfilePicturePrompt />
 
       <AppShell.Main>
         <Box h={`calc(100vh - ${HEADER_HEIGHT}px)`}>
@@ -330,7 +385,9 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                 py={{ base: 10, sm: 20 }}
                 h='100%'
               >
-                {auth.user ? (
+                {isWaitingForPasskeyProbe ? (
+                  <PageLoader />
+                ) : auth.user ? (
                   <Suspense fallback={<PageLoader />}>
                     {!requiredGroups ||
                     requiredGroups.some((role) => auth.user?.groups?.includes(role)) ? (
@@ -341,6 +398,15 @@ const AuthenticatedArea = (props: PropsWithChildren<IAuthenticatedAreaProps>) =>
                       </Center>
                     )}
                   </Suspense>
+                ) : loginFailed && !isAuthenticated ? (
+                  <Center className={classes.fullHeight}>
+                    <Stack align='center' gap='sm'>
+                      <Text>
+                        You could not be signed in right now. Please try again in a moment.
+                      </Text>
+                      <Button onClick={() => window.location.reload()}>Try again</Button>
+                    </Stack>
+                  </Center>
                 ) : (
                   <PageLoader />
                 )}

@@ -5,14 +5,18 @@ const ALLOWED_ENVIRONMENT_VARIABLES = [
   'KEYCLOAK_HOST',
   'KEYCLOAK_REALM_NAME',
   'KEYCLOAK_CLIENT_ID',
+  'PASSKEY_RP_ID',
+  'PASSKEY_RP_NAME',
+  'PASSKEY_PROMPT_APPS',
   'CHAIR_NAME',
   'CHAIR_URL',
   // environments with defaults
   'ALLOW_SUGGESTED_TOPICS',
+  'AI_FEATURES_ENABLED',
   'APPLICATION_TITLE',
   'GENDERS',
   'STUDY_DEGREES',
-  'STUDY_PROGRAMS',
+  'THESIS_PORTAL_URL',
   'LANGUAGES',
   'THESIS_TYPES',
   'CUSTOM_DATA',
@@ -22,6 +26,8 @@ const ALLOWED_ENVIRONMENT_VARIABLES = [
   // Optional environment marker shown as a banner above the header and
   // suffixed onto the footer version (production / staging / test / dev).
   'ENVIRONMENT',
+  // Optional maintenance notice shown as a banner on every page when set.
+  'MAINTENANCE_MESSAGE',
 ]
 
 async function generateConfig() {

@@ -1,0 +1,68 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+
+@media screen and (max-width: 62.25rem) {
+  .heroBanner {
+    padding: 2rem;
+  }
+}
+
+.tileGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  max-width: 43.75rem;
+  margin: 2rem auto 0;
+}
+
+@media screen and (max-width: 37.5rem) {
+  .tileGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(0.25rem);
+  text-decoration: none;
+  color: white;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.tile:hover {
+  transform: translateY(-0.25rem);
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  text-decoration: none;
+}
+
+.tileIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tileTitle {
+  margin: 0 0 0.25rem;
+  font-size: 1.2rem;
+}
+
+.tileDescription {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}

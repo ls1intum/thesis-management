@@ -1,98 +1,140 @@
 import { describe, test } from 'node:test'
 import assert from 'node:assert/strict'
 
-// Tests for `formatDate` in `client/src/utils/format.ts`.
+// Tests for the date helpers `formatDate`, `formatTime` and `formatDateTime` in
+// `client/src/core/utils/format.ts`.
 //
-// The fix for #827 replaced the legacy `{ year: '2-digit', month: '2-digit', day: 'numeric' }`
-// options (which produce the ambiguous "MM/D/YY" form in en-US) with
-// `{ dateStyle: 'medium', ... }`. Instead of importing the TypeScript source
-// (which would require a build step), we re-implement the function below
-// using the same Intl options the production code uses, then assert against
-// the resulting strings. This catches accidental regressions to the previous
-// ambiguous format.
+// The fix for #827 removed ambiguous numeric dates such as "2/12/26" (MM/D/YY in
+// en-US, DD.MM.YY in de-DE). Dates are now rendered in one locale-neutral layout:
+// `YYYY-MM-DD`, `HH:mm` (24 h) and `YYYY-MM-DD HH:mm`. The helpers are built from
+// the Date getters, never from `toLocale*` / `Intl`, so the output cannot depend on
+// the browser's locale. Instead of importing the TypeScript source (which would
+// require a build step), we re-implement the helpers below and pin the production
+// source in the last test, so a revert to locale-dependent formatting fails here too.
 
-function formatDate(date, { withTime = true } = {}) {
-  if (date == null) return ''
-  return new Date(date).toLocaleString(undefined, {
-    dateStyle: 'medium',
-    ...(withTime ? { timeStyle: 'short' } : {}),
-  })
+const pad2 = (value) => value.toString().padStart(2, '0')
+const pad4 = (value) => value.toString().padStart(4, '0')
+
+function toValidDate(date) {
+  if (date === undefined || date === null) return null
+  if (typeof date === 'string') {
+    const dateOnly = date.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (dateOnly) {
+      const [year, month, day] = [Number(dateOnly[1]), Number(dateOnly[2]), Number(dateOnly[3])]
+      const item = new Date(0)
+      item.setFullYear(year, month - 1, day)
+      item.setHours(0, 0, 0, 0)
+      if (item.getFullYear() !== year || item.getMonth() !== month - 1 || item.getDate() !== day) {
+        return null
+      }
+      return item
+    }
+  }
+  const item = new Date(date)
+  return Number.isNaN(item.getTime()) ? null : item
 }
 
-// We force a known locale via toLocaleString's first argument for the en-US/de-DE
-// behavioral checks below.
-function formatDateForLocale(date, locale, { withTime = true } = {}) {
-  if (date == null) return ''
-  return new Date(date).toLocaleString(locale, {
-    dateStyle: 'medium',
-    ...(withTime ? { timeStyle: 'short' } : {}),
-  })
+function formatDate(date) {
+  const item = toValidDate(date)
+  if (item === null) return ''
+  return `${pad4(item.getFullYear())}-${pad2(item.getMonth() + 1)}-${pad2(item.getDate())}`
 }
 
-describe('formatDate — issue #827 (unambiguous date display)', () => {
-  test('returns empty string for null / undefined input', () => {
-    assert.equal(formatDate(null), '')
-    assert.equal(formatDate(undefined), '')
+function formatTime(date) {
+  const item = toValidDate(date)
+  if (item === null) return ''
+  return `${pad2(item.getHours())}:${pad2(item.getMinutes())}`
+}
+
+function formatDateTime(date) {
+  const item = toValidDate(date)
+  if (item === null) return ''
+  return `${formatDate(item)} ${formatTime(item)}`
+}
+
+describe('formatDate / formatTime / formatDateTime — issue #827 (unambiguous, locale-neutral dates)', () => {
+  // Built from local-time components so the expectations hold in every time zone.
+  const morning = new Date(2026, 1, 12, 9, 5)
+  const afternoon = new Date(2026, 1, 12, 13, 45)
+
+  test('return an empty string for null, undefined and invalid input', () => {
+    for (const helper of [formatDate, formatTime, formatDateTime]) {
+      assert.equal(helper(null), '')
+      assert.equal(helper(undefined), '')
+      assert.equal(helper('not a date'), '')
+      assert.equal(helper(new Date(Number.NaN)), '')
+    }
   })
 
-  test('en-US: month is rendered as 3-letter abbreviation, not a digit', () => {
-    // Before the fix this produced "2/12/26" (ambiguous MM/D/YY).
-    const out = formatDateForLocale(Date.UTC(2026, 1, 12, 12, 0, 0), 'en-US')
-    assert.match(out, /^Feb 12, 2026,/, `expected "Feb 12, 2026, ..." got "${out}"`)
-    assert.doesNotMatch(out, /^\d+\/\d+\/\d+/, `should not start with digit/digit/digit: "${out}"`)
+  test('formatDate renders YYYY-MM-DD, never an ambiguous numeric form', () => {
+    // Before the fix this produced "2/12/26" (MM/D/YY) in en-US.
+    assert.equal(formatDate(morning), '2026-02-12')
+    assert.match(formatDate(morning), /^\d{4}-\d{2}-\d{2}$/)
   })
 
-  test('de-DE: full year is rendered, not 2-digit', () => {
-    const out = formatDateForLocale(Date.UTC(2026, 1, 12, 12, 0, 0), 'de-DE')
-    // 'medium' in de-DE renders something like "12. Feb. 2026, 13:00" depending on TZ.
-    assert.match(out, /2026/, `expected 4-digit year in "${out}"`)
-    assert.doesNotMatch(out, /\b\d{2}\.\d{2}\.\d{2}\b/, `should not be DD.MM.YY: "${out}"`)
+  test('formatTime renders 24-hour HH:mm with zero padding', () => {
+    assert.equal(formatTime(morning), '09:05')
+    assert.equal(formatTime(afternoon), '13:45') // not "1:45 PM"
   })
 
-  test('withTime=false omits the time portion', () => {
-    const withTime = formatDateForLocale(Date.UTC(2026, 1, 12, 12, 0, 0), 'en-US')
-    const noTime = formatDateForLocale(Date.UTC(2026, 1, 12, 12, 0, 0), 'en-US', {
-      withTime: false,
-    })
-    assert.match(withTime, /\d:\d{2}/) // contains "12:00" or similar
-    assert.doesNotMatch(noTime, /\d:\d{2}/)
-    // Both must still contain the unambiguous date portion.
-    assert.match(noTime, /Feb 12, 2026/)
+  test('formatDateTime renders "YYYY-MM-DD HH:mm"', () => {
+    assert.equal(formatDateTime(morning), '2026-02-12 09:05')
+    assert.equal(formatDateTime(afternoon), '2026-02-12 13:45')
   })
 
-  test('uses environment locale (passes undefined to toLocaleString)', () => {
-    // The production helper passes `undefined` so each browser uses its own locale.
-    // We verify the function returns something non-empty for a valid Date regardless of host locale.
-    const out = formatDate(Date.UTC(2026, 1, 12, 12, 0, 0))
-    assert.ok(out.length > 0)
-    assert.match(out, /2026/)
+  test('does not call any locale-dependent Date API', () => {
+    const originals = {}
+    for (const name of ['toLocaleString', 'toLocaleDateString', 'toLocaleTimeString']) {
+      originals[name] = Date.prototype[name]
+      Date.prototype[name] = () => {
+        throw new Error(`${name} must not be used for date formatting`)
+      }
+    }
+    try {
+      assert.equal(formatDateTime(afternoon), '2026-02-12 13:45')
+    } finally {
+      Object.assign(Date.prototype, originals)
+    }
   })
 
-  test('"3/2/26"-style ambiguous output is no longer possible (sanity)', () => {
-    // Direct check that the production options string does not produce 2-digit
-    // numeric month+day+year for en-US.
-    const out = new Date(Date.UTC(2026, 2, 2, 12, 0, 0)).toLocaleString('en-US', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    })
-    // Must contain a 3-letter month token AND a 4-digit year.
-    assert.match(out, /\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/)
-    assert.match(out, /\b\d{4}\b/)
+  test('date-only strings are read as local calendar dates (no time-zone shift)', () => {
+    // `new Date("2026-02-12")` is UTC midnight, which is still 11 Feb west of UTC.
+    assert.equal(formatDate('2026-02-12'), '2026-02-12')
+    assert.equal(formatDateTime('2026-02-12'), '2026-02-12 00:00')
   })
 
-  test('production formatDate in src/utils/format.ts uses dateStyle medium + withTime-gated timeStyle', async () => {
+  test('impossible date-only strings are rejected instead of rolling over', () => {
+    assert.equal(formatDate('2026-02-30'), '')
+    assert.equal(formatDate('2026-13-01'), '')
+  })
+
+  test('years below 1000 are zero-padded to four digits', () => {
+    const early = new Date(0)
+    early.setFullYear(999, 0, 1)
+    early.setHours(0, 0, 0, 0)
+    assert.equal(formatDate(early), '0999-01-01')
+  })
+
+  test('production helpers in src/core/utils/format.ts are built without locale APIs', async () => {
     // The local re-implementation above only catches regressions in the test
-    // copy. Pin the production source so a revert to numeric/2-digit options
-    // (e.g. month: '2-digit') fails this test as well.
+    // copy. Pin the production source so a revert to `toLocaleString` / `Intl`
+    // (or to the old `withTime` option) fails this test as well.
     const { readFileSync } = await import('node:fs')
     const { join, dirname } = await import('node:path')
     const { fileURLToPath } = await import('node:url')
     const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-    const source = readFileSync(join(ROOT, 'src/utils/format.ts'), 'utf8')
+    const source = readFileSync(join(ROOT, 'src/core/utils/format.ts'), 'utf8')
     assert.match(source, /export function formatDate\(/)
-    assert.match(source, /dateStyle:\s*'medium'/)
-    assert.match(source, /withTime\s*\?\s*\{\s*timeStyle:\s*'short'\s*\}\s*:\s*\{\s*\}/)
-    // Guard against accidental regressions to the previously-ambiguous options.
+    assert.match(source, /export function formatTime\(/)
+    assert.match(source, /export function formatDateTime\(/)
+    for (const getter of ['getFullYear', 'getMonth', 'getDate', 'getHours', 'getMinutes']) {
+      assert.match(source, new RegExp(`\\.${getter}\\(\\)`), `expected ${getter}() in format.ts`)
+    }
+    assert.doesNotMatch(source, /toLocale(Date|Time)?String/)
+    assert.doesNotMatch(source, /Intl\.DateTimeFormat/)
+    assert.doesNotMatch(source, /dateStyle|timeStyle/)
+    assert.doesNotMatch(source, /withTime/)
+    // Guard against a return to the previously-ambiguous options.
     assert.doesNotMatch(source, /year:\s*'2-digit'/)
     assert.doesNotMatch(source, /month:\s*'2-digit'/)
   })
@@ -100,7 +142,7 @@ describe('formatDate — issue #827 (unambiguous date display)', () => {
 
 describe('ensureAbsoluteLinkHref — issue #802 (rich-text editor link normalization)', () => {
   // The DocumentEditor calls `ensureAbsoluteLinkHref` (defined in
-  // src/utils/format.ts) from inside the SmartLink extension's overridden
+  // src/core/utils/format.ts) from inside the SmartLink extension's overridden
   // `setLink` command, so a schemeless href the user types into the toolbar's
   // link popover (e.g. "example.com") is stored as the absolute
   // "https://example.com" rather than as a relative path under the current
@@ -156,12 +198,12 @@ describe('ensureAbsoluteLinkHref — issue #802 (rich-text editor link normaliza
     assert.equal(ensureAbsoluteLinkHref('   '), '')
   })
 
-  test('production ensureAbsoluteLinkHref in src/utils/format.ts trims input and prefixes https', async () => {
+  test('production ensureAbsoluteLinkHref in src/core/utils/format.ts trims input and prefixes https', async () => {
     const { readFileSync } = await import('node:fs')
     const { join, dirname } = await import('node:path')
     const { fileURLToPath } = await import('node:url')
     const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-    const source = readFileSync(join(ROOT, 'src/utils/format.ts'), 'utf8')
+    const source = readFileSync(join(ROOT, 'src/core/utils/format.ts'), 'utf8')
     assert.match(source, /export function ensureAbsoluteLinkHref\(/)
     assert.match(source, /href\.trim\(\)/)
     assert.match(source, /`https:\/\/\$\{trimmed\}`/)
@@ -193,7 +235,7 @@ describe('ensureAbsoluteLinkHref — issue #802 (rich-text editor link normaliza
     const { fileURLToPath } = await import('node:url')
     const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
     const source = readFileSync(
-      join(ROOT, 'src/components/DocumentEditor/DocumentEditor.tsx'),
+      join(ROOT, 'src/core/components/DocumentEditor/DocumentEditor.tsx'),
       'utf8',
     )
     // SmartLink override of setLink (covers the toolbar popover path).

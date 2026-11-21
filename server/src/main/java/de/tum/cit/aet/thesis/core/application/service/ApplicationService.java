@@ -1,0 +1,581 @@
+package de.tum.cit.aet.thesis.core.application.service;
+
+import de.tum.cit.aet.thesis.core.admin.service.MailingService;
+import de.tum.cit.aet.thesis.core.application.constants.ApplicationRejectReason;
+import de.tum.cit.aet.thesis.core.application.constants.ApplicationReviewReason;
+import de.tum.cit.aet.thesis.core.application.constants.ApplicationState;
+import de.tum.cit.aet.thesis.core.application.cron.model.ApplicationRejectObject;
+import de.tum.cit.aet.thesis.core.application.entity.Application;
+import de.tum.cit.aet.thesis.core.application.entity.ApplicationReviewer;
+import de.tum.cit.aet.thesis.core.application.entity.key.ApplicationReviewerId;
+import de.tum.cit.aet.thesis.core.application.repository.ApplicationRepository;
+import de.tum.cit.aet.thesis.core.application.repository.ApplicationReviewerRepository;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
+import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.core.topic.entity.Topic;
+import de.tum.cit.aet.thesis.core.topic.entity.TopicRole;
+import de.tum.cit.aet.thesis.core.topic.repository.TopicRepository;
+import de.tum.cit.aet.thesis.core.topic.service.TopicService;
+import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.core.utility.HibernateHelper;
+import de.tum.cit.aet.thesis.interview.entity.InterviewProcess;
+import de.tum.cit.aet.thesis.interview.repository.InterviewProcessRepository;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName;
+import de.tum.cit.aet.thesis.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.thesis.service.ThesisService;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+/**
+ * Handles the lifecycle of thesis applications, including creation, review, acceptance, and rejection.
+ */
+@Service
+public class ApplicationService {
+	private final ApplicationRepository applicationRepository;
+	private final MailingService mailingService;
+	private final TopicRepository topicRepository;
+	private final ThesisService thesisService;
+	private final TopicService topicService;
+	private final ApplicationReviewerRepository applicationReviewerRepository;
+	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+	private final ResearchGroupRepository researchGroupRepository;
+	private final InterviewProcessRepository interviewProcessRepository;
+	private final Clock clock;
+
+	/**
+	 * Injects all required repositories, services, and the current user provider for application management.
+	 *
+	 * @param applicationRepository the application repository
+	 * @param mailingService the mailing service
+	 * @param topicRepository the topic repository
+	 * @param thesisService the thesis service
+	 * @param topicService the topic service
+	 * @param applicationReviewerRepository the application reviewer repository
+	 * @param currentUserProviderProvider the current user provider
+	 * @param researchGroupRepository the research group repository
+	 * @param interviewProcessRepository the interview process repository
+	 * @param clock the clock used to read the current time; injected so tests can pin
+	 *              it for deterministic deadline math
+	 */
+	@Autowired
+	public ApplicationService(
+			ApplicationRepository applicationRepository,
+			MailingService mailingService,
+			TopicRepository topicRepository,
+			ThesisService thesisService,
+			TopicService topicService,
+			ApplicationReviewerRepository applicationReviewerRepository,
+			ObjectProvider<CurrentUserProvider> currentUserProviderProvider,
+			ResearchGroupRepository researchGroupRepository,
+			InterviewProcessRepository interviewProcessRepository,
+			Clock clock
+	) {
+		this.applicationRepository = applicationRepository;
+		this.mailingService = mailingService;
+		this.topicRepository = topicRepository;
+		this.thesisService = thesisService;
+		this.topicService = topicService;
+		this.applicationReviewerRepository = applicationReviewerRepository;
+		this.currentUserProviderProvider = currentUserProviderProvider;
+		this.researchGroupRepository = researchGroupRepository;
+		this.interviewProcessRepository = interviewProcessRepository;
+		this.clock = clock;
+	}
+
+	private CurrentUserProvider currentUserProvider() {
+		return currentUserProviderProvider.getObject();
+	}
+
+	/**
+	 * Returns a paginated and filtered list of applications for the current user's research group.
+	 *
+	 * @param userId the user ID to filter applications by ownership
+	 * @param reviewerId the reviewer ID to filter applications by reviewer
+	 * @param searchQuery the search query to filter results
+	 * @param states the application states to filter by
+	 * @param previous the previous application states to filter by
+	 * @param topics the topic identifiers to filter by
+	 * @param types the thesis types to filter by
+	 * @param includeSuggestedTopics whether to include suggested topics
+	 * @param page the page number for pagination
+	 * @param limit the number of items per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @return the paginated list of applications
+	 */
+	public Page<Application> getAll(
+			UUID userId,
+			UUID reviewerId,
+			String searchQuery,
+			ApplicationState[] states,
+			String[] previous,
+			String[] topics,
+			String[] types,
+			boolean includeSuggestedTopics,
+			int page,
+			int limit,
+			String sortBy,
+			String sortOrder
+	) {
+		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+				HibernateHelper.validateSortField(Application.class, sortBy));
+
+		ResearchGroup researchGroup = currentUserProvider().getResearchGroupOrThrow();
+		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
+		Set<ApplicationState> statesFilter = states == null || states.length == 0 ? null : new HashSet<>(Arrays.asList(states));
+		Set<UUID> topicsFilter = topics == null || topics.length == 0 ? null : Arrays.stream(topics).map(t -> {
+			try {
+				return UUID.fromString(t);
+			} catch (IllegalArgumentException e) {
+				throw new ResourceInvalidParametersException("Invalid topic ID: " + t);
+			}
+		}).collect(Collectors.toSet());
+		Set<String> typesFilter = types == null || types.length == 0 ? null : new HashSet<>(Arrays.asList(types));
+		Set<UUID> previousFilter = previous == null || previous.length == 0 ? null : Arrays.stream(previous).map(t -> {
+			try {
+				return UUID.fromString(t);
+			} catch (IllegalArgumentException e) {
+				throw new ResourceInvalidParametersException("Invalid application ID: " + t);
+			}
+		}).collect(Collectors.toSet());
+
+		return applicationRepository.searchApplications(
+				researchGroup == null ? null : researchGroup.getId(),
+				userId,
+				statesFilter != null && !statesFilter.contains(ApplicationState.REJECTED) ? reviewerId : null,
+				searchQueryFilter,
+				statesFilter,
+				previousFilter,
+				topicsFilter,
+				typesFilter,
+				includeSuggestedTopics,
+				PageRequest.of(page, limit, Sort.by(order))
+		);
+	}
+
+	/**
+	 * Returns all not-yet-reviewed suggested applications for the given research group.
+	 *
+	 * @param researchGroupId the unique identifier of the research group
+	 * @return the list of unreviewed suggested applications
+	 */
+	public List<Application> getNotAssesedSuggestedOfResearchGroup(UUID researchGroupId) {
+		return applicationRepository.findNotReviewedSuggestedByResearchGroup(researchGroupId);
+	}
+
+	/**
+	 * Creates a new thesis application and records the privacy consent timestamp.
+	 *
+	 * <p>The consent timestamp ({@link Application#getConsentTimestamp()}) is set to
+	 * {@link Instant#now()} at the moment the application is persisted. This provides
+	 * server-side proof that the student accepted the privacy statement, as required by
+	 * GDPR Art. 7(1). The consent flag is validated in
+	 * {@link de.tum.cit.aet.thesis.core.application.controller.ApplicationController#createApplication}
+	 * before this method is called.</p>
+	 *
+	 * @param user             the authenticated user submitting the application
+	 * @param researchGroupId  the target research group ID (used if no topic is provided)
+	 * @param topicId          the topic to apply for (may be null for custom thesis titles)
+	 * @param thesisTitle      the suggested thesis title (may be null if applying for a topic)
+	 * @param thesisType       the type of thesis
+	 * @param desiredStartDate the desired start date
+	 * @param motivation       the applicant's motivation text
+	 * @return the persisted application with consent timestamp set
+	 */
+	public Application createApplication(User user, UUID researchGroupId, UUID topicId, String thesisTitle,
+										String thesisType, Instant desiredStartDate, String motivation) {
+		Topic topic = topicId == null ? null : topicService.findById(topicId);
+		Instant now = Instant.now(clock);
+
+		if (topic != null && topic.getPublishedAt() == null) {
+			throw new ResourceInvalidParametersException("This topic is not open for applications.");
+		}
+
+		if (topic != null && topic.getClosedAt() != null) {
+			throw new ResourceInvalidParametersException("This topic is already closed. You cannot submit new applications for it.");
+		}
+
+		// Reject when now >= deadline so the cutoff itself is treated as "closed".
+		if (topic != null && topic.getApplicationDeadline() != null && !now.isBefore(topic.getApplicationDeadline())) {
+			throw new ResourceInvalidParametersException("The application deadline for this topic has passed. You cannot submit new applications for it.");
+		}
+
+		Application application = new Application();
+		application.setUser(user);
+
+		application.setTopic(topic);
+		application.setThesisTitle(thesisTitle);
+		application.setThesisType(thesisType);
+		application.setMotivation(motivation);
+		application.setComment("");
+		application.setState(ApplicationState.NOT_ASSESSED);
+		application.setDesiredStartDate(desiredStartDate);
+		application.setCreatedAt(now);
+
+		// Record the server-side consent timestamp as proof of privacy statement acceptance (GDPR Art. 7(1)).
+		application.setConsentTimestamp(now);
+
+		ResearchGroup researchGroup = topic != null
+				? topic.getResearchGroup()
+				: researchGroupRepository.findById(researchGroupId).orElseThrow(() -> new ResourceNotFoundException(
+				String.format("Research Group with id %s not found.", researchGroupId)));
+		application.setResearchGroup(researchGroup);
+
+		application = applicationRepository.save(application);
+
+		mailingService.sendApplicationCreatedEmail(application);
+
+		return application;
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public Application updateApplication(Application application, UUID topicId, String thesisTitle, String thesisType, Instant desiredStartDate, String motivation) {
+		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+		application.setTopic(topicId == null ? null : topicService.findById(topicId));
+		application.setThesisTitle(thesisTitle);
+		application.setThesisType(thesisType);
+		application.setMotivation(motivation);
+		application.setDesiredStartDate(desiredStartDate);
+
+		application = applicationRepository.save(application);
+
+		return application;
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public List<Application> accept(
+			User reviewingUser,
+			Application application,
+			String thesisTitle,
+			String thesisType,
+			String language,
+			List<UUID> supervisorIds,
+			List<UUID> examinerIds,
+			boolean notifyUser,
+			boolean closeTopic
+	) {
+		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+		List<Application> result = new ArrayList<>();
+
+		application.setState(ApplicationState.ACCEPTED);
+		application.setReviewedAt(Instant.now());
+
+		application = reviewApplication(application, reviewingUser, ApplicationReviewReason.INTERESTED);
+
+		Thesis thesis = thesisService.createThesis(
+				thesisTitle,
+				thesisType,
+				language,
+				examinerIds,
+				supervisorIds,
+				List.of(application.getUser().getId()),
+				List.of(),
+				application,
+				notifyUser,
+				application.getResearchGroup().getId()
+		);
+
+		application = applicationRepository.save(application);
+
+		Topic topic = application.getTopic();
+
+		if (topic != null && closeTopic) {
+			topic.setClosedAt(Instant.now());
+
+			result.addAll(rejectApplicationsForTopic(reviewingUser, topic, ApplicationRejectReason.TOPIC_FILLED, true));
+
+			application.setTopic(topicRepository.save(topic));
+		}
+
+		if (notifyUser) {
+			mailingService.sendApplicationAcceptanceEmail(application, thesis);
+		}
+
+		result.add(applicationRepository.save(application));
+
+		return result;
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public List<Application> reject(User reviewingUser, Application application,
+			ApplicationRejectReason reason, boolean notifyUser, boolean authenticated) {
+		// if auto is provided and true, skip access check (used for automatic rejects)
+		if (authenticated) {
+			currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+		}
+		application.setState(ApplicationState.REJECTED);
+		application.setRejectReason(reason);
+		application.setReviewedAt(Instant.now());
+
+		application = authenticated
+				? reviewApplication(application, reviewingUser, ApplicationReviewReason.NOT_INTERESTED)
+				: reviewApplicationWithoutAuth(application, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
+
+		List<Application> result = new ArrayList<>();
+
+		if (reason == ApplicationRejectReason.FAILED_STUDENT_REQUIREMENTS) {
+			List<Application> applications = applicationRepository.findAllByUser(application.getUser());
+
+			for (Application item : applications) {
+				if (item.getState() == ApplicationState.NOT_ASSESSED) {
+					item.setState(ApplicationState.REJECTED);
+					item.setRejectReason(reason);
+					item.setReviewedAt(Instant.now());
+
+					item = authenticated
+							? reviewApplication(item, reviewingUser, ApplicationReviewReason.NOT_INTERESTED)
+							: reviewApplicationWithoutAuth(item, reviewingUser, ApplicationReviewReason.NOT_INTERESTED);
+
+					result.add(applicationRepository.save(item));
+				}
+			}
+		}
+
+		if (notifyUser) {
+			mailingService.sendApplicationRejectionEmail(application, reason);
+		}
+
+		result.add(applicationRepository.save(application));
+
+		return result;
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public void rejectAllApplicationsAutomatically(Topic topic, int afterDuration, Instant referenceDate, UUID researchGroupId) {
+		List<Application> applications = applicationRepository.findAllByTopic(topic);
+
+		int minimalRejectDuration = 14;
+		int referenceDuration = Math.max(afterDuration * 7, minimalRejectDuration);
+
+		for (Application application : applications) {
+			Instant referenceDateLocal = referenceDate == null ? application.getCreatedAt() : referenceDate;
+
+			// Check if the application is older than two weeks and the reference date + duration is in the past
+			if (application.getState() == ApplicationState.NOT_ASSESSED
+					&& Instant.now().isAfter(application.getCreatedAt()
+							.plus(java.time.Duration.ofDays(minimalRejectDuration)))
+					&& Instant.now().isAfter(referenceDateLocal
+							.plus(java.time.Duration.ofDays(referenceDuration)))) {
+				ResearchGroup topicGroup = researchGroupRepository.findById(researchGroupId)
+						.orElseThrow(() -> new ResourceNotFoundException(
+								"Research Group not found: " + researchGroupId));
+				User reviewingUser = topicGroup.getHead();
+
+				Optional<TopicRole> examiner = topic.getRoles().stream().filter((role) -> role.getId().getRole() == ThesisRoleName.EXAMINER).findFirst();
+
+				if (examiner.isPresent()) {
+					reviewingUser = examiner.orElseThrow().getUser();
+				}
+
+				reject(reviewingUser, application, ApplicationRejectReason.GENERAL, true, false);
+			}
+		}
+	}
+
+	/**
+	 * Returns a list of applications that are scheduled to be automatically rejected based on the configured duration.
+	 *
+	 * @param topic the topic whose applications to check
+	 * @param afterDuration the duration in weeks after which applications are rejected
+	 * @param referenceDate the reference date to calculate rejection timing
+	 * @return the list of applications pending automatic rejection
+	 */
+	public List<ApplicationRejectObject> getListOfApplicationsThatWillBeRejected(Topic topic, int afterDuration, Instant referenceDate) {
+		List<Application> applications = applicationRepository.findAllByTopic(topic);
+		List<ApplicationRejectObject> result = new ArrayList<>();
+
+		int minimalRejectDuration = 14;
+		int referenceDuration = Math.max(afterDuration * 7, minimalRejectDuration);
+		int timeTillRejection = 7;
+
+		for (Application application : applications) {
+			Instant applicationReferenceDate = referenceDate;
+			if (applicationReferenceDate == null) {
+				applicationReferenceDate = application.getCreatedAt();
+			}
+
+			if (application.getState() == ApplicationState.NOT_ASSESSED) {
+				Instant rejectionOption1 = application.getCreatedAt().plus(java.time.Duration.ofDays(minimalRejectDuration));
+				Instant rejectionOption2 = applicationReferenceDate.plus(java.time.Duration.ofDays(referenceDuration));
+				Instant dateOfRejection = rejectionOption1.isAfter(rejectionOption2) ? rejectionOption1 : rejectionOption2;
+
+				if (Instant.now().isAfter(dateOfRejection.minus(java.time.Duration.ofDays(timeTillRejection)))) {
+					result.add(new ApplicationRejectObject(
+							application.getUser().getFirstName() + " " + application.getUser().getLastName(),
+							topic.getTitle(), dateOfRejection, application.getId()));
+				}
+			}
+		}
+
+		return result;
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public void rejectListOfApplicationsIfOlderThan(
+			List<Application> applications, int afterDuration, UUID researchGroupId) {
+		ResearchGroup topicGroup = researchGroupRepository.findById(researchGroupId)
+				.orElseThrow(() -> new ResourceNotFoundException(
+						"Research Group not found: " + researchGroupId));
+		User reviewingUser = topicGroup.getHead();
+
+		for (Application application : applications) {
+			// Check if the application is older than rejection duration, but minimal 14 days
+			if (application.getState() == ApplicationState.NOT_ASSESSED
+					&& Instant.now().isAfter(application.getCreatedAt()
+							.plus(java.time.Duration.ofDays(Math.max(afterDuration, 14))))) {
+				reject(reviewingUser, application, ApplicationRejectReason.GENERAL, true, false);
+			}
+		}
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public Topic closeTopic(Topic topic, ApplicationRejectReason reason, boolean notifyUser) {
+		currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
+		topic.setClosedAt(Instant.now());
+
+		rejectApplicationsForTopic(currentUserProvider().getUser(), topic, reason, notifyUser);
+
+		InterviewProcess interviewProcess = interviewProcessRepository.findByTopicId(topic.getId());
+		if (interviewProcess != null) {
+			interviewProcess.setCompleted(true);
+			interviewProcessRepository.save(interviewProcess);
+		}
+
+		return topicRepository.save(topic);
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public List<Application> rejectApplicationsForTopic(User closer, Topic topic, ApplicationRejectReason reason, boolean notifyUser) {
+		currentUserProvider().assertCanAccessResearchGroup(topic.getResearchGroup());
+		List<Application> applications = applicationRepository.findAllByTopic(topic);
+		List<Application> result = new ArrayList<>();
+
+		for (Application application : applications) {
+			if (!(application.getState() == ApplicationState.NOT_ASSESSED || application.getState() == ApplicationState.INTERVIEWING)) {
+				continue;
+			}
+
+			result.addAll(reject(closer, application, reason, notifyUser, true));
+		}
+
+		return result;
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public Application reviewApplication(Application application, User reviewer, ApplicationReviewReason reason) {
+		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+
+		return reviewApplicationWithoutAuth(application, reviewer, reason);
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public Application reviewApplicationWithoutAuth(Application application, User reviewer, ApplicationReviewReason reason) {
+		ApplicationReviewer entity = application.getReviewer(reviewer).orElseGet(() -> {
+			ApplicationReviewerId id = new ApplicationReviewerId();
+			id.setApplicationId(application.getId());
+			id.setUserId(reviewer.getId());
+
+			ApplicationReviewer element = new ApplicationReviewer();
+			element.setId(id);
+			element.setApplication(application);
+			element.setUser(reviewer);
+
+			return element;
+		});
+
+		ApplicationReviewerId entityId = entity.getId();
+
+		entity.setReason(reason);
+		entity.setReviewedAt(Instant.now());
+
+		application.setReviewers(new ArrayList<>(application.getReviewers().stream().filter(element -> !element.getId().equals(entityId)).toList()));
+
+		if (reason == ApplicationReviewReason.NOT_REVIEWED) {
+			applicationReviewerRepository.delete(entity);
+		} else {
+			entity = applicationReviewerRepository.save(entity);
+
+			application.getReviewers().add(entity);
+		}
+
+		return applicationRepository.save(application);
+	}
+
+	// TODO: we should avoid using @Transactional because it can lead to performance issue and concurrency problems
+	@Transactional
+	public Application updateComment(Application application, String comment) {
+		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+		application.setComment(comment);
+		return applicationRepository.save(application);
+	}
+
+	/**
+	 * Checks whether the user already has a pending application for the given topic.
+	 *
+	 * @param user the user to check for existing applications
+	 * @param topicId the unique identifier of the topic
+	 * @return true if a pending application exists, false otherwise
+	 */
+	public boolean applicationExists(User user, UUID topicId) {
+		return applicationRepository.existsPendingApplication(user.getId(), topicId);
+	}
+
+	/**
+	 * Finds an application by its ID and verifies the current user has access to its research group.
+	 *
+	 * @param applicationId the unique identifier of the application
+	 * @return the found application
+	 */
+	public Application findById(UUID applicationId) {
+		Application application = applicationRepository.findById(applicationId)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format("Application with id %s not found.", applicationId)));
+		currentUserProvider().assertCanAccessResearchGroup(application.getResearchGroup());
+		return application;
+	}
+
+	/**
+	 * Deletes an application by its ID, preventing deletion of accepted applications linked to theses.
+	 *
+	 * @param applicationId the application identifier
+	 */
+	public void deleteApplication(UUID applicationId) {
+		Application application = findById(applicationId);
+
+		if (application.getState() == ApplicationState.ACCEPTED) {
+			throw new ResourceInvalidParametersException(
+					"Accepted applications cannot be deleted because they are linked to a thesis.");
+		}
+
+		applicationReviewerRepository.deleteAll(application.getReviewers());
+		application.getReviewers().clear();
+		applicationRepository.delete(application);
+	}
+}

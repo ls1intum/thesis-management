@@ -8,33 +8,34 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.jayway.jsonpath.JsonPath;
-import de.tum.cit.aet.thesis.controller.payload.CreateApplicationPayload;
-import de.tum.cit.aet.thesis.controller.payload.CreateThesisPayload;
-import de.tum.cit.aet.thesis.controller.payload.ReplaceTopicPayload;
-import de.tum.cit.aet.thesis.repository.ApplicationRepository;
-import de.tum.cit.aet.thesis.repository.ApplicationReviewerRepository;
-import de.tum.cit.aet.thesis.repository.DataExportRepository;
-import de.tum.cit.aet.thesis.repository.EmailTemplateRepository;
-import de.tum.cit.aet.thesis.repository.InterviewProcessRepository;
-import de.tum.cit.aet.thesis.repository.IntervieweeRepository;
-import de.tum.cit.aet.thesis.repository.NotificationSettingRepository;
-import de.tum.cit.aet.thesis.repository.ResearchGroupRepository;
-import de.tum.cit.aet.thesis.repository.ResearchGroupSettingsRepository;
-import de.tum.cit.aet.thesis.repository.ThesisAssessmentRepository;
-import de.tum.cit.aet.thesis.repository.ThesisCommentRepository;
-import de.tum.cit.aet.thesis.repository.ThesisFeedbackRepository;
-import de.tum.cit.aet.thesis.repository.ThesisFileRepository;
-import de.tum.cit.aet.thesis.repository.ThesisPresentationInviteRepository;
-import de.tum.cit.aet.thesis.repository.ThesisPresentationRepository;
-import de.tum.cit.aet.thesis.repository.ThesisProposalRepository;
-import de.tum.cit.aet.thesis.repository.ThesisRepository;
-import de.tum.cit.aet.thesis.repository.ThesisRoleRepository;
-import de.tum.cit.aet.thesis.repository.ThesisStateChangeRepository;
-import de.tum.cit.aet.thesis.repository.TopicRepository;
-import de.tum.cit.aet.thesis.repository.TopicRoleRepository;
-import de.tum.cit.aet.thesis.repository.UserGroupRepository;
-import de.tum.cit.aet.thesis.repository.UserRepository;
-import de.tum.cit.aet.thesis.service.AccessManagementService;
+import de.tum.cit.aet.thesis.core.admin.repository.DataExportRepository;
+import de.tum.cit.aet.thesis.core.application.controller.payload.CreateApplicationPayload;
+import de.tum.cit.aet.thesis.core.application.repository.ApplicationRepository;
+import de.tum.cit.aet.thesis.core.application.repository.ApplicationReviewerRepository;
+import de.tum.cit.aet.thesis.core.group.repository.EmailTemplateRepository;
+import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupRepository;
+import de.tum.cit.aet.thesis.core.group.repository.ResearchGroupSettingsRepository;
+import de.tum.cit.aet.thesis.core.notification.repository.NotificationSettingRepository;
+import de.tum.cit.aet.thesis.core.session.repository.UserSessionRepository;
+import de.tum.cit.aet.thesis.core.topic.controller.payload.ReplaceTopicPayload;
+import de.tum.cit.aet.thesis.core.topic.repository.TopicRepository;
+import de.tum.cit.aet.thesis.core.topic.repository.TopicRoleRepository;
+import de.tum.cit.aet.thesis.core.user.repository.UserGroupRepository;
+import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
+import de.tum.cit.aet.thesis.core.user.service.AccessManagementService;
+import de.tum.cit.aet.thesis.interview.repository.InterviewProcessRepository;
+import de.tum.cit.aet.thesis.interview.repository.IntervieweeRepository;
+import de.tum.cit.aet.thesis.presentation.repository.ThesisPresentationInviteRepository;
+import de.tum.cit.aet.thesis.presentation.repository.ThesisPresentationRepository;
+import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
+import de.tum.cit.aet.thesis.thesis.controller.payload.CreateThesisPayload;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisAssessmentRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisCommentRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisFeedbackRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisFileRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisRoleRepository;
+import de.tum.cit.aet.thesis.thesis.repository.ThesisStateChangeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import tools.jackson.databind.ObjectMapper;
 
@@ -136,6 +138,9 @@ public abstract class BaseIntegrationTest {
 	private UserRepository userRepository;
 
 	@Autowired
+	private UserSessionRepository userSessionRepository;
+
+	@Autowired
 	protected MockMvc mockMvc;
 
 	@Autowired
@@ -147,7 +152,7 @@ public abstract class BaseIntegrationTest {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	protected static PostgreSQLContainer dbContainer = new PostgreSQLContainer("postgres:18.2-alpine")
+	protected static PostgreSQLContainer dbContainer = new PostgreSQLContainer(TestContainerImages.POSTGRES)
 			.withCommand("postgres", "-c", "max_connections=200");
 
 	protected static GreenMail greenMail;
@@ -221,11 +226,16 @@ public abstract class BaseIntegrationTest {
 		jdbcTemplate.execute("UPDATE research_groups SET head_user_id = NULL, created_by = NULL, updated_by = NULL");
 
 		researchGroupSettingsRepository.deleteAll();
+		userSessionRepository.deleteAll();
 		userGroupRepository.deleteAll();
 		researchGroupRepository.deleteAll();
 		userRepository.deleteAll();
 
 		clearEmails();
+	}
+
+	protected int jdbcTemplateUpdate(String sql, Object... args) {
+		return jdbcTemplate.update(sql, args);
 	}
 
 	protected MimeMessage[] getReceivedEmails() {
@@ -268,15 +278,15 @@ public abstract class BaseIntegrationTest {
 
 	public record TestUser(UUID userId, String universityId) {}
 	protected TestUser createTestUser(String universityId, List<String> roles) throws Exception {
-		String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/user-info")
-						.header("Authorization", generateTestAuthenticationHeader(universityId, roles))
-				)
-				.andReturn()
-				.getResponse()
-				.getContentAsString();
+		// The user is created by the session exchange, the only place that syncs profile data from the token.
+		mockMvc.perform(MockMvcRequestBuilders.post("/v2/auth/session")
+						.header("Authorization", generateTestAuthenticationHeader(universityId, roles)))
+				.andExpect(MockMvcResultMatchers.status().isOk());
 
-		UUID userId = UUID.fromString(JsonPath.parse(response).read("$.userId", String.class));
-		String actualUniversityId = JsonPath.parse(response).read("$.universityId", String.class);
+		String userIdText = jdbcTemplate.queryForObject(
+				"SELECT user_id::text FROM users WHERE university_id = ?", String.class, universityId);
+		UUID userId = UUID.fromString(userIdText);
+		String actualUniversityId = universityId;
 
 		// Clear auto-assigned groups (e.g., student from updateAuthenticatedUser)
 		// so only the explicitly requested groups are present

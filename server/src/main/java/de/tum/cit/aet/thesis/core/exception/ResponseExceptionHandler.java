@@ -1,0 +1,49 @@
+package de.tum.cit.aet.thesis.core.exception;
+
+import de.tum.cit.aet.thesis.core.dto.ErrorDto;
+import de.tum.cit.aet.thesis.core.exception.request.AccessDeniedException;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceAlreadyExistsException;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import tools.jackson.core.JacksonException;
+
+import java.text.ParseException;
+
+@ControllerAdvice
+public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
+	@ExceptionHandler({ ResourceNotFoundException.class })
+	protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
+		return handleExceptionInternal(ex, ErrorDto.fromException(ex), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+	}
+
+	@ExceptionHandler({ ResourceAlreadyExistsException.class })
+	protected ResponseEntity<Object> handleAlreadyExists(RuntimeException ex, WebRequest request) {
+		return handleExceptionInternal(ex, ErrorDto.fromException(ex), new HttpHeaders(), HttpStatus.CONFLICT, request);
+	}
+
+	@ExceptionHandler({
+			ParseException.class,
+			ResourceInvalidParametersException.class,
+			JacksonException.class,
+	})
+	protected ResponseEntity<Object> handleBadRequest(Exception ex, WebRequest request) {
+		return handleExceptionInternal(ex, ErrorDto.fromException(ex), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+	}
+
+	@ExceptionHandler({ AccessDeniedException.class })
+	protected ResponseEntity<Object> handleAccessDenied(RuntimeException ex, WebRequest request) {
+		return handleExceptionInternal(ex, ErrorDto.fromException(ex), new HttpHeaders(), HttpStatus.FORBIDDEN, request);
+	}
+
+	@ExceptionHandler({ MailingException.class, UploadException.class })
+	protected ResponseEntity<Object> handleServerError(RuntimeException ex, WebRequest request) {
+		return handleExceptionInternal(ex, ErrorDto.fromException(ex), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+	}
+}

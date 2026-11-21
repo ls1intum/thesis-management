@@ -1,0 +1,173 @@
+package de.tum.cit.aet.thesis.core.user.service;
+
+import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
+import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
+import de.tum.cit.aet.thesis.core.security.CurrentUserProvider;
+import de.tum.cit.aet.thesis.core.upload.service.UploadService;
+import de.tum.cit.aet.thesis.core.user.entity.User;
+import de.tum.cit.aet.thesis.core.user.repository.UserRepository;
+import de.tum.cit.aet.thesis.core.utility.HibernateHelper;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+/** Provides user lookup, search, and document retrieval operations. */
+@Service
+public class UserService {
+	private final UserRepository userRepository;
+	private final UploadService uploadService;
+	private final AccessManagementService accessManagementService;
+	private final ObjectProvider<CurrentUserProvider> currentUserProviderProvider;
+
+	/**
+	 * Injects the user repository, upload service, access management service, and current user provider.
+	 *
+	 * @param userRepository the user repository
+	 * @param uploadService the upload service
+	 * @param accessManagementService the access management service used to look up users in Keycloak
+	 * @param currentUserProviderProvider the current user provider
+	 */
+	@Autowired
+	public UserService(UserRepository userRepository, UploadService uploadService,
+		AccessManagementService accessManagementService,
+		ObjectProvider<CurrentUserProvider> currentUserProviderProvider) {
+		this.userRepository = userRepository;
+		this.uploadService = uploadService;
+		this.accessManagementService = accessManagementService;
+		this.currentUserProviderProvider = currentUserProviderProvider;
+	}
+
+	private CurrentUserProvider currentUserProvider() {
+		return currentUserProviderProvider.getObject();
+	}
+
+	/**
+	 * Returns a paginated and filtered list of users within the current user's research group.
+	 *
+	 * @param searchQuery the search query to filter users
+	 * @param groups the user groups to filter by
+	 * @param page the page number
+	 * @param limit the number of items per page
+	 * @param sortBy the field to sort by
+	 * @param sortOrder the sort direction (asc or desc)
+	 * @return a page of users matching the filters
+	 */
+	public Page<User> getAll(String searchQuery, String[] groups, Integer page, Integer limit, String sortBy, String sortOrder) {
+		Sort.Order order = new Sort.Order(sortOrder.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+				HibernateHelper.validateSortField(User.class, sortBy));
+
+		ResearchGroup researchGroup = currentUserProvider().getResearchGroupOrThrow();
+		String searchQueryFilter = searchQuery == null || searchQuery.isEmpty() ? null : searchQuery.toLowerCase();
+		Set<String> groupsFilter = groups == null || groups.length == 0 ? null : new HashSet<>(Arrays.asList(groups));
+
+		return userRepository
+				.searchUsers(researchGroup == null ? null : researchGroup.getId(),searchQueryFilter, groupsFilter, PageRequest.of(page, limit, Sort.by(order)));
+	}
+
+	/**
+	 * Loads and returns the examination report file for the given user.
+	 *
+	 * @param user the user whose examination report to retrieve
+	 * @return the examination report file resource
+	 */
+	public Resource getExaminationReport(User user) {
+		return uploadService.load(user.getExaminationFilename());
+	}
+
+	/**
+	 * Loads and returns the CV file for the given user.
+	 *
+	 * @param user the user whose CV to retrieve
+	 * @return the CV file resource
+	 */
+	public Resource getCV(User user) {
+		return uploadService.load(user.getCvFilename());
+	}
+
+	/**
+	 * Loads and returns the degree report file for the given user.
+	 *
+	 * @param user the user whose degree report to retrieve
+	 * @return the degree report file resource
+	 */
+	public Resource getDegreeReport(User user) {
+		return uploadService.load(user.getDegreeFilename());
+	}
+
+	/**
+	 * Finds a user by their ID or throws a ResourceNotFoundException if not found.
+	 *
+	 * @param userId the user ID
+	 * @return the user
+	 */
+	public User findById(UUID userId) {
+		return userRepository.findById(userId)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format("User with id %s not found.", userId)));
+	}
+
+	/**
+	 * Finds a user by their university ID or throws a ResourceNotFoundException if not found.
+	 *
+	 * @param universityId the university ID
+	 * @return the user
+	 */
+	public User findByUniversityId(String universityId) {
+		return userRepository.findByUniversityId(universityId)
+				.orElseThrow(() -> new ResourceNotFoundException(String.format("User with universityId %s not found.", universityId)));
+	}
+
+	/**
+	 * Returns all users matching the given list of university IDs.
+	 *
+	 * @param universityIds the list of university IDs to search for
+	 * @return the list of matching users
+	 */
+	public List<User> findAllByUniversityIdIn(List<String> universityIds) {
+		return userRepository.findAllByUniversityIdIn(universityIds);
+	}
+
+	/**
+	 * Returns the local user matching the given university ID, or materialises a new one from Keycloak.
+	 * Used when an operator picks a directory entry that has never logged in to the portal: we fetch
+	 * the canonical name/email/matriculation number from Keycloak and persist a row so the rest of the
+	 * app can keep referring to users by their internal UUID.
+	 *
+	 * @param universityId the Keycloak username (== {@link User#getUniversityId()}) to look up or create
+	 * @return the existing or newly created user
+	 */
+	public User findOrCreateByUniversityId(String universityId) {
+		return userRepository.findByUniversityId(universityId).orElseGet(() -> {
+			AccessManagementService.KeycloakUserInformation keycloakUser =
+					accessManagementService.getUserByUsername(universityId);
+
+			Instant now = Instant.now();
+			User newUser = new User();
+			newUser.setJoinedAt(now);
+			newUser.setUpdatedAt(now);
+			newUser.setUniversityId(keycloakUser.username());
+			newUser.setFirstName(keycloakUser.firstName());
+			newUser.setLastName(keycloakUser.lastName());
+			newUser.setEmail(keycloakUser.email());
+			newUser.setMatriculationNumber(keycloakUser.getMatriculationNumber());
+
+			try {
+				return userRepository.save(newUser);
+			} catch (DataIntegrityViolationException ex) {
+				// Another request created the same user concurrently. Return the now-persisted row.
+				return userRepository.findByUniversityId(universityId).orElseThrow(() -> ex);
+			}
+		});
+	}
+}

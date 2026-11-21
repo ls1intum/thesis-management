@@ -1,5 +1,12 @@
 import { defineConfig, devices } from '@playwright/test'
 
+// Application sessions are tied to the browser family and operating system of the User-Agent that created
+// them; a session used with another one ends (USER_AGENT_MISMATCH). The login setup, the test project and the
+// contexts that specs open themselves with `browser.newContext()` (which do not inherit project options) must
+// therefore present the same User-Agent. `devices['Desktop Chrome']` would send a Windows one, which no
+// `browser.newContext()` call gets, so keep the browser's own User-Agent everywhere.
+const browserIdentity = { ...devices['Desktop Chrome'], userAgent: undefined }
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
@@ -18,11 +25,15 @@ export default defineConfig({
     video: 'on-first-retry',
   },
   projects: [
-    { name: 'setup', testMatch: /.*\.setup\.ts/ },
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+      use: { ...browserIdentity },
+    },
     {
       name: 'chromium',
       use: {
-        ...devices['Desktop Chrome'],
+        ...browserIdentity,
         storageState: 'e2e/.auth/student.json',
       },
       dependencies: ['setup'],

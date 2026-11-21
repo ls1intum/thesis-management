@@ -1,0 +1,57 @@
+import { Button, Modal, type ButtonProps } from '@mantine/core'
+import type { PropsWithChildren } from 'react'
+import { useState } from 'react'
+import { AuthenticatedFilePreview } from '@/core/components/AuthenticatedFilePreview/AuthenticatedFilePreview'
+import type { UploadFileType } from '@/core/config/types'
+import { getAdjustedFileType } from '@/core/utils/file'
+
+interface IAuthenticatedFilePreviewButtonProps extends ButtonProps {
+  url: string
+  filename: string
+  type: UploadFileType
+  aspectRatio?: number
+  allowDownload?: boolean
+}
+
+export const AuthenticatedFilePreviewButton = (
+  props: PropsWithChildren<IAuthenticatedFilePreviewButtonProps>,
+) => {
+  const {
+    url,
+    filename,
+    type,
+    aspectRatio = 16 / 9,
+    allowDownload,
+    children,
+    ...buttonProps
+  } = props
+
+  const [modal, setModal] = useState(false)
+
+  const adjustedFileType = getAdjustedFileType(filename, type)
+
+  if (adjustedFileType === 'any') {
+    return null
+  }
+
+  return (
+    <Button onClick={() => setModal(true)} {...buttonProps}>
+      <Modal
+        size='xl'
+        title={filename}
+        opened={modal}
+        onClose={() => setModal(false)}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <AuthenticatedFilePreview
+          url={url}
+          filename={filename}
+          type={type}
+          allowDownload={allowDownload}
+          aspectRatio={aspectRatio}
+        />
+      </Modal>
+      {children}
+    </Button>
+  )
+}
