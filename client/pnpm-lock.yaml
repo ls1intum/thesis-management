@@ -195,7 +195,7 @@ overrides:
   webpack-dev-middleware@<8.3.0: 8.6.1
   compression@<1.8.2: 1.8.2
   proxy-addr@<2.0.8: 2.0.8
-  postcss-selector-parser@<7.1.7: 7.1.7
+  postcss-selector-parser@<7.1.7: 7.2.1
   prosemirror-view@<1.42.3: 1.42.9
 
 importers:
@@ -3682,8 +3682,8 @@ packages:
     peerDependencies:
       postcss: 8.5.33
 
-  postcss-selector-parser@7.1.7:
-    resolution: {integrity: sha512-wWBro/7hJ40ye6TPiXkUQoXKCw23xSsjriUvqd7Uls9Sso3oLiON1flc18cCdnjgCRXw4fBVqUJJeOdDTh3P3g==}
+  postcss-selector-parser@7.2.1:
+    resolution: {integrity: sha512-GwxlMgTTXwIom+ebC7an3k6RaJDwklRQQnfiXsLPGicu8FYV/k/+1/9YY2OU2+r938H2t4X0TDxoif+HP2rjzQ==}
     engines: {node: '>=4'}
 
   postcss-simple-vars@7.0.1:
@@ -7810,7 +7810,7 @@ snapshots:
   postcss-calc@10.1.1(postcss@8.5.33):
     dependencies:
       postcss: 8.5.33
-      postcss-selector-parser: 7.1.7
+      postcss-selector-parser: 7.2.1
       postcss-value-parser: 4.2.0
 
   postcss-colormin@7.0.10(postcss@8.5.33):
@@ -7830,7 +7830,7 @@ snapshots:
   postcss-discard-comments@7.0.8(postcss@8.5.33):
     dependencies:
       postcss: 8.5.33
-      postcss-selector-parser: 7.1.7
+      postcss-selector-parser: 7.2.1
 
   postcss-discard-duplicates@7.0.4(postcss@8.5.33):
     dependencies:
@@ -7880,7 +7880,7 @@ snapshots:
       caniuse-api: 3.0.0
       cssnano-utils: 5.0.3(postcss@8.5.33)
       postcss: 8.5.33
-      postcss-selector-parser: 7.1.7
+      postcss-selector-parser: 7.2.1
 
   postcss-minify-font-values@7.0.3(postcss@8.5.33):
     dependencies:
@@ -7907,7 +7907,7 @@ snapshots:
       caniuse-api: 3.0.0
       cssesc: 3.0.0
       postcss: 8.5.33
-      postcss-selector-parser: 7.1.7
+      postcss-selector-parser: 7.2.1
 
   postcss-mixins@12.1.2(postcss@8.5.33):
     dependencies:
@@ -7925,13 +7925,13 @@ snapshots:
     dependencies:
       icss-utils: 5.1.0(postcss@8.5.33)
       postcss: 8.5.33
-      postcss-selector-parser: 7.1.7
+      postcss-selector-parser: 7.2.1
       postcss-value-parser: 4.2.0
 
   postcss-modules-scope@3.2.1(postcss@8.5.33):
     dependencies:
       postcss: 8.5.33
-      postcss-selector-parser: 7.1.7
+      postcss-selector-parser: 7.2.1
 
   postcss-modules-values@4.0.0(postcss@8.5.33):
     dependencies:
@@ -7941,7 +7941,7 @@ snapshots:
   postcss-nested@7.0.2(postcss@8.5.33):
     dependencies:
       postcss: 8.5.33
-      postcss-selector-parser: 7.1.7
+      postcss-selector-parser: 7.2.1
 
   postcss-normalize-charset@7.0.3(postcss@8.5.33):
     dependencies:
@@ -8011,9 +8011,8 @@ snapshots:
       postcss: 8.5.33
       postcss-value-parser: 4.2.0
 
-  postcss-selector-parser@7.1.7:
+  postcss-selector-parser@7.2.1:
     dependencies:
-      cssesc: 3.0.0
       util-deprecate: 1.0.2
 
   postcss-simple-vars@7.0.1(postcss@8.5.33):
@@ -8029,7 +8028,7 @@ snapshots:
   postcss-unique-selectors@7.0.7(postcss@8.5.33):
     dependencies:
       postcss: 8.5.33
-      postcss-selector-parser: 7.1.7
+      postcss-selector-parser: 7.2.1
 
   postcss-value-parser@4.2.0: {}
 
@@ -8540,7 +8539,7 @@ snapshots:
     dependencies:
       browserslist: 4.29.6
       postcss: 8.5.33
-      postcss-selector-parser: 7.1.7
+      postcss-selector-parser: 7.2.1
 
   stylus@0.62.0(supports-color@8.1.1):
     dependencies:
