@@ -75,7 +75,7 @@ the variable is unset, so the workspace builds even without `.env`:
 | Consumer | Reads the version from | Fallback default |
 |----------|------------------------|------------------|
 | `docker-compose.yml`, `docker-compose.prod.yml`, `docker-compose.showcase.yml` | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) (auto-loaded); `.env.prod` for production | the `${POSTGRES_IMAGE_TAG:-19.0-alpine}` inline fallback in each compose file |
-| Integration-test Testcontainers (`BaseIntegrationTest`, `BaseKeycloakIntegrationTest` via `TestContainerImages`) | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env), parsed in [`server/build.gradle`](https://github.com/ls1intum/thesis-management/blob/develop/server/build.gradle) (or a `POSTGRES_IMAGE_TAG` env var) | the `System.getProperty(…, "19.0-alpine")` fallback in `TestContainerImages` |
+| Integration-test Testcontainers (`BaseIntegrationTest`, `BaseKeycloakIntegrationTest` via `TestContainerImages`) | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env), parsed in [`server/build.gradle`](https://github.com/ls1intum/thesis-management/blob/develop/server/build.gradle) (or a `POSTGRES_IMAGE_TAG` env var) | the `.getOrElse("19.0-alpine")` fallback in `server/build.gradle`, and the `System.getProperty(…, "19.0-alpine")` fallback in `TestContainerImages` for IDE runs |
 | `.github/workflows/e2e_tests.yml` (CI service container) | `POSTGRES_IMAGE_TAG` repository variable (*Settings → Secrets and variables → Actions → Variables*) — the workflow `services.image` field cannot read `.env` | the `${{ vars.POSTGRES_IMAGE_TAG \|\| '19.0-alpine' }}` fallback in the workflow |
 
 `POSTGRES_IMAGE_TAG` is **not a secret** — the committed `.env` must hold non-secret config only.
@@ -83,7 +83,7 @@ the variable is unset, so the workspace builds even without `.env`:
 **To bump the version**, edit `POSTGRES_IMAGE_TAG` in the committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) — that updates
 both Docker Compose and the Gradle tests at once. For full reproducibility also update the matching
 hard-coded fallbacks (the `${POSTGRES_IMAGE_TAG:-…}` in the three compose files, the workflow's
-`|| '19.0-alpine'`, and the default in `TestContainerImages`), then run the major-upgrade procedure
+`|| '19.0-alpine'`, the `.getOrElse(…)` in `server/build.gradle`, and the default in `TestContainerImages`), then run the major-upgrade procedure
 below on Dev and Production. The GitHub repository variable is optional and only needed to override CI
 without a code change.
 
@@ -218,8 +218,20 @@ rm -rf thesis_dump.dump pg-upgrade
   as well.
 - **Backups keep working.** `thesis-track-backup.sh` runs `pg_dump` inside the running database
   container, so it picks up the new version automatically.
-- **Cleanup on Dev is still open:** `postgres_data_backup_pg18` and `pg19-upgrade/` in
-  `/home/thesistrack/` are kept for 1–2 weeks as the rollback path.
+- **Production (2026-11-21, same day, Saturday morning):** 29 MB database, 35 tables, 36,260 rows,
+  prod runs the `:latest` release image. A pre-flight with the application still running proved
+  the plan before any outage: take the backup dump, check it with `pg_restore -l`, restore it into
+  a throwaway `postgres:19.0-alpine` container started with `--network none` and a random
+  password, and compare row counts with the live database (identical). The real swap then took
+  **9 seconds** from stopping the application to restarting it (a fresh dump after the stop, the
+  data-directory move, the restore and a row-count check), run as one script with an `ERR` trap that
+  moves `postgres_data_backup_pg18` back and restores `.env.prod` if anything fails before the
+  application is restarted. After the restart: Liquibase "up to date", 0 errors in the server log,
+  health endpoint `UP`, the application reconnected with its usual 11 connections, and `pg_dump`
+  from the PG 19 container works (the nightly backup path).
+- **Cleanup on Dev and Production is still open:** `postgres_data_backup_pg18` and `pg19-upgrade/` in
+  `/home/thesistrack/` (and, on Production, the `backups/pre-pg19_db_*.dump` files) are kept for 1–2
+  weeks as the rollback path.
 
 ### Rollback
 
@@ -232,7 +244,11 @@ docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
 mv ./postgres_data ./postgres_data_failed
 mv ./postgres_data_backup ./postgres_data
 # Point back at the previous image tag (replace with the version you upgraded from)
-sed -i 's/^POSTGRES_IMAGE_TAG=.*/POSTGRES_IMAGE_TAG=18.6-alpine/' .env.prod
+# Replace the line if present, append it if a deploy has removed it (deploys regenerate .env.prod
+# without it, and the compose fallback may already say the new version)
+grep -q '^POSTGRES_IMAGE_TAG=' .env.prod \
+  && sed -i 's/^POSTGRES_IMAGE_TAG=.*/POSTGRES_IMAGE_TAG=18.6-alpine/' .env.prod \
+  || echo 'POSTGRES_IMAGE_TAG=18.6-alpine' >> .env.prod
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
 ```
 
