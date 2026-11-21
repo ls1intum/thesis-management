@@ -61,34 +61,60 @@ re-import it with `pg_restore`.
 Starting with PostgreSQL 18, the official Docker image changed the default `PGDATA` from
 `/var/lib/postgresql/data` to `/var/lib/postgresql/18/docker`
 ([docker-library/postgres#1259](https://github.com/docker-library/postgres/pull/1259)).
+PostgreSQL 19 keeps that layout (`/var/lib/postgresql/19/docker`, `VOLUME /var/lib/postgresql`).
 Our production compose file explicitly sets `PGDATA=/var/lib/postgresql/data` to keep existing
-volume mounts working.
+volume mounts working, and that override stays in place for every later major version.
 
 ### Canonical PostgreSQL Version
 
-The PostgreSQL image tag is **`18.6-alpine`**. The committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) (`POSTGRES_IMAGE_TAG`)
+The PostgreSQL image tag is **`19.0-alpine`**. The committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) (`POSTGRES_IMAGE_TAG`)
 is the single source of truth: Docker Compose loads it automatically and the Gradle build parses it
 for the integration-test Testcontainers. Every consumer falls back to the same hard-coded default if
 the variable is unset, so the workspace builds even without `.env`:
 
 | Consumer | Reads the version from | Fallback default |
 |----------|------------------------|------------------|
-| `docker-compose.yml`, `docker-compose.prod.yml`, `docker-compose.showcase.yml` | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) (auto-loaded); `.env.prod` for production | the `${POSTGRES_IMAGE_TAG:-18.6-alpine}` inline fallback in each compose file |
-| Integration-test Testcontainers (`BaseIntegrationTest`, `BaseKeycloakIntegrationTest` via `TestContainerImages`) | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env), parsed in [`server/build.gradle`](https://github.com/ls1intum/thesis-management/blob/develop/server/build.gradle) (or a `POSTGRES_IMAGE_TAG` env var) | the `System.getProperty(…, "18.6-alpine")` fallback in `TestContainerImages` |
-| `.github/workflows/e2e_tests.yml` (CI service container) | `POSTGRES_IMAGE_TAG` repository variable (*Settings → Secrets and variables → Actions → Variables*) — the workflow `services.image` field cannot read `.env` | the `${{ vars.POSTGRES_IMAGE_TAG \|\| '18.6-alpine' }}` fallback in the workflow |
+| `docker-compose.yml`, `docker-compose.prod.yml`, `docker-compose.showcase.yml` | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) (auto-loaded); `.env.prod` for production | the `${POSTGRES_IMAGE_TAG:-19.0-alpine}` inline fallback in each compose file |
+| Integration-test Testcontainers (`BaseIntegrationTest`, `BaseKeycloakIntegrationTest` via `TestContainerImages`) | committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env), parsed in [`server/build.gradle`](https://github.com/ls1intum/thesis-management/blob/develop/server/build.gradle) (or a `POSTGRES_IMAGE_TAG` env var) | the `System.getProperty(…, "19.0-alpine")` fallback in `TestContainerImages` |
+| `.github/workflows/e2e_tests.yml` (CI service container) | `POSTGRES_IMAGE_TAG` repository variable (*Settings → Secrets and variables → Actions → Variables*) — the workflow `services.image` field cannot read `.env` | the `${{ vars.POSTGRES_IMAGE_TAG \|\| '19.0-alpine' }}` fallback in the workflow |
 
 `POSTGRES_IMAGE_TAG` is **not a secret** — the committed `.env` must hold non-secret config only.
 
 **To bump the version**, edit `POSTGRES_IMAGE_TAG` in the committed [`.env`](https://github.com/ls1intum/thesis-management/blob/develop/.env) — that updates
 both Docker Compose and the Gradle tests at once. For full reproducibility also update the matching
 hard-coded fallbacks (the `${POSTGRES_IMAGE_TAG:-…}` in the three compose files, the workflow's
-`|| '18.6-alpine'`, and the default in `TestContainerImages`), then run the major-upgrade procedure
-below for production. The GitHub repository variable is optional and only needed to override CI
+`|| '19.0-alpine'`, and the default in `TestContainerImages`), then run the major-upgrade procedure
+below on Dev and Production. The GitHub repository variable is optional and only needed to override CI
 without a code change.
+
+### How deployments pick the PostgreSQL version
+
+`deploy_docker.yml` copies `docker-compose.prod.yml` to the VM, **regenerates `.env.prod` from scratch
+on every deploy** (it contains no `POSTGRES_IMAGE_TAG`) and runs `up -d --force-recreate`. The tag a
+deployed environment runs is therefore the `${POSTGRES_IMAGE_TAG:-…}` fallback inside
+`docker-compose.prod.yml`. A `POSTGRES_IMAGE_TAG` line added to `.env.prod` by hand only lasts until
+the next deploy.
+
+Consequence: **merging a PostgreSQL major bump to `develop` redeploys Dev with the new image against the
+old data directory, and the database container cannot start.** PostgreSQL refuses to open a data
+directory written by another major version. For that reason the database is upgraded first (below),
+and the release that carries the new tag is merged afterwards, when it is a no-op for the database.
 
 ### Upgrade Procedure
 
 > **Always test the upgrade on the dev environment first before applying to production.**
+
+Recommended order for every environment (Dev first, then Production):
+
+1. Merge nothing else to `develop` (Dev) or approve no Production deploy for the whole window. Any
+   deploy regenerates `.env.prod` and would start the old image tag again.
+2. Run the manual procedure below. The running release talks to the new PostgreSQL without code
+   changes; the PostgreSQL JDBC driver is version-agnostic across majors.
+3. Merge the release that bumps the tag. The deploy recreates the database container from the same
+   image and the same data directory, so nothing changes for the database.
+4. Production only: do this after Dev has run on the new version long enough to trust it.
+
+Expect downtime from step 1 of the procedure until step 10, proportional to the dump size.
 
 All commands must be run as the `thesistrack` user in `/home/thesistrack/` on the VM.
 SSH in, then switch to the correct user:
@@ -115,11 +141,13 @@ docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
 # 4. Back up the old data directory (do NOT delete it yet)
 mv ./postgres_data ./postgres_data_backup
 
-# 5. Point the deployment at the new PostgreSQL image tag. All compose files read
-#    ${POSTGRES_IMAGE_TAG} (see "Canonical PostgreSQL Version" above), so set it once in .env.prod
-#    instead of editing the compose file. Replace 18.6-alpine with the target tag.
-echo 'POSTGRES_IMAGE_TAG=18.6-alpine' >> .env.prod
-#    (or edit the existing POSTGRES_IMAGE_TAG line if it is already present)
+# 5. Point this VM at the new PostgreSQL image tag for the duration of the manual upgrade.
+#    The compose file reads ${POSTGRES_IMAGE_TAG}; set it in .env.prod. Replace 19.0-alpine with the
+#    target tag. This line is wiped by the next deploy, which is fine: the release that follows
+#    carries the same tag as the fallback in docker-compose.prod.yml.
+grep -q '^POSTGRES_IMAGE_TAG=' .env.prod \
+  && sed -i 's/^POSTGRES_IMAGE_TAG=.*/POSTGRES_IMAGE_TAG=19.0-alpine/' .env.prod \
+  || echo 'POSTGRES_IMAGE_TAG=19.0-alpine' >> .env.prod
 
 # 6. Start only the database service
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d db
@@ -146,21 +174,29 @@ rm -rf ./postgres_data_backup thesis_dump.dump
 
 ### Rollback
 
-If the upgrade fails, restore the previous version:
+If the upgrade fails, restore the previous version. The old data directory is untouched until step 12,
+so this is a file move, not a restore:
 
 ```bash
 docker compose -f docker-compose.prod.yml --env-file=.env.prod down db
-rm -rf ./postgres_data
+# Keep the failed attempt for inspection instead of deleting it
+mv ./postgres_data ./postgres_data_failed
 mv ./postgres_data_backup ./postgres_data
-# Revert docker-compose.prod.yml changes (PG image tag and PGDATA override)
+# Point back at the previous image tag (replace with the version you upgraded from)
+sed -i 's/^POSTGRES_IMAGE_TAG=.*/POSTGRES_IMAGE_TAG=18.6-alpine/' .env.prod
 docker compose -f docker-compose.prod.yml --env-file=.env.prod up -d
 ```
 
+Writes made after the upgrade are lost on rollback, because the old directory only contains data up
+to step 3. If the release carrying the new tag has already been deployed, also revert that commit;
+otherwise the next deploy starts the new image against the old data directory again.
+
 ### References
 
-- [PostgreSQL 18 Upgrading Guide](https://www.postgresql.org/docs/18/upgrading.html)
-- [pg_dump Documentation](https://www.postgresql.org/docs/18/app-pgdump.html)
-- [pg_restore Documentation](https://www.postgresql.org/docs/18/app-pg-restore.html)
+- [PostgreSQL 19 Upgrading Guide](https://www.postgresql.org/docs/19/upgrading.html)
+- [PostgreSQL 19 Release Notes](https://www.postgresql.org/docs/19/release-19.html)
+- [pg_dump Documentation](https://www.postgresql.org/docs/19/app-pgdump.html)
+- [pg_restore Documentation](https://www.postgresql.org/docs/19/app-pgrestore.html)
 - [PGDATA path change (docker-library/postgres#1259)](https://github.com/docker-library/postgres/pull/1259)
 
 ## 🗺️ Database Schema

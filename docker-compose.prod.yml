@@ -142,7 +142,7 @@ services:
       - thesis-management-network
 
   db:
-    image: "postgres:${POSTGRES_IMAGE_TAG:-18.6-alpine}"
+    image: "postgres:${POSTGRES_IMAGE_TAG:-19.0-alpine}"
     container_name: thesis-management-db
     environment:
       - POSTGRES_USER=${SPRING_DATASOURCE_USERNAME}

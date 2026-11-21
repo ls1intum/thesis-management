@@ -31,7 +31,7 @@
 
 services:
   db:
-    image: 'postgres:${POSTGRES_IMAGE_TAG:-18.6-alpine}'
+    image: 'postgres:${POSTGRES_IMAGE_TAG:-19.0-alpine}'
     container_name: thesis-management-showcase-db
     environment:
       POSTGRES_USER: thesis-management-postgres
