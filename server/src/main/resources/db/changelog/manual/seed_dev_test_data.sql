@@ -2248,7 +2248,7 @@ WHERE application_id IN (
 INSERT INTO schools (school_id, name, abbreviation, website_url, thesis_portal_url)
 VALUES
     ('00000000-0000-4000-d100-000000000001'::UUID, 'TUM School of Computation, Information and Technology', 'CIT',
-     'https://www.cit.tum.de/en/cit/home/', 'https://portal.cit.tum.de/'),
+     'https://www.cit.tum.de/en/cit/home/', 'https://koinon.tum.de/'),
     ('00000000-0000-4000-d100-000000000002'::UUID, 'TUM School of Management', 'MGT',
      'https://www.mgt.tum.de/', 'https://portal.mgt.tum.de/')
 ON CONFLICT DO NOTHING;

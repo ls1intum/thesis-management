@@ -46,7 +46,7 @@ export const GLOBAL_CONFIG: IGlobalConfig = {
 
   chair_name: getEnvironmentVariable('CHAIR_NAME') ?? 'ThesisManagement',
   chair_url: getEnvironmentVariable('CHAIR_URL') ?? window.origin,
-  thesis_portal_url: getEnvironmentVariable('THESIS_PORTAL_URL') ?? 'https://portal.cit.tum.de/',
+  thesis_portal_url: getEnvironmentVariable('THESIS_PORTAL_URL') ?? 'https://koinon.tum.de/',
 
   environment: parseEnvironment(getEnvironmentVariable('ENVIRONMENT')),
 

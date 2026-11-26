@@ -68,7 +68,7 @@ class ReferenceDataPresetLoaderTest extends BaseIntegrationTest {
 		assertThat(preset.schools()).allSatisfy(school -> assertThat(school.departments()).isNotEmpty());
 		assertThat(preset.schools()).filteredOn(school -> school.thesisPortalUrl() != null)
 				.extracting(ReferenceDataPresetLoader.PresetSchool::thesisPortalUrl)
-				.contains("https://portal.cit.tum.de/", "https://portal.mgt.tum.de/", "https://portal.mh.tum.de/");
+				.contains("https://koinon.tum.de/", "https://portal.mgt.tum.de/", "https://portal.mh.tum.de/");
 		assertThat(preset.studyPrograms()).extracting(ReferenceDataPresetLoader.PresetStudyProgram::key)
 				.doesNotHaveDuplicates()
 				.contains("COMPUTER_SCIENCE", "GAMES_ENGINEERING", "INFORMATION_SYSTEMS", "MANAGEMENT_AND_TECHNOLOGY", "OTHER");

@@ -3,12 +3,12 @@ import { authStatePath, navigateTo, navigateToThesisConfig } from '../helpers'
 
 // Dedicated seed theses (not shared with other specs, this spec changes the study program of one):
 // thesis 30 (student5, Management and Technology -> School of Management, portal.mgt.tum.de),
-// thesis 31 (student3, Games Engineering -> CIT, portal.cit.tum.de).
+// thesis 31 (student3, Games Engineering -> CIT, koinon.tum.de).
 const THESIS_MGT = '00000000-0000-4000-d000-000000000030'
 const THESIS_CIT = '00000000-0000-4000-d000-000000000031'
 
 const MGT_PORTAL = 'https://portal.mgt.tum.de/'
-const CIT_PORTAL = 'https://portal.cit.tum.de/'
+const CIT_PORTAL = 'https://koinon.tum.de/'
 
 // The supervisor test changes the study program of THESIS_CIT, which the student test reads. The config
 // enables fullyParallel, so run the tests of this file one after another.
