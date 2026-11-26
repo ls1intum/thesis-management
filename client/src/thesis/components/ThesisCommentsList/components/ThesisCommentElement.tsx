@@ -1,7 +1,7 @@
 import { Group, Stack, Text } from '@mantine/core'
 import type { IThesisComment } from '@/thesis/requests/responses/thesis'
 import { CustomAvatar } from '@/core/components/CustomAvatar/CustomAvatar'
-import { formatDate } from '@/core/utils/format'
+import { formatDateTime } from '@/core/utils/format'
 import FileElement from '@/core/components/FileElement/FileElement'
 import { AuthenticatedFilePreviewButton } from '@/core/components/AuthenticatedFilePreviewButton/AuthenticatedFilePreviewButton'
 import { AuthenticatedFileDownloadButton } from '@/core/components/AuthenticatedFileDownloadButton/AuthenticatedFileDownloadButton'
@@ -68,7 +68,7 @@ const ThesisCommentElement = ({ comment, thesisId, deleteComment }: IThesisComme
           <div>
             <Text size='sm'> {`${comment.createdBy.firstName} ${comment.createdBy.lastName}`}</Text>
             <Text size='xs' c='dimmed'>
-              {formatDate(comment.createdAt, { withTime: true })}
+              {formatDateTime(comment.createdAt)}
             </Text>
           </div>
         </Group>

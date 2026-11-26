@@ -1,7 +1,7 @@
 import { Badge, Group, Stack, Text, Paper } from '@mantine/core'
 import type { IApplication } from '@/core/application/requests/responses/application'
 import { ApplicationStateColor } from '@/core/config/colors'
-import { formatApplicationState, formatDate } from '@/core/utils/format'
+import { formatApplicationState, formatDateTime } from '@/core/utils/format'
 import React from 'react'
 import { useHighlightedBackgroundColor } from '@/core/hooks/theme'
 
@@ -39,7 +39,7 @@ const ApplicationListItem = (props: IApplicationListItemProps) => {
             Topic: {application.topic.title}
           </Text>
         )}
-        <Text size='sm'>Submission Date: {formatDate(application.createdAt)}</Text>
+        <Text size='sm'>Submission Date: {formatDateTime(application.createdAt)}</Text>
       </Stack>
     </Paper>
   )

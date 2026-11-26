@@ -8,7 +8,7 @@ import type {
   IThesisPresentation,
 } from '@/thesis/requests/responses/thesis'
 import { isPublishedPresentation } from '@/thesis/requests/responses/thesis'
-import { formatDate, formatPresentationType } from '@/core/utils/format'
+import { formatDateTime, formatPresentationType } from '@/core/utils/format'
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import { Anchor, Badge, Button, Center, Group, Stack, Text, Tooltip } from '@mantine/core'
 import AvatarUserList from '@/core/components/AvatarUserList/AvatarUserList'
@@ -168,7 +168,7 @@ const PresentationsTable = <T extends IThesisPresentation | IPublishedPresentati
       title: 'Scheduled At',
       width: 160,
       ellipsis: true,
-      render: (presentation) => formatDate(presentation.scheduledAt),
+      render: (presentation) => formatDateTime(presentation.scheduledAt),
     },
     actions: {
       accessor: 'presentationId',

@@ -1,7 +1,12 @@
 import { useThesesContext } from '@/thesis/providers/ThesesProvider/hooks'
 import GanttChart from '@/thesis/components/GanttChart/GanttChart'
 import React, { useMemo, useState } from 'react'
-import { formatDate, formatPresentationType, formatThesisType } from '@/core/utils/format'
+import {
+  formatDate,
+  formatDateTime,
+  formatPresentationType,
+  formatThesisType,
+} from '@/core/utils/format'
 import { ThesisStateColor, ThesisTypeColor } from '@/core/config/colors'
 import ThesisPreviewModal from '@/thesis/components/ThesisPreviewModal/ThesisPreviewModal'
 import { ThesisState } from '@/thesis/requests/responses/thesis'
@@ -182,7 +187,7 @@ const ThesesGanttChart = () => {
               {presentation && (
                 <Text fw='bold' fz='sm'>
                   {formatPresentationType(presentation.type)} Presentation scheduled at{' '}
-                  {formatDate(presentation.scheduledAt)}
+                  {formatDateTime(presentation.scheduledAt)}
                 </Text>
               )}
               <LabeledItem label='Title' value={thesis.title} />

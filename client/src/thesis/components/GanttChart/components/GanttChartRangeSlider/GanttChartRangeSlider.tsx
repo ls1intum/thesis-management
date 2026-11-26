@@ -15,7 +15,7 @@ const GanttChartRangeSlider = () => {
         step={3600 * 24 * 1000}
         value={filteredRange}
         onChange={setRange}
-        label={(value) => formatDate(new Date(value), { withTime: false })}
+        label={(value) => formatDate(new Date(value))}
       />
     </Group>
   )

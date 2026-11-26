@@ -17,7 +17,7 @@ import ThesisCommentsForm from '@/thesis/components/ThesisCommentsForm/ThesisCom
 import ThesisCommentsProvider from '@/thesis/providers/ThesisCommentsProvider/ThesisCommentsProvider'
 import ThesisCommentsList from '@/thesis/components/ThesisCommentsList/ThesisCommentsList'
 import { ApiError, getApiResponseErrorMessage } from '@/core/requests/handler'
-import { formatDate, formatThesisFilename } from '@/core/utils/format'
+import { formatDateTime, formatThesisFilename } from '@/core/utils/format'
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import { UploadFileButton } from '@/core/components/UploadFileButton/UploadFileButton'
 import { AuthenticatedFilePreview } from '@/core/components/AuthenticatedFilePreview/AuthenticatedFilePreview'
@@ -191,7 +191,7 @@ const ThesisWritingSection = () => {
                                 </Text>
                               </Table.Td>
                               <Table.Td>
-                                <Text>{formatDate(customFiles[key]?.uploadedAt)}</Text>
+                                <Text>{formatDateTime(customFiles[key]?.uploadedAt)}</Text>
                               </Table.Td>
                               <Table.Td>
                                 <Center>
