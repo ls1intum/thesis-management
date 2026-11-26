@@ -86,6 +86,7 @@ Concretely:
 2. The SPA sends that token **once**, to `POST /v2/auth/session`. The Spring Boot server validates it via the realm's `jwk-set-uri` (configured in `application.yml`; this resource server only guards that one endpoint), syncs the profile from the token's claims and creates a Thesis Management session. All other calls are authenticated by the session cookie, so Keycloak is not involved in them and the application keeps working for logged-in users while Keycloak is unavailable (see [Application-owned sessions](#application-owned-sessions)).
 3. When the Spring Boot server needs to query Keycloak as an admin (e.g. "search users by name to add to a research group"), it does **not** reuse the user's token. Instead, `AccessManagementService.getAuthenticationHeaders` performs a Client Credentials grant against `thesis-management-service-client` using its secret (`KEYCLOAK_SERVICE_CLIENT_SECRET`), caches the resulting access token, and uses it as a Bearer credential against `/admin/realms/{realm}/...`.
 4. The service client must have the `view-users` / `query-users` role on the `realm-management` client to perform these lookups (already configured in the imported realm).
+5. Since Keycloak 26.8.2, the Admin REST API also requires the token to be issued for it: the service client must have the built-in `kc-admin-api` client scope assigned, otherwise the token is rejected with `401 Unauthorized` (for example, searching users in the research group administration returns no results). The imported realm JSON already assigns the scope. Realms that were set up earlier or by hand need the manual step described under [Existing realms](#existing-realms-and-the-kc-admin-api-scope).
 
 > **Authorization, not authentication.** Neither client is the source of truth for application roles. Spring Security authorities are loaded from the `user_groups` database table on every request (`UserAuthorities`, called by `UserSessionAuthenticationFilter`). The Keycloak realm roles (`admin`, `advisor`, `group-admin`, `supervisor`, `student`) are only meaningful for the local dev seed and the imported realm JSON — production deployments may use a completely different role schema in Keycloak. See the [Authorization Architecture](#authorization-architecture-db-as-single-source-of-truth) section below.
 
@@ -113,6 +114,7 @@ The realm JSON is the simplest path. If you need to bootstrap a production realm
    - Capability config: **Client authentication** **on** (= confidential), **Service accounts** ✓, **Standard flow** ✗ (not needed; the realm JSON has it on for historical reasons but the Spring Boot server only uses Client Credentials).
    - Credentials tab → copy the generated **Client secret** into `KEYCLOAK_SERVICE_CLIENT_SECRET`.
    - Service accounts roles → assign these roles from the `realm-management` client: `view-users`, `query-users`. (Optional: `view-clients` for richer error messages.)
+   - Client scopes tab → *Add client scope* → select `kc-admin-api` → add it as **Default**. Without it, Keycloak 26.8.2 and later reject the service client's tokens at the Admin REST API with `401 Unauthorized`.
 
 4. **Create realm-level / client-level roles**
    The application reads roles only from the database, but the dev seed and any "promote a user" flow against a fresh Keycloak still expect these roles to exist on `thesis-management-app`:
@@ -126,9 +128,22 @@ The realm JSON is the simplest path. If you need to bootstrap a production realm
 
 7. **Verify**
    - The realm's discovery document should be reachable: `curl https://<keycloak-host>/realms/thesis-management/.well-known/openid-configuration`.
-   - Client Credentials grant should work: `curl -d "grant_type=client_credentials&client_id=thesis-management-service-client&client_secret=<secret>" https://<keycloak-host>/realms/thesis-management/protocol/openid-connect/token`.
+   - Client Credentials grant should work: `curl -d "grant_type=client_credentials&client_id=thesis-management-service-client&client_secret=<secret>" https://<keycloak-host>/realms/thesis-management/protocol/openid-connect/token`. The returned access token must contain `kc-admin-api` in its `scope` claim and the realm's Admin API URL (`https://<keycloak-host>/admin/realms/thesis-management`) in `aud`.
+   - The Admin API should accept that token: `curl -H "Authorization: Bearer <access_token>" "https://<keycloak-host>/admin/realms/thesis-management/users?search=test"` returns `200` (a `401` means the `kc-admin-api` scope is missing).
 
 > **All Keycloak users must have an email address.** Every notification, application confirmation, proposal feedback, presentation invitation, and final-grade email is sent to the email claim from the JWT (synced into the `users.email` column on first login). A user without an email can sign in and use the UI, but they will silently miss every transactional email — including being added as a BCC recipient when they are a research group head. When provisioning users in a production Keycloak realm, make the email attribute mandatory and verified.
+
+### Existing realms and the `kc-admin-api` scope
+
+Keycloak 26.8.2 (see "Admin REST API now enforces an audience check" in the [Keycloak upgrading guide](https://www.keycloak.org/docs/latest/upgrading/index.html)) only accepts Admin REST API tokens that carry the `kc-admin-api` scope and the realm's Admin API URL as audience. On upgrade Keycloak creates the `kc-admin-api` client scope in every realm and assigns it to `admin-cli` and `security-admin-console`, but **not** to your own clients. A realm that existed before the upgrade (or was imported from an older realm JSON) therefore needs one manual change, otherwise the server's user search against Keycloak fails with `401`:
+
+1. In the Keycloak admin console, open the realm → *Clients* → `thesis-management-service-client` → *Client scopes* tab.
+2. *Add client scope* → select `kc-admin-api` → *Add* → **Default**.
+3. Verify with the two `curl` calls from the previous section.
+
+The same can be done through the Admin REST API with an admin token: `PUT /admin/realms/thesis-management/clients/<client-uuid>/default-client-scopes/<kc-admin-api-scope-uuid>`. The scope UUID is listed by `GET /admin/realms/thesis-management/client-scopes`.
+
+Keycloak instances started with `--spi-admin--audience-check-enabled=false` skip the audience check and do not need the scope. Keycloak strongly discourages this because it removes a layer of defense against token misuse, so prefer assigning the scope. The realm JSON used for local development and the E2E tests does not use the opt-out.
 
 ## PostgreSQL Database
 
