@@ -1,6 +1,6 @@
 services:
   reverse-proxy:
-    image: traefik:v3.7
+    image: traefik:v3.8.0
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
@@ -160,7 +160,7 @@ services:
       - thesis-management-network
 
   postfix:
-    image: ghcr.io/ls1admin/postfix:latest
+    image: ghcr.io/ls1admin/postfix:latest@sha256:c7d7f2dab71992b7a137e787573258a51ea7936f4b4a1786d0de0254acdde302
     container_name: thesis-management-postfix
     volumes:
       - ./postfix-config:/config
