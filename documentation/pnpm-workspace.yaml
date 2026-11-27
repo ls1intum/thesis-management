@@ -27,7 +27,7 @@ overrides:
   # GHSA-4mjr-xmp4-gh2g / GHSA-x5fp-wj9c-mxmx (qs, via express)
   qs@<6.16.0: 6.17.1
   # body-parser DoS via trailing bytes (CVE-2026-111181, via express)
-  body-parser@<1.20.9: 1.20.9
+  body-parser@<1.20.9: 2.4.0
   # compression memory-leak DoS on premature close (GHSA-vc2v-76pw-4v95)
   compression@<1.8.2: 1.8.2
   # follow-redirects sensitive-header leaks on cross-origin redirects
