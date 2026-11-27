@@ -43,6 +43,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -212,6 +213,17 @@ class MailDeliveryServiceTest {
 		clearInvocations(mailSender);
 		firstRetry.run();
 		verify(mailSender, never()).send(any(MimeMessage.class));
+	}
+
+	@Test
+	void schedulerAlreadyShutDown_FailureIsRethrownAndNothingStaysQueued() {
+		doThrow(connectionFailure()).when(mailSender).send(message);
+		when(scheduler.schedule(any(Runnable.class), anyLong(), any(TimeUnit.class))).thenThrow(new RejectedExecutionException("shut down"));
+		MailDeliveryService service = newService(DELAYS, 10);
+
+		assertThatThrownBy(() -> service.send(message, "Subject")).isInstanceOf(MailSendException.class);
+
+		assertThat(service.pendingCount()).isZero();
 	}
 
 	@Test

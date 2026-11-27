@@ -32,6 +32,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -122,8 +123,11 @@ public class MailDeliveryService {
 				throw exception;
 			}
 
+			if (!enqueue(new PendingMail(message, subject))) {
+				throw exception;
+			}
+
 			log.warn("Failed to send email '{}' temporarily, queued for retry: {}", subject, exception.getMessage());
-			enqueue(new PendingMail(message, subject));
 			return Status.QUEUED;
 		}
 	}
@@ -150,7 +154,8 @@ public class MailDeliveryService {
 		}
 	}
 
-	private void enqueue(PendingMail mail) {
+	/** Returns false if the mail could not be queued because the scheduler is already shut down. */
+	private boolean enqueue(PendingMail mail) {
 		synchronized (pending) {
 			if (pending.size() >= queueCapacity) {
 				PendingMail oldest = pending.pollFirst();
@@ -160,7 +165,14 @@ public class MailDeliveryService {
 			}
 
 			pending.addLast(mail);
-			schedule(mail);
+			try {
+				schedule(mail);
+			} catch (RejectedExecutionException rejected) {
+				pending.remove(mail);
+				log.warn("Email '{}' could not be queued for retry, the mail retry is stopped", mail.subject);
+				return false;
+			}
+			return true;
 		}
 	}
 
@@ -191,7 +203,11 @@ public class MailDeliveryService {
 				log.warn("Failed to send email '{}' on retry {}, retrying in {}: {}", mail.subject, mail.retries, delays.get(mail.retries), exception.getMessage());
 				synchronized (pending) {
 					if (!mail.dropped) {
-						schedule(mail);
+						try {
+							schedule(mail);
+						} catch (RejectedExecutionException rejected) {
+							pending.remove(mail);
+						}
 					}
 				}
 			}
