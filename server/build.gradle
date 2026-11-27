@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.12.3"
+version = "4.12.4"
 description = "Thesis Management"
 
 // The explicit Tomcat and Netty version overrides that previously pulled security
