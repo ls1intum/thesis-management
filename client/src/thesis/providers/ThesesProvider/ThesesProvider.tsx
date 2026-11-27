@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type {
   IThesesContext,
   IThesesFilters,

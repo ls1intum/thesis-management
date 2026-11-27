@@ -1,7 +1,7 @@
 import type { ITopic, ITopicOverview } from '@/core/topic/requests/responses/topic'
 import { TopicState, toTopicOverview } from '@/core/topic/requests/responses/topic'
 import { X } from '@phosphor-icons/react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTopicsContext } from '@/core/topic/providers/TopicsProvider/hooks'
 import { doRequest } from '@/core/requests/request'
 import { showSimpleError, showSimpleSuccess } from '@/core/utils/notification'

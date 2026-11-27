@@ -1,5 +1,5 @@
 import PresentationsTable from '@/presentation/components/PresentationsTable/PresentationsTable'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { PaginationResponse } from '@/core/requests/responses/pagination'
 import type { IPublishedPresentation } from '@/thesis/requests/responses/thesis'
 import { doRequest } from '@/core/requests/request'

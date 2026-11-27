@@ -2,7 +2,6 @@ import { Badge, Group, Stack, Text, Paper } from '@mantine/core'
 import type { IApplication } from '@/core/application/requests/responses/application'
 import { ApplicationStateColor } from '@/core/config/colors'
 import { formatApplicationState, formatDate } from '@/core/utils/format'
-import React from 'react'
 import { useHighlightedBackgroundColor } from '@/core/hooks/theme'
 
 interface IApplicationListItemProps {

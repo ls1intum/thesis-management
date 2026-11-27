@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { IInterviewProcessContext } from '@/interview/providers/InterviewProcessProvider/context'
 import { InterviewProcessContext } from '@/interview/providers/InterviewProcessProvider/context'
 import { doRequest } from '@/core/requests/request'

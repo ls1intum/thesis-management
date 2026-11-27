@@ -1,4 +1,3 @@
-import React from 'react'
 import type { IApplication } from '@/core/application/requests/responses/application'
 import type { DataTableColumn } from 'mantine-datatable'
 import { DataTable } from 'mantine-datatable'

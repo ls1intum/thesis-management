@@ -1,7 +1,6 @@
 import type { DataTableColumn } from 'mantine-datatable'
 import { DataTable } from 'mantine-datatable'
 import { formatDate, formatThesisType } from '@/core/utils/format'
-import React from 'react'
 import { useThesesContext } from '@/thesis/providers/ThesesProvider/hooks'
 import type { IThesesSort } from '@/thesis/providers/ThesesProvider/context'
 import { useNavigate } from 'react-router'

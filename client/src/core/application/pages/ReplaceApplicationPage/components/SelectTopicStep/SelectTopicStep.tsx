@@ -1,7 +1,7 @@
 import type { ITopic } from '@/core/topic/requests/responses/topic'
 import { Alert, Stack } from '@mantine/core'
 import { InfoIcon } from '@phosphor-icons/react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TOPIC_DISCLAIMER_TEXT } from '@/core/topic/components/TopicDisclaimerAlert/TopicDisclaimerAlert'
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import { useSearchParams } from 'react-router'

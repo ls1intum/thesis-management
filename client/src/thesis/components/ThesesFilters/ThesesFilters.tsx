@@ -1,4 +1,3 @@
-import React from 'react'
 import { Grid, MultiSelect, Select, TextInput } from '@mantine/core'
 import { useThesesContext } from '@/thesis/providers/ThesesProvider/hooks'
 import { ThesisState } from '@/thesis/requests/responses/thesis'

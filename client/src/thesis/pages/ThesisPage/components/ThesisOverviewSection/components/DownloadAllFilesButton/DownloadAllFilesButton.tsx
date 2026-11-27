@@ -1,5 +1,5 @@
 import { Button } from '@mantine/core'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useLoadedThesisContext } from '@/thesis/providers/ThesisProvider/hooks'
 import { formatThesisFilename } from '@/core/utils/format'
 import { GLOBAL_CONFIG } from '@/core/config/global'

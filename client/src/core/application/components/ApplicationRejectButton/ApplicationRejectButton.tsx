@@ -3,7 +3,7 @@ import type { IApplication } from '@/core/application/requests/responses/applica
 import { ApplicationState } from '@/core/application/requests/responses/application'
 import { showSimpleError, showSimpleSuccess } from '@/core/utils/notification'
 import { Button, Checkbox, Modal, Radio, Stack, Text, type ButtonProps } from '@mantine/core'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useApplicationsContextUpdater } from '@/core/application/providers/ApplicationsProvider/hooks'
 import { getApiResponseErrorMessage } from '@/core/requests/handler'
 import { isNotEmpty, useForm } from '@mantine/form'

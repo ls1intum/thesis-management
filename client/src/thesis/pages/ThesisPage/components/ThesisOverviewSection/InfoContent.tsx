@@ -1,5 +1,5 @@
 import type { IThesis } from '@/thesis/requests/responses/thesis'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button, Flex, Grid, Group, Stack, TextInput } from '@mantine/core'
 import { Link } from 'react-router'
 import DocumentEditor from '@/core/components/DocumentEditor/DocumentEditor'

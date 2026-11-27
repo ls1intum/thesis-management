@@ -3,7 +3,6 @@ import { Grid, Stack, Text } from '@mantine/core'
 import LabeledItem from '@/core/components/LabeledItem/LabeledItem'
 import { formatDate, formatThesisType, pluralize } from '@/core/utils/format'
 import DocumentEditor from '@/core/components/DocumentEditor/DocumentEditor'
-import React from 'react'
 import AvatarUserList from '@/core/components/AvatarUserList/AvatarUserList'
 
 interface ITopicDataProps {

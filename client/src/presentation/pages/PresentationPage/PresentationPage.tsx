@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { IPublishedPresentation } from '@/thesis/requests/responses/thesis'
 import { doRequest } from '@/core/requests/request'
 import ThesisData from '@/thesis/components/ThesisData/ThesisData'

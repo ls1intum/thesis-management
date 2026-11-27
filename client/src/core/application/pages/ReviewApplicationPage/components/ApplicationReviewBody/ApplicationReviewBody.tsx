@@ -1,7 +1,7 @@
 import ApplicationData from '@/core/application/components/ApplicationData/ApplicationData'
 import ApplicationReviewForm from '@/core/application/components/ApplicationReviewForm/ApplicationReviewForm'
 import { Divider, Group, Stack } from '@mantine/core'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import type { IApplication } from '@/core/application/requests/responses/application'
 import ApplicationRejectButton from '@/core/application/components/ApplicationRejectButton/ApplicationRejectButton'
 import ApplicationDeleteButton from '@/core/application/components/ApplicationDeleteButton/ApplicationDeleteButton'

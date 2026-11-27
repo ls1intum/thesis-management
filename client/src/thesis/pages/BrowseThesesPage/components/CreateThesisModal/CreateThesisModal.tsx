@@ -1,7 +1,7 @@
 import { Button, Modal, Select, Stack, TextInput } from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { GLOBAL_CONFIG } from '@/core/config/global'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { UserMultiSelect } from '@/core/user/components/UserMultiSelect/UserMultiSelect'
 import { StudentMultiSelect } from '@/core/user/components/StudentMultiSelect/StudentMultiSelect'
 import { useNavigate } from 'react-router'

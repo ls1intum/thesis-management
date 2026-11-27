@@ -1,5 +1,4 @@
 import { Badge, Group, Tooltip } from '@mantine/core'
-import React from 'react'
 
 import type { ThesisFeedbackCategory } from '@/thesis/requests/responses/thesis'
 import { CATEGORY_DESCRIPTION, humanizeFeedbackCategory } from '@/thesis/utils/feedbackLabels'
