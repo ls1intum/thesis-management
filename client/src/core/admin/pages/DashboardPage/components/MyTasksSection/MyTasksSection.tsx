@@ -1,5 +1,5 @@
 import { ActionIcon, Center, Group, Skeleton, Stack, Title } from '@mantine/core'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { doRequest } from '@/core/requests/request'
 import { showSimpleError } from '@/core/utils/notification'
 import { getApiResponseErrorMessage } from '@/core/requests/handler'

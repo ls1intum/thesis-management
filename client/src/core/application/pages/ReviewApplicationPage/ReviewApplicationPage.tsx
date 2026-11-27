@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import type { IApplication } from '@/core/application/requests/responses/application'
 import { ApplicationState } from '@/core/application/requests/responses/application'

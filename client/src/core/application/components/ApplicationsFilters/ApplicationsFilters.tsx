@@ -2,7 +2,6 @@ import { Grid, MultiSelect, Select, Stack, Switch, TextInput } from '@mantine/co
 import { MagnifyingGlass } from '@phosphor-icons/react'
 import { ApplicationState } from '@/core/application/requests/responses/application'
 import { useApplicationsContext } from '@/core/application/providers/ApplicationsProvider/hooks'
-import React from 'react'
 import { formatApplicationState, formatThesisType } from '@/core/utils/format'
 import { GLOBAL_CONFIG } from '@/core/config/global'
 

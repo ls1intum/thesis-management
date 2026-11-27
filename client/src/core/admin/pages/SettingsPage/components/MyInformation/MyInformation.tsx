@@ -1,6 +1,5 @@
 import { showSimpleSuccess } from '@/core/utils/notification'
 import UserInformationForm from '@/core/user/components/UserInformationForm/UserInformationForm'
-import React from 'react'
 import { usePageTitle } from '@/core/hooks/theme'
 
 const MyInformation = () => {

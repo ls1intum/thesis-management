@@ -1,4 +1,3 @@
-import React from 'react'
 import ThesesFilters from '@/thesis/components/ThesesFilters/ThesesFilters'
 import ThesesProvider from '@/thesis/providers/ThesesProvider/ThesesProvider'
 import { usePageTitle } from '@/core/hooks/theme'

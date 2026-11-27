@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button, createTheme, MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import '@/../public/favicon.svg'

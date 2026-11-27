@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Alert, Button, Group, Loader, Modal, Stack, Text, TextInput, Title } from '@mantine/core'
 import { Warning } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router'

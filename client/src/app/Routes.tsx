@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react'
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import AuthenticatedArea from '@/app/layout/AuthenticatedArea/AuthenticatedArea'
 import PageLoader from '@/core/components/PageLoader/PageLoader'

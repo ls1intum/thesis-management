@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import type { DataTableColumn } from 'mantine-datatable'
 import { DataTable } from 'mantine-datatable'
 import type {

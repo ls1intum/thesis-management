@@ -3,7 +3,7 @@ import { ApplicationState } from '@/core/application/requests/responses/applicat
 import { useApplicationsContextUpdater } from '@/core/application/providers/ApplicationsProvider/hooks'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { GLOBAL_CONFIG } from '@/core/config/global'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useDebouncedValue } from '@mantine/hooks'
 import { doRequest } from '@/core/requests/request'
 import {

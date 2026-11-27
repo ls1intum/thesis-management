@@ -1,6 +1,6 @@
 import { Button, Group, Stack, Title } from '@mantine/core'
 import { usePageTitle } from '@/core/hooks/theme'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useManagementAccess } from '@/core/hooks/authentication'
 import ThesesProvider from '@/thesis/providers/ThesesProvider/ThesesProvider'
 import { Plus } from '@phosphor-icons/react'

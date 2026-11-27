@@ -1,7 +1,6 @@
 import type { IApplication } from '@/core/application/requests/responses/application'
 import { Stack, Group, Grid, Title, Badge, Accordion } from '@mantine/core'
 import type { ReactNode } from 'react'
-import React from 'react'
 import { GLOBAL_CONFIG } from '@/core/config/global'
 import { AVAILABLE_COUNTRIES } from '@/core/config/countries'
 import {

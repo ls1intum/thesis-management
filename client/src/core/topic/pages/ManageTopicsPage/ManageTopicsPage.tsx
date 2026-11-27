@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { usePageTitle } from '@/core/hooks/theme'
 import { Button, Group, Stack, Title } from '@mantine/core'
 import TopicsProvider from '@/core/topic/providers/TopicsProvider/TopicsProvider'

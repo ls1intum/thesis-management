@@ -1,4 +1,3 @@
-import React from 'react'
 import { usePageTitle } from '@/core/hooks/theme'
 import { Link, useNavigate, useParams } from 'react-router'
 import { useTopic } from '@/core/hooks/fetcher'

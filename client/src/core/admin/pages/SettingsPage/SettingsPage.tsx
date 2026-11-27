@@ -1,4 +1,3 @@
-import React from 'react'
 import { Divider, Space, Tabs } from '@mantine/core'
 import { EnvelopeOpen, User, UserMinus } from '@phosphor-icons/react'
 import MyInformation from '@/core/admin/pages/SettingsPage/components/MyInformation/MyInformation'

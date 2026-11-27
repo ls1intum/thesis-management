@@ -1,5 +1,4 @@
 import type { Dispatch, SetStateAction } from 'react'
-import React from 'react'
 import { Switch, type BoxProps } from '@mantine/core'
 import { useNotificationSetting } from '@/core/hooks/notification'
 

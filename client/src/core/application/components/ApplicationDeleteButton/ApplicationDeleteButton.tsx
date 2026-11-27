@@ -3,7 +3,7 @@ import type { IApplication } from '@/core/application/requests/responses/applica
 import { ApplicationState } from '@/core/application/requests/responses/application'
 import { showSimpleError, showSimpleSuccess } from '@/core/utils/notification'
 import { Button, Modal, Stack, Text, Tooltip, type ButtonProps } from '@mantine/core'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { getApiResponseErrorMessage } from '@/core/requests/handler'
 import { useAuthenticationContext } from '@/core/hooks/authentication'
 

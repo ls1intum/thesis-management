@@ -1,6 +1,6 @@
 import { DataTable } from 'mantine-datatable'
 import { ActionIcon, Anchor, Center, Group, Modal, Stack, Text, Tooltip } from '@mantine/core'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { PaginationResponse } from '@/core/requests/responses/pagination'
 import type { IPublishedThesis } from '@/thesis/requests/responses/thesis'
 import { doRequest } from '@/core/requests/request'

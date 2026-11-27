@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { doRequest } from '@/core/requests/request'
 import { showSimpleError } from '@/core/utils/notification'
 import type { ITopicOverview } from '@/core/topic/requests/responses/topic'

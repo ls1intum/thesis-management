@@ -1,6 +1,6 @@
 import { useThesesContext } from '@/thesis/providers/ThesesProvider/hooks'
 import GanttChart from '@/thesis/components/GanttChart/GanttChart'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { formatDate, formatPresentationType, formatThesisType } from '@/core/utils/format'
 import { ThesisStateColor, ThesisTypeColor } from '@/core/config/colors'
 import ThesisPreviewModal from '@/thesis/components/ThesisPreviewModal/ThesisPreviewModal'

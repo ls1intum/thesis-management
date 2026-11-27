@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { IThesis, IThesisComment } from '@/thesis/requests/responses/thesis'
 import type { IThesisCommentsContext } from '@/thesis/providers/ThesisCommentsProvider/context'
 import { ThesisCommentsContext } from '@/thesis/providers/ThesisCommentsProvider/context'

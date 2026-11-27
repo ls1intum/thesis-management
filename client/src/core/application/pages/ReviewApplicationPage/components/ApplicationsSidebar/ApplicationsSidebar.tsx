@@ -1,6 +1,6 @@
 import { Center, Pagination, Stack, Text } from '@mantine/core'
 import ApplicationsFilters from '@/core/application/components/ApplicationsFilters/ApplicationsFilters'
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { shouldIgnoreArrowKey } from '@/core/application/pages/ReviewApplicationPage/components/ApplicationsSidebar/keyNavigationFilter'
 import type { IApplication } from '@/core/application/requests/responses/application'
 import { useApplicationsContext } from '@/core/application/providers/ApplicationsProvider/hooks'

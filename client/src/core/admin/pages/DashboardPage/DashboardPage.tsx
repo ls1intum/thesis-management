@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { usePageTitle } from '@/core/hooks/theme'
 import ApplicationsTable from '@/core/application/components/ApplicationsTable/ApplicationsTable'
 import ThesesTable from '@/thesis/components/ThesesTable/ThesesTable'

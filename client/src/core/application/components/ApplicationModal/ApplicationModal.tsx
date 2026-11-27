@@ -1,7 +1,6 @@
 import type { IApplication } from '@/core/application/requests/responses/application'
 import { ApplicationState } from '@/core/application/requests/responses/application'
 import { Button, Divider, Modal, Stack } from '@mantine/core'
-import React from 'react'
 import ApplicationReviewForm from '@/core/application/components/ApplicationReviewForm/ApplicationReviewForm'
 import ApplicationData from '@/core/application/components/ApplicationData/ApplicationData'
 import { Link } from 'react-router'
