@@ -44,17 +44,8 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v7
 
-      - name: Create main.cf and master.cf File
-        env:
-          POSTFIX_MAIN_CF: ${{ vars.POSTFIX_MAIN_CF }}
-          POSTFIX_MASTER_CF: ${{ vars.POSTFIX_MASTER_CF }}
-        run: |
-          printf '%s' "$POSTFIX_MAIN_CF" > main.cf
-          printf '%s' "$POSTFIX_MASTER_CF" > master.cf
-
       # All files are copied in a single SCP call to avoid multiple SSH handshakes
-      # through the bastion host. Files land in the home directory; the postfix
-      # configs are moved to their subdirectory in the next step.
+      # through the bastion host. Files land in the home directory.
       - name: Copy Files to VM Host
         uses: appleboy/scp-action@v1.0.0
         with:
@@ -65,22 +56,8 @@ jobs:
           proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
           proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
           proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
-          source: "docker-compose.prod.yml,main.cf,master.cf"
+          source: "docker-compose.prod.yml"
           target: /home/${{ vars.VM_USERNAME }}
-
-      - name: SSH to VM and Move Postfix Config Files
-        uses: appleboy/ssh-action@v1.2.5
-        with:
-          host: ${{ vars.VM_HOST }}
-          username: ${{ vars.VM_USERNAME }}
-          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          proxy_host: ${{ vars.DEPLOYMENT_GATEWAY_HOST }}
-          proxy_username: ${{ vars.DEPLOYMENT_GATEWAY_USER }}
-          proxy_key: ${{ secrets.DEPLOYMENT_GATEWAY_SSH_KEY }}
-          proxy_port: ${{ vars.DEPLOYMENT_GATEWAY_PORT }}
-          script: |
-            mkdir -p postfix-config
-            mv -f main.cf master.cf postfix-config/
 
       - name: SSH to VM and Create .env.prod
         uses: appleboy/ssh-action@v1.2.5

@@ -11,7 +11,7 @@ You can follow the steps in [deploy_docker.yml](https://github.com/ls1intum/thes
 ## Requirements
 
 1. Setup a production PostgreSQL database
-2. Setup a production Postfix instance for sending mails. Sending mails can be disabled
+2. Provide an SMTP server for sending mails, for example the TUM mail relay. Sending mails can be disabled
 3. Setup a production keycloak instance. Guide for first time setup can be found in [Development Setup](/developer/development-setup)
    - If you use passkeys in production, enable `webAuthnPolicyPasswordlessPasskeysEnabled` on the production realm and align the other `webAuthnPolicyPasswordless*` realm settings with your intended passkey policy.
 
@@ -46,7 +46,7 @@ environment:
   - MAIL_ENABLED=true
   - MAIL_WORKSPACE_URL=
   - MAIL_SENDER=
-  - POSTFIX_HOST=postfix
+  - POSTFIX_HOST=mailrelay.in.tum.de
   - POSTFIX_PORT=25
   - POSTFIX_USERNAME=
   - POSTFIX_PASSWORD=
@@ -119,6 +119,30 @@ There are 2 places that require backups:
 Note: The `/data-exports` directory contains temporary data export ZIP files that auto-delete after 7 days. Backing up this directory is optional.
 
 There is an example script [thesis-management-backup.sh](https://github.com/ls1intum/thesis-management/blob/develop/supporting_scripts/thesis-management-backup.sh) that you can call in a cronjob to create regular backups.
+
+## Email delivery and retry
+
+The server sends emails directly to an SMTP server. The production deployment uses the TUM mail relay `mailrelay.in.tum.de` on port 25 (plain SMTP, no credentials, the relay trusts the address of the VM). The `POSTFIX_*` variable names are historical: they name any SMTP server, and `POSTFIX_USERNAME` and `POSTFIX_PASSWORD` are only needed if the server requires authentication.
+
+Earlier versions ran a local Postfix container in front of the relay, because the application did not retry failed emails. Postfix is no longer used. After upgrading, the old `thesis-management-postfix` container and the `postfix-config` directory on the host can be removed (`docker rm -f thesis-management-postfix`; `docker compose` reports it as an orphan until then).
+
+The first attempt to send an email happens immediately, as part of the request that triggers it. If it fails for a temporary reason (the server is unreachable, a timeout, or an SMTP `4xx` reply), the email is put into a small in-memory queue and a background thread retries it with an increasing delay. If a retry succeeds, the email is delivered late but not lost. Permanent failures (an SMTP `5xx` reply, an invalid address) are logged and not retried. If the server rejects only some recipients of an email permanently while the others are fine (for example one invalid CC address), the rejected recipients are removed from the email and the email is retried for the remaining ones, so a single bad address does not keep the others from receiving it.
+
+| Property | Environment variable | Default | Meaning |
+| -------- | -------------------- | ------- | ------- |
+| `thesis-management.mail.retry.delays` | `MAIL_RETRY_DELAYS` | `1m,5m,15m,30m,1h` | Waiting time before each retry. Five entries mean at most five retries within about two hours. An empty value switches the retry off. |
+| `thesis-management.mail.retry.queue-capacity` | `MAIL_RETRY_QUEUE_CAPACITY` | `1000` | Maximum number of emails waiting for a retry. When the queue is full, the oldest email is dropped and a warning is logged. |
+| `spring.mail.properties.mail.smtp.connectiontimeout` | `MAIL_SMTP_CONNECTION_TIMEOUT` | `10000` | Connection timeout in milliseconds |
+| `spring.mail.properties.mail.smtp.timeout` | `MAIL_SMTP_TIMEOUT` | `30000` | Read timeout in milliseconds |
+| `spring.mail.properties.mail.smtp.writetimeout` | `MAIL_SMTP_WRITE_TIMEOUT` | `30000` | Write timeout in milliseconds |
+
+Limits to be aware of:
+
+- The queue is only kept in memory. Emails that are still waiting when the server stops or restarts are lost; the shutdown log states how many. The retries cover an outage of about two hours, after that the email is dropped with a warning (`Failed to send email '...' after N retries, giving up`).
+- The logs of the retry name the subject of an email and the error message of the mail server (which, like the existing error logs, may mention a rejected address), never the content of the email. (If `MAIL_ENABLED=false` and the log level is DEBUG, the disabled-mail development path logs the full message, as before.)
+- The first attempt still runs inside the request that triggers the email. The timeouts make sure a hanging mail server delays that request for a bounded time instead of blocking it indefinitely.
+- To change these values in the production setup, pass the environment variable through the `environment` list of the `server` service in `docker-compose.prod.yml`.
+- The connection to the TUM relay is not encrypted. Enable `MAIL_STARTTLS_ENABLE` and `MAIL_STARTTLS_REQUIRED` for an SMTP server that offers TLS.
 
 ## Further Configuration
 

@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "de.tum.cit.aet.thesis"
-version = "4.12.3"
+version = "4.12.4"
 description = "Thesis Management"
 
 // The explicit Tomcat and Netty version overrides that previously pulled security
@@ -70,6 +70,8 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-webmvc"
 	implementation "org.springframework.boot:spring-boot-starter-validation"
 	implementation "org.springframework.boot:spring-boot-starter-mail"
+	// SMTP reply codes of failed deliveries (MailDeliveryService); already on the runtime classpath through the mail starter
+	implementation "org.eclipse.angus:angus-mail"
 	implementation "org.springframework.boot:spring-boot-starter-webflux"
 	implementation "org.springframework.boot:spring-boot-starter-security"
 	implementation "org.springframework.boot:spring-boot-starter-security-oauth2-resource-server"
