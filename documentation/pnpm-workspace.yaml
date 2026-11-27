@@ -33,7 +33,7 @@ overrides:
   # follow-redirects sensitive-header leaks on cross-origin redirects
   follow-redirects@<1.16.2: 1.16.3
   # joi quadratic-time email split
-  joi@>=17.1.1 <17.13.9: 17.13.9
+  joi@>=17.1.1 <17.13.9: 18.3.2
   # launch-editor command injection / escaping issues
   launch-editor@<2.14.2: 2.14.2
   # postcss-selector-parser quadratic selector parsing
