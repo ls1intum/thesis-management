@@ -62,13 +62,16 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${SPRING_DATASOURCE_DATABASE}
       - MAIL_ENABLED=true
-      - POSTFIX_HOST=postfix
+      # Mail is sent straight to the TUM mail relay (plain SMTP, no credentials, it trusts the VM address); the
+      # server retries temporary failures itself. The POSTFIX_* names are historical: they now name any SMTP server.
+      - POSTFIX_HOST=mailrelay.in.tum.de
       - POSTFIX_PORT=25
       - UPLOAD_FOLDER=/uploads
       - DEBUG_MODE=false
       # take from docker environment
       - SPRING_DATASOURCE_USERNAME
       - SPRING_DATASOURCE_PASSWORD
+      # optional, only needed if the SMTP server requires authentication (not the case for the TUM relay)
       - POSTFIX_USERNAME
       - POSTFIX_PASSWORD
       - CLIENT_HOST
@@ -155,16 +158,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    restart: unless-stopped
-    networks:
-      - thesis-management-network
-
-  postfix:
-    image: ghcr.io/ls1admin/postfix:latest@sha256:c7d7f2dab71992b7a137e787573258a51ea7936f4b4a1786d0de0254acdde302
-    container_name: thesis-management-postfix
-    volumes:
-      - ./postfix-config:/config
-    hostname: ${APP_HOSTNAME}
     restart: unless-stopped
     networks:
       - thesis-management-network

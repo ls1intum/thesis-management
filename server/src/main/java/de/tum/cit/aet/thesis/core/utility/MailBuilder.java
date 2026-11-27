@@ -24,7 +24,6 @@ import de.tum.cit.aet.thesis.thesis.mailvariables.MailThesisComment;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.context.Context;
 
 import jakarta.activation.DataHandler;
@@ -505,10 +504,10 @@ public class MailBuilder {
 	/**
 	 * Renders and sends the email with all configured recipients, placeholders, and attachments.
 	 *
-	 * @param mailSender the mail sender
+	 * @param mailDelivery the service that delivers the prepared messages and retries temporary failures
 	 * @param uploadService upload service used for stored attachments
 	 */
-	public void send(JavaMailSender mailSender, UploadService uploadService) {
+	public void send(MailDeliveryService mailDelivery, UploadService uploadService) {
 		List<User> toRecipients = new ArrayList<>();
 		List<User> ccRecipients = new ArrayList<>();
 
@@ -548,7 +547,7 @@ public class MailBuilder {
 
 		for (User recipient : toRecipients) {
 			try {
-				MimeMessage message = mailSender.createMimeMessage();
+				MimeMessage message = mailDelivery.createMimeMessage();
 
 				message.setFrom("ThesisManagement <" + config.getSender().getAddress() + ">");
 				message.setSender(config.getSender());
@@ -592,11 +591,7 @@ public class MailBuilder {
 
 				message.setContent(messageContent);
 
-				if (config.isEnabled()) {
-					mailSender.send(message);
-				} else {
-					log.debug("Sending Mail (postfix disabled)\n{}", MailLogger.getTextFromMimeMessage(message));
-				}
+				mailDelivery.send(message, subject);
 			} catch (Exception exception) {
 				log.warn("Failed to send email '{}' to {}", subject, recipient.getUniversityId(), exception);
 			}

@@ -13,6 +13,7 @@ import de.tum.cit.aet.thesis.core.user.entity.User;
 import de.tum.cit.aet.thesis.core.utility.DataFormatter;
 import de.tum.cit.aet.thesis.core.utility.MailBuilder;
 import de.tum.cit.aet.thesis.core.utility.MailConfig;
+import de.tum.cit.aet.thesis.core.utility.MailDeliveryService;
 import de.tum.cit.aet.thesis.interview.entity.InterviewSlot;
 import de.tum.cit.aet.thesis.interview.entity.Interviewee;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility;
@@ -29,7 +30,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
@@ -47,7 +47,7 @@ import java.util.UUID;
 public class MailingService {
 	private static final Logger log = LoggerFactory.getLogger(MailingService.class);
 
-	private final JavaMailSender javaMailSender;
+	private final MailDeliveryService mailDelivery;
 	private final UploadService uploadService;
 	private final MailConfig config;
 	private final EmailTemplateRepository emailTemplateRepository;
@@ -55,21 +55,21 @@ public class MailingService {
 	private static final String NOTIFICATION_NAME_START = "thesis-";
 
 	/**
-	 * Injects the mail sender, upload service, mail configuration, and email template repository.
+	 * Injects the mail delivery service, upload service, mail configuration, and email template repository.
 	 *
-	 * @param javaMailSender the mail sender for sending emails
+	 * @param mailDelivery the service that sends emails and retries temporary failures
 	 * @param uploadService the service for handling file uploads
 	 * @param config the mail configuration
 	 * @param emailTemplateRepository the repository for email templates
 	 */
 	@Autowired
 	public MailingService(
-			JavaMailSender javaMailSender,
+			MailDeliveryService mailDelivery,
 			UploadService uploadService,
 			MailConfig config,
 			EmailTemplateRepository emailTemplateRepository
 	) {
-		this.javaMailSender = javaMailSender;
+		this.mailDelivery = mailDelivery;
 		this.uploadService = uploadService;
 		this.config = config;
 		this.emailTemplateRepository = emailTemplateRepository;
@@ -95,7 +95,7 @@ public class MailingService {
 			.sendToChairMembers(application.getResearchGroup().getId())
 			.addNotificationName("new-applications")
 			.filterChairMembersNewApplicationNotifications(application.getTopic(), "new-applications")
-			.send(javaMailSender, uploadService);
+			.send(mailDelivery, uploadService);
 
 		MailBuilder notificationCopyMailBuilder = includeData
 				? prepareApplicationCreatedMailBuilder(application, researchGroupEmailTemplate)
@@ -120,7 +120,7 @@ public class MailingService {
 						getUserFilename(application.getUser(), "Degree Report",
 								application.getUser().getDegreeFilename()))
 				.fillApplicationPlaceholders(application)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	private MailBuilder prepareApplicationCreatedMailBuilder(Application application, EmailTemplate template) {
@@ -191,7 +191,7 @@ public class MailingService {
 
 		mailBuilder
 				.addPrimaryRecipient(buildNotificationRecipientForCopy(researchGroup, additionalEmail))
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	private User buildNotificationRecipientForCopy(ResearchGroup researchGroup, String email) {
@@ -236,7 +236,7 @@ public class MailingService {
 				.fillUserPlaceholders(advisor, "advisor")
 				.fillApplicationPlaceholders(application)
 				.fillThesisPlaceholders(thesis)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -255,7 +255,7 @@ public class MailingService {
 				.addPrimaryRecipient(application.getUser())
 				.addDefaultBccRecipients(application.getResearchGroup().getHead().getEmail())
 				.fillApplicationPlaceholders(application)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class MailingService {
 				.addNotificationName("unreviewed-application-reminder")
 				.fillPlaceholder("unreviewedApplications", String.valueOf(unreviewedApplications))
 				.fillPlaceholder("reviewApplicationsLink", config.getClientHost() + "/applications")
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -299,7 +299,7 @@ public class MailingService {
 				.addPrimaryRecipient(user)
 				.addNotificationName(emailTemplate.getSubject())
 				.fillPlaceholders(model)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -320,7 +320,7 @@ public class MailingService {
 				.addNotificationName(emailTemplate.getSubject())
 				.fillApplicationPlaceholders(interviewee.getApplication())
 				.fillIntervieweePlaceholders(interviewee)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -350,7 +350,7 @@ public class MailingService {
 				.fillApplicationPlaceholders(slot.getInterviewee().getApplication())
 				.fillIntervieweePlaceholders(slot.getInterviewee())
 				.fillInterviewSlotPlaceholders(slot)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -371,7 +371,7 @@ public class MailingService {
 				.addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
 				.fillThesisPlaceholders(thesis)
 				.fillUserPlaceholders(creatingUser, "creatingUser")
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -392,7 +392,7 @@ public class MailingService {
 				.addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
 				.fillThesisPlaceholders(thesis)
 				.fillUserPlaceholders(deletingUser, "deletingUser")
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -412,7 +412,7 @@ public class MailingService {
 				.addNotificationName(NOTIFICATION_NAME_START + proposal.getThesis().getId())
 				.fillThesisProposalPlaceholders(proposal)
 				.addStoredAttachment(proposal.getProposalFilename(), getThesisFilename(proposal.getThesis(), "Proposal", proposal.getProposalFilename()))
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -432,7 +432,7 @@ public class MailingService {
 				.addNotificationName(NOTIFICATION_NAME_START + proposal.getThesis().getId())
 				.fillThesisPlaceholders(proposal.getThesis())
 				.fillThesisProposalPlaceholders(proposal)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -460,7 +460,7 @@ public class MailingService {
 								.map(ThesisFeedback::getFeedback)
 								.toList()
 				)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -487,7 +487,7 @@ public class MailingService {
 				.addNotificationName(NOTIFICATION_NAME_START + comment.getThesis().getId())
 				.fillThesisCommentPlaceholders(comment)
 				.addStoredAttachment(comment.getFilename(), getUserFilename(comment.getCreatedBy(), "Comment", comment.getUploadName()))
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -515,7 +515,7 @@ public class MailingService {
 				.sendToThesisStudents(presentation.getThesis())
 				.addNotificationName(NOTIFICATION_NAME_START + presentation.getThesis().getId())
 				.fillThesisPresentationPlaceholders(presentation)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 
 		if (presentation.getVisibility() == ThesisPresentationVisibility.PUBLIC) {
 			EmailTemplate publicEmailTemplate = loadTemplate(
@@ -539,7 +539,7 @@ public class MailingService {
 				);
 			}
 
-			publicMailBuilder.send(javaMailSender, uploadService);
+			publicMailBuilder.send(mailDelivery, uploadService);
 		}
 	}
 
@@ -565,7 +565,7 @@ public class MailingService {
 				.addNotificationName(NOTIFICATION_NAME_START + presentation.getThesis().getId())
 				.fillThesisPresentationPlaceholders(presentation)
 				.fillUserPlaceholders(deletingUser, "deletingUser")
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 
 		if (presentation.getVisibility() == ThesisPresentationVisibility.PUBLIC) {
 			EmailTemplate publicEmailTemplate = loadTemplate(
@@ -582,7 +582,7 @@ public class MailingService {
 				publicMailBuilder.addBccRecipient(invite.getEmail());
 			}
 
-			publicMailBuilder.send(javaMailSender, uploadService);
+			publicMailBuilder.send(mailDelivery, uploadService);
 		}
 	}
 
@@ -604,7 +604,7 @@ public class MailingService {
 				.fillThesisPlaceholders(thesis)
 				//.addStoredAttachment(thesis.getFinalThesisFilename(), getThesisFilename(thesis, "File", thesis.getFinalThesisFilename()))
 				//.addStoredAttachment(thesis.getFinalPresentationFilename(), getThesisFilename(thesis, "Presentation", thesis.getFinalPresentationFilename()))
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -624,7 +624,7 @@ public class MailingService {
 				.sendToThesisExaminers(assessment.getThesis())
 				.addNotificationName(NOTIFICATION_NAME_START + assessment.getThesis().getId())
 				.fillThesisAssessmentPlaceholders(assessment)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -643,7 +643,7 @@ public class MailingService {
 				.sendToThesisStudents(thesis)
 				.addNotificationName(NOTIFICATION_NAME_START + thesis.getId())
 				.fillThesisGradePlaceholders(thesis)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	private EmailTemplate loadTemplate(UUID researchGroupId, String templateCase, String language) {
@@ -692,7 +692,7 @@ public class MailingService {
 				.addPrimaryRecipient(user)
 				.fillUserPlaceholders(user, "user")
 				.fillPlaceholder("downloadUrl", downloadUrl)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	/**
@@ -725,7 +725,7 @@ public class MailingService {
 		mailBuilder
 				.addPrimaryRecipient(researchGroup.getHead())
 				.fillPlaceholders(model)
-				.send(javaMailSender, uploadService);
+				.send(mailDelivery, uploadService);
 	}
 
 	private String getThesisFilename(Thesis thesis, String name, String originalFilename) {
