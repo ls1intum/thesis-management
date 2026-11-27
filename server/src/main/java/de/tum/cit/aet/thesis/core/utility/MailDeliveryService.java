@@ -15,21 +15,29 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PreDestroy;
+import jakarta.mail.Address;
 import jakarta.mail.AuthenticationFailedException;
+import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.NoSuchProviderException;
 import jakarta.mail.SendFailedException;
 import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -119,7 +127,7 @@ public class MailDeliveryService {
 			mailSender.send(message);
 			return Status.SENT;
 		} catch (RuntimeException exception) {
-			if (delays.isEmpty() || !isTemporary(exception)) {
+			if (delays.isEmpty() || !isRetryable(message, subject, exception)) {
 				throw exception;
 			}
 
@@ -193,7 +201,7 @@ public class MailDeliveryService {
 			finish(mail);
 			log.info("Sent email '{}' on retry {}", mail.subject, mail.retries);
 		} catch (RuntimeException exception) {
-			if (!isTemporary(exception)) {
+			if (!isRetryable(mail.message, mail.subject, exception)) {
 				finish(mail);
 				log.warn("Failed to send email '{}' on retry {}, giving up (permanent failure)", mail.subject, mail.retries, exception);
 			} else if (mail.retries >= delays.size()) {
@@ -218,6 +226,85 @@ public class MailDeliveryService {
 		synchronized (pending) {
 			pending.remove(mail);
 		}
+	}
+
+	/**
+	 * Decides whether a failed attempt is worth repeating. If the server rejected some recipients permanently while
+	 * others only failed temporarily, the rejected ones are removed from the message first, so the retry goes to the
+	 * remaining recipients only.
+	 */
+	private boolean isRetryable(MimeMessage message, String subject, Throwable failure) {
+		return removeRejectedRecipients(message, subject, failure) || isTemporary(failure);
+	}
+
+	/**
+	 * Handles a failure in which the server accepted some recipients and refused others. JavaMail reports this as a
+	 * {@link SendFailedException} with the invalid (permanently rejected), valid-unsent (temporarily failed) and
+	 * valid-sent addresses. Without {@code mail.smtp.sendpartial} nothing is delivered in that case, so the
+	 * valid-sent list is normally empty; if it is not, those addresses are removed too so nobody gets a duplicate.
+	 *
+	 * @return true if recipients were removed and valid-unsent recipients remain on the message, false if the failure
+	 *         has to be classified as a whole
+	 */
+	private static boolean removeRejectedRecipients(MimeMessage message, String subject, Throwable failure) {
+		Set<String> invalid = new HashSet<>();
+		Set<String> sent = new HashSet<>();
+		Set<String> unsent = new HashSet<>();
+
+		for (Throwable cause : collectCauses(failure)) {
+			if (cause instanceof SendFailedException sendFailed) {
+				addAddresses(invalid, sendFailed.getInvalidAddresses());
+				addAddresses(sent, sendFailed.getValidSentAddresses());
+				addAddresses(unsent, sendFailed.getValidUnsentAddresses());
+			}
+		}
+
+		unsent.removeAll(invalid);
+		unsent.removeAll(sent);
+		if (unsent.isEmpty() || invalid.isEmpty() && sent.isEmpty()) {
+			return false;
+		}
+
+		try {
+			Set<String> removed = new HashSet<>(invalid);
+			removed.addAll(sent);
+
+			Map<Message.RecipientType, Address[]> remaining = new LinkedHashMap<>();
+			int remainingCount = 0;
+			for (Message.RecipientType type : List.of(Message.RecipientType.TO, Message.RecipientType.CC, Message.RecipientType.BCC)) {
+				Address[] current = message.getRecipients(type);
+				Address[] kept = current == null ? null : Arrays.stream(current).filter(address -> !removed.contains(normalize(address))).toArray(Address[]::new);
+				remaining.put(type, kept == null || kept.length == 0 ? null : kept);
+				remainingCount += kept == null ? 0 : kept.length;
+			}
+
+			if (remainingCount == 0) {
+				return false;
+			}
+
+			for (Map.Entry<Message.RecipientType, Address[]> entry : remaining.entrySet()) {
+				message.setRecipients(entry.getKey(), entry.getValue());
+			}
+
+			log.warn("Email '{}': {} recipient(s) rejected permanently or already served were removed, retrying for the remaining {}",
+					subject, removed.size(), remainingCount);
+			return true;
+		} catch (MessagingException exception) {
+			return false;
+		}
+	}
+
+	private static void addAddresses(Set<String> target, Address[] addresses) {
+		if (addresses != null) {
+			for (Address address : addresses) {
+				target.add(normalize(address));
+			}
+		}
+	}
+
+	private static String normalize(Address address) {
+		String value = address instanceof InternetAddress internetAddress ? internetAddress.getAddress() : address.toString();
+		return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
 	}
 
 	/**

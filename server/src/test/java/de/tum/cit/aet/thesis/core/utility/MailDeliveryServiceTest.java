@@ -30,6 +30,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import jakarta.mail.Address;
+import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.SendFailedException;
 import jakarta.mail.Session;
@@ -227,6 +228,21 @@ class MailDeliveryServiceTest {
 	}
 
 	@Test
+	void rejectedQueueingDoesNotLeaveAnEntryThatBreaksTheOldestDrop() {
+		doThrow(connectionFailure()).when(mailSender).send(any(MimeMessage.class));
+		when(scheduler.schedule(any(Runnable.class), anyLong(), any(TimeUnit.class))).thenThrow(new RejectedExecutionException("shut down"));
+		MailDeliveryService service = newService(DELAYS, 1);
+		assertThatThrownBy(() -> service.send(message, "Rejected")).isInstanceOf(MailSendException.class);
+
+		doReturnFuture();
+		service.send(new MimeMessage(Session.getInstance(new Properties())), "Second");
+		service.send(new MimeMessage(Session.getInstance(new Properties())), "Third");
+
+		assertThat(service.pendingCount()).isEqualTo(1);
+		assertThat(warnings()).anyMatch(event -> event.getFormattedMessage().contains("dropped the oldest email 'Second'"));
+	}
+
+	@Test
 	void mailDisabled_OnlyLogs() throws Exception {
 		message.setFrom("sender@example.com");
 		message.setSubject("Subject");
@@ -267,6 +283,102 @@ class MailDeliveryServiceTest {
 		service.shutdown();
 
 		assertThat(logs.list).noneMatch(event -> event.getFormattedMessage().contains("secret-body-text"));
+	}
+
+	private static Address[] addresses(String... values) throws Exception {
+		Address[] result = new Address[values.length];
+		for (int i = 0; i < values.length; i++) {
+			result[i] = new InternetAddress(values[i]);
+		}
+		return result;
+	}
+
+	private static MailSendException recipientFailure(String[] sent, String[] unsent, String[] invalid) throws Exception {
+		SendFailedException failure = new SendFailedException("Invalid Addresses", smtpReply(550), addresses(sent), addresses(unsent), addresses(invalid));
+		return new MailSendException(Map.of("message", failure));
+	}
+
+	private List<String> recipients(Message.RecipientType type) throws Exception {
+		Address[] current = message.getRecipients(type);
+		return current == null ? List.of() : java.util.Arrays.stream(current).map(Address::toString).toList();
+	}
+
+	@Test
+	void rejectedRecipientsAreRemovedFromAllRecipientTypesBeforeTheRetry() throws Exception {
+		message.setRecipients(Message.RecipientType.TO, addresses("invalid@example.com"));
+		message.setRecipients(Message.RecipientType.CC, addresses("Valid@Example.com"));
+		message.setRecipients(Message.RecipientType.BCC, addresses("INVALID2@example.com", "bcc@example.com"));
+		doThrow(recipientFailure(new String[0], new String[] {"valid@example.com", "bcc@example.com"}, new String[] {"invalid@example.com", "invalid2@example.com"}))
+				.when(mailSender).send(message);
+		MailDeliveryService service = newService(DELAYS, 10);
+
+		assertThat(service.send(message, "Subject")).isEqualTo(MailDeliveryService.Status.QUEUED);
+
+		assertThat(recipients(Message.RecipientType.TO)).isEmpty();
+		assertThat(recipients(Message.RecipientType.CC)).containsExactly("Valid@Example.com");
+		assertThat(recipients(Message.RecipientType.BCC)).containsExactly("bcc@example.com");
+		assertThat(service.pendingCount()).isEqualTo(1);
+		assertThat(warnings()).anyMatch(event -> event.getFormattedMessage().contains("2 recipient(s)") && !event.getFormattedMessage().contains("@"));
+	}
+
+	@Test
+	void alreadyServedRecipientsAreRemovedSoNobodyGetsADuplicate() throws Exception {
+		message.setRecipients(Message.RecipientType.TO, addresses("served@example.com"));
+		message.setRecipients(Message.RecipientType.CC, addresses("later@example.com"));
+		doThrow(recipientFailure(new String[] {"served@example.com"}, new String[] {"later@example.com"}, new String[0])).when(mailSender).send(message);
+		MailDeliveryService service = newService(DELAYS, 10);
+
+		assertThat(service.send(message, "Subject")).isEqualTo(MailDeliveryService.Status.QUEUED);
+
+		assertThat(recipients(Message.RecipientType.TO)).isEmpty();
+		assertThat(recipients(Message.RecipientType.CC)).containsExactly("later@example.com");
+	}
+
+	@Test
+	void everyRemainingRecipientRejectedPermanently_NotRetried() throws Exception {
+		message.setRecipients(Message.RecipientType.TO, addresses("invalid@example.com"));
+		doThrow(recipientFailure(new String[0], new String[0], new String[] {"invalid@example.com"})).when(mailSender).send(message);
+		MailDeliveryService service = newService(DELAYS, 10);
+
+		assertThatThrownBy(() -> service.send(message, "Subject")).isInstanceOf(MailSendException.class);
+
+		assertThat(service.pendingCount()).isZero();
+		verifyNoInteractions(scheduler);
+	}
+
+	@Test
+	void unsentAddressesThatAreNotOnTheMessageAnymore_NotRetried() throws Exception {
+		message.setRecipients(Message.RecipientType.TO, addresses("invalid@example.com"));
+		doThrow(recipientFailure(new String[0], new String[] {"other@example.com"}, new String[] {"invalid@example.com"})).when(mailSender).send(message);
+		MailDeliveryService service = newService(DELAYS, 10);
+
+		assertThatThrownBy(() -> service.send(message, "Subject")).isInstanceOf(MailSendException.class);
+
+		assertThat(service.pendingCount()).isZero();
+	}
+
+	@Test
+	void mixedFailureDuringARetryRemovesNewlyRejectedRecipientsAndKeepsTheRetryAccounting() throws Exception {
+		message.setRecipients(Message.RecipientType.TO, addresses("a@example.com", "b@example.com", "c@example.com"));
+		doThrow(connectionFailure())
+				.doThrow(recipientFailure(new String[0], new String[] {"a@example.com", "c@example.com"}, new String[] {"b@example.com"}))
+				.doNothing()
+				.when(mailSender).send(message);
+		MailDeliveryService service = newService(DELAYS, 10);
+
+		service.send(message, "Subject");
+		lastScheduledRetry().run();
+
+		assertThat(recipients(Message.RecipientType.TO)).containsExactly("a@example.com", "c@example.com");
+		assertThat(service.pendingCount()).isEqualTo(1);
+		ArgumentCaptor<Long> delays = ArgumentCaptor.forClass(Long.class);
+		verify(scheduler, times(2)).schedule(any(Runnable.class), delays.capture(), eq(TimeUnit.MILLISECONDS));
+		assertThat(delays.getAllValues()).containsExactly(Duration.ofMinutes(1).toMillis(), Duration.ofMinutes(5).toMillis());
+
+		lastScheduledRetry().run();
+
+		verify(mailSender, times(3)).send(message);
+		assertThat(service.pendingCount()).isZero();
 	}
 
 	@Test
