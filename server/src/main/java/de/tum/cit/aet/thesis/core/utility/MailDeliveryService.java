@@ -304,7 +304,14 @@ public class MailDeliveryService {
 
 	private static String normalize(Address address) {
 		String value = address instanceof InternetAddress internetAddress ? internetAddress.getAddress() : address.toString();
-		return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+		if (value == null) {
+			return "";
+		}
+
+		// The domain is case-insensitive, the local part may be case-sensitive (RFC 5321), so keep its case.
+		String trimmed = value.trim();
+		int at = trimmed.lastIndexOf('@');
+		return at < 0 ? trimmed : trimmed.substring(0, at) + trimmed.substring(at).toLowerCase(Locale.ROOT);
 	}
 
 	/**

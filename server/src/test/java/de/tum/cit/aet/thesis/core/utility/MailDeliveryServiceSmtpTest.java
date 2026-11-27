@@ -114,8 +114,8 @@ class MailDeliveryServiceSmtpTest {
 	}
 
 	@Test
-	void caseInsensitiveRejectionOfToAndBccOnlyRecipientIsRetried() throws Exception {
-		MimeMessage message = message("Reject-Me@Example.com", null, "defer-bcc@example.com");
+	void mixedCaseDomainRejectionOfToAndBccOnlyRecipientIsRetried() throws Exception {
+		MimeMessage message = message("reject-me@EXAMPLE.com", null, "defer-bcc@example.com");
 
 		assertThat(service.send(message, "Subject")).isEqualTo(MailDeliveryService.Status.QUEUED);
 

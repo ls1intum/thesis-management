@@ -306,8 +306,8 @@ class MailDeliveryServiceTest {
 	@Test
 	void rejectedRecipientsAreRemovedFromAllRecipientTypesBeforeTheRetry() throws Exception {
 		message.setRecipients(Message.RecipientType.TO, addresses("invalid@example.com"));
-		message.setRecipients(Message.RecipientType.CC, addresses("Valid@Example.com"));
-		message.setRecipients(Message.RecipientType.BCC, addresses("INVALID2@example.com", "bcc@example.com"));
+		message.setRecipients(Message.RecipientType.CC, addresses("valid@EXAMPLE.com"));
+		message.setRecipients(Message.RecipientType.BCC, addresses("invalid2@EXAMPLE.COM", "bcc@example.com"));
 		doThrow(recipientFailure(new String[0], new String[] {"valid@example.com", "bcc@example.com"}, new String[] {"invalid@example.com", "invalid2@example.com"}))
 				.when(mailSender).send(message);
 		MailDeliveryService service = newService(DELAYS, 10);
@@ -315,10 +315,21 @@ class MailDeliveryServiceTest {
 		assertThat(service.send(message, "Subject")).isEqualTo(MailDeliveryService.Status.QUEUED);
 
 		assertThat(recipients(Message.RecipientType.TO)).isEmpty();
-		assertThat(recipients(Message.RecipientType.CC)).containsExactly("Valid@Example.com");
+		assertThat(recipients(Message.RecipientType.CC)).containsExactly("valid@EXAMPLE.com");
 		assertThat(recipients(Message.RecipientType.BCC)).containsExactly("bcc@example.com");
 		assertThat(service.pendingCount()).isEqualTo(1);
 		assertThat(warnings()).anyMatch(event -> event.getFormattedMessage().contains("2 recipient(s)") && !event.getFormattedMessage().contains("@"));
+	}
+
+	@Test
+	void localPartsThatDifferOnlyInCaseAreDifferentRecipients() throws Exception {
+		message.setRecipients(Message.RecipientType.TO, addresses("User@example.com", "user@example.com"));
+		doThrow(recipientFailure(new String[0], new String[] {"user@example.com"}, new String[] {"User@example.com"})).when(mailSender).send(message);
+		MailDeliveryService service = newService(DELAYS, 10);
+
+		assertThat(service.send(message, "Subject")).isEqualTo(MailDeliveryService.Status.QUEUED);
+
+		assertThat(recipients(Message.RecipientType.TO)).containsExactly("user@example.com");
 	}
 
 	@Test
