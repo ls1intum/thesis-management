@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -163,7 +164,7 @@ public class AIFeedbackService {
 		// transactional, and persisting the score first would leave it standing on its own if saving
 		// the feedback rows failed and rolled them back.
 		summaryWriter.record(thesis, reviewType, reviewed.result(), reviewed.documentVersionId(),
-				reviewed.resolvedIds());
+				reviewed.resolvedIds(), reviewed.baselineCapturedAt());
 
 		return updated;
 	}
@@ -328,7 +329,7 @@ public class AIFeedbackService {
 
 	/** One completed review: the raw result, its drafts, and the revision it ran against. */
 	private record Reviewed(ReviewResult result, List<AIFeedbackDraftDTO> drafts, UUID documentVersionId,
-			List<UUID> resolvedIds) {
+			List<UUID> resolvedIds, Instant baselineCapturedAt) {
 	}
 
 	/**
@@ -348,7 +349,8 @@ public class AIFeedbackService {
 				baseline.entries().size());
 
 		IterationComparison.Compared compared = iterationComparison.apply(result, baseline);
-		return new Reviewed(compared.result(), compared.drafts(), document.versionId(), compared.resolvedIds());
+		return new Reviewed(compared.result(), compared.drafts(), document.versionId(), compared.resolvedIds(),
+				baseline.capturedAt());
 	}
 
 	private static ThesisFeedbackType toFeedbackType(ReviewType reviewType) {

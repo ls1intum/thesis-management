@@ -61,10 +61,15 @@ public class EarlierFeedbackChecker {
 	 * @param followUps    restated defects of the entries that persist
 	 * @param persistRefs  refs of the entries that persist, including any whose follow-up was dropped
 	 * @param resolvedRefs refs of the entries the new version resolved
+	 * @param failed       whether the comparison call failed, so nothing at all is known
 	 */
-	public record Outcome(List<FollowUp> followUps, List<String> persistRefs, List<String> resolvedRefs) {
-		/** Nothing compared: no completed entries, or a failed call. */
-		public static final Outcome EMPTY = new Outcome(List.of(), List.of(), List.of());
+	public record Outcome(List<FollowUp> followUps, List<String> persistRefs, List<String> resolvedRefs,
+			boolean failed) {
+		/** Nothing to compare: there were no completed entries. */
+		public static final Outcome EMPTY = new Outcome(List.of(), List.of(), List.of(), false);
+
+		/** The comparison did not happen; the review must say so rather than imply nothing changed. */
+		public static final Outcome FAILED = new Outcome(List.of(), List.of(), List.of(), true);
 	}
 
 	/**
@@ -90,7 +95,12 @@ public class EarlierFeedbackChecker {
 				.call()
 				.responseEntity(LenientOutputConverter.forType(EarlierFeedbackVerdicts.class));
 		EarlierFeedbackVerdicts verdicts = response.getEntity();
-		return interpret(verdicts == null ? List.of() : verdicts.verdicts(), entries, pages);
+		if (verdicts == null) {
+			// A JSON null parses cleanly but answers nothing; reading it as "no verdicts" would pass a
+			// comparison that never happened off as one that found nothing.
+			throw new IllegalStateException("The comparison against earlier feedback returned no result");
+		}
+		return interpret(verdicts.verdicts(), entries, pages);
 	}
 
 	/**
@@ -138,7 +148,7 @@ public class EarlierFeedbackChecker {
 				}
 			}
 		}
-		return new Outcome(List.copyOf(followUps), List.copyOf(persists), List.copyOf(resolved));
+		return new Outcome(List.copyOf(followUps), List.copyOf(persists), List.copyOf(resolved), false);
 	}
 
 	private static Finding toFinding(EarlierFeedback entry, EarlierFeedbackVerdicts.Verdict verdict, String quote,

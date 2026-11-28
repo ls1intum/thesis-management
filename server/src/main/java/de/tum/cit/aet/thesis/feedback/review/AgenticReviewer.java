@@ -83,10 +83,6 @@ public class AgenticReviewer implements ThesisReviewer {
 
 	private static final String FINISH_TOOL = "finish_review";
 
-	/** Note added to the summary of a run that was offered the comparison but skipped it. */
-	static final String EARLIER_FEEDBACK_UNCHECKED = "Earlier feedback was not compared with this version, so "
-			+ "resolved and recurring issues are not reported.";
-
 	private final PdfService pdfService;
 	private final ChatClient chatClient;
 	private final ToolCallingManager toolCallingManager;
@@ -151,7 +147,7 @@ public class AgenticReviewer implements ThesisReviewer {
 			// Coverage of the comparison is recorded like coverage of a category: the entries exist
 			// only behind get_earlier_feedback, so an agent that never called it cannot have compared.
 			log.warn("Agentic review never fetched the {} earlier feedback entries", request.earlierFeedback().size());
-			result = result.withSummary(appendNote(result.summary(), EARLIER_FEEDBACK_UNCHECKED));
+			result = IncompleteCoverage.qualifyUncompared(result);
 		}
 		if (missing.isEmpty() && !toolbox.finished()) {
 			// Every category's rules were fetched, but the agent stopped before finish_review, so
@@ -289,10 +285,6 @@ public class AgenticReviewer implements ThesisReviewer {
 				.mapToObj(index -> "=== PAGE " + (index + 1) + " ===\n" + pages.get(index))
 				.collect(Collectors.joining("\n\n"));
 		return "<" + ReviewToolbox.PAGE_TEXT_TAG + ">\n" + body + "\n</" + ReviewToolbox.PAGE_TEXT_TAG + ">";
-	}
-
-	private static String appendNote(String summary, String note) {
-		return summary == null || summary.isBlank() ? note : summary + "\n\n" + note;
 	}
 
 	private static String slugsOf(List<ReviewCategory> categories) {

@@ -15,9 +15,18 @@ ALTER TABLE thesis_feedback
 ALTER TABLE thesis_feedback
     ADD COLUMN deferred_to_supervisor BOOLEAN NOT NULL DEFAULT FALSE;
 
-CREATE INDEX idx_thesis_feedback_follows_up_id ON thesis_feedback (follows_up_id);
+-- At most one follow-up per entry: a second successor would start a parallel chain, and later
+-- reviews would then compare (and defer) the same defect twice. Unique rather than checked in code
+-- alone, so two saves racing for the same parent cannot both succeed. NULLs stay unrestricted.
+CREATE UNIQUE INDEX uq_thesis_feedback_follows_up_id ON thesis_feedback (follows_up_id);
 
 -- The completed entries the latest auto review found resolved, so the UI can acknowledge them next
 -- to the score. JSON array of thesis_feedback ids; NULL for rows written before this column.
 ALTER TABLE ai_review_summary
     ADD COLUMN resolved_feedback_ids JSONB;
+
+-- When the review behind this summary read the feedback it compared against. The next review
+-- acknowledges only entries completed after this moment; the summary's own write time would be too
+-- late, swallowing completions made while the review was still running.
+ALTER TABLE ai_review_summary
+    ADD COLUMN baseline_captured_at TIMESTAMP WITH TIME ZONE;

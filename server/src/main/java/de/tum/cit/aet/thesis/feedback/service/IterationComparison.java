@@ -2,7 +2,6 @@ package de.tum.cit.aet.thesis.feedback.service;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
-import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
 import de.tum.cit.aet.thesis.feedback.model.EarlierFeedback;
 import de.tum.cit.aet.thesis.feedback.model.FollowUp;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
@@ -83,14 +82,18 @@ public class IterationComparison {
 	 * The earlier entries a review is compared against, and when the previous review ran.
 	 *
 	 * @param entries      the entries, with refs assigned
-	 * @param lastReviewAt when the previous auto review of this type ran; {@code null} if never
+	 * @param lastReviewAt when the previous auto review of this type captured its baseline;
+	 *                     {@code null} if there was none
+	 * @param capturedAt   when this baseline was read; recorded with the summary so the next review
+	 *                     knows which completions this one could not have seen
 	 */
-	public record Baseline(List<EarlierFeedback> entries, Instant lastReviewAt) {
+	public record Baseline(List<EarlierFeedback> entries, Instant lastReviewAt, Instant capturedAt) {
 		/**
 		 * Normalizes the entry list.
 		 *
 		 * @param entries      the entries, with refs assigned
-		 * @param lastReviewAt when the previous auto review of this type ran
+		 * @param lastReviewAt when the previous auto review captured its baseline
+		 * @param capturedAt   when this baseline was read
 		 */
 		public Baseline {
 			entries = entries == null ? List.of() : List.copyOf(entries);
@@ -120,16 +123,22 @@ public class IterationComparison {
 	 * @return the baseline; empty entries for a first review
 	 */
 	public Baseline load(Thesis thesis, ReviewType type) {
+		Instant capturedAt = Instant.now();
 		ThesisFeedbackType feedbackType = switch (type) {
 			case PROPOSAL -> ThesisFeedbackType.PROPOSAL;
 			case THESIS -> ThesisFeedbackType.THESIS;
 		};
 		List<ThesisFeedback> ofType = thesis.getFeedback() == null ? List.of()
 				: thesis.getFeedback().stream().filter(feedback -> feedback.getType() == feedbackType).toList();
+		// The cutoff is when the previous review read its feedback, not when its summary was saved:
+		// an entry completed while that review was running was open in its baseline, so it was never
+		// checked as completed and must still be acknowledgeable now.
 		Instant lastReviewAt = summaryRepository.findByThesisIdAndType(thesis.getId(), type)
-				.map(AIReviewSummary::getUpdatedAt)
+				.map(summary -> summary.getBaselineCapturedAt() != null
+						? summary.getBaselineCapturedAt()
+						: summary.getUpdatedAt())
 				.orElse(null);
-		return new Baseline(selectEntries(ofType), lastReviewAt);
+		return new Baseline(selectEntries(ofType), lastReviewAt, capturedAt);
 	}
 
 	/**

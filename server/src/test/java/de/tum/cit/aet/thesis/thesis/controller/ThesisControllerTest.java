@@ -546,6 +546,45 @@ class ThesisControllerTest extends BaseIntegrationTest {
 		}
 
 		@Test
+		void requestChanges_savesASecondFollowUpToTheSameEntryUnlinked() throws Exception {
+			UUID thesisId = createTestThesis("Single successor thesis");
+			String adminAuth = createRandomAdminAuthentication();
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
+							.header("Authorization", adminAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(new RequestChangesPayload(ThesisFeedbackType.THESIS,
+									List.of(new RequestChangesPayload.RequestedChange("Original", false, null, null, null))))))
+					.andExpect(status().isOk());
+			UUID originalId = thesisFeedbackRepository.findAll().getFirst().getId();
+
+			// A stale preview saved after another review already followed up the same entry: the second
+			// follow-up keeps its text but must not start a parallel chain.
+			for (String text : List.of("First follow-up", "Stale follow-up")) {
+				mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
+								.header("Authorization", adminAuth)
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(objectMapper.writeValueAsString(new RequestChangesPayload(ThesisFeedbackType.THESIS,
+										List.of(new RequestChangesPayload.RequestedChange(text, false, null, null, null,
+												originalId, true))))))
+						.andExpect(status().isOk());
+			}
+
+			assertThat(thesisFeedbackRepository.findAll())
+					.extracting(f -> f.getFeedback(), f -> f.getFollowsUpId(), f -> f.isDeferredToSupervisor())
+					.containsExactlyInAnyOrder(
+							org.assertj.core.groups.Tuple.tuple("Original", null, false),
+							org.assertj.core.groups.Tuple.tuple("First follow-up", originalId, true),
+							org.assertj.core.groups.Tuple.tuple("Stale follow-up", null, false));
+
+			// A save racing past the application check is stopped by the database itself.
+			var stale = thesisFeedbackRepository.findAll().stream()
+					.filter(f -> f.getFeedback().equals("Stale follow-up")).findFirst().orElseThrow();
+			stale.setFollowsUpId(originalId);
+			org.assertj.core.api.Assertions.assertThatThrownBy(() -> thesisFeedbackRepository.saveAndFlush(stale))
+					.isInstanceOf(org.springframework.dao.DataIntegrityViolationException.class);
+		}
+
+		@Test
 		void requestChanges_rejectsAFollowUpOfAnotherThesisOrType() throws Exception {
 			UUID otherThesisId = createTestThesis("Other thesis");
 			UUID thesisId = createTestThesis("Follow-up thesis");

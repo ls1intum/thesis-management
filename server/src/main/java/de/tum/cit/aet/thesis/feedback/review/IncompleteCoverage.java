@@ -27,6 +27,10 @@ import java.util.stream.Collectors;
  */
 public final class IncompleteCoverage {
 
+	/** What a review says when earlier feedback existed but was not compared with this version. */
+	public static final String EARLIER_FEEDBACK_UNCHECKED = "Earlier feedback could not be compared with this "
+			+ "version, so resolved and recurring issues are not reported.";
+
 	private IncompleteCoverage() {
 	}
 
@@ -72,5 +76,24 @@ public final class IncompleteCoverage {
 				? warning
 				: warning + "\n\n" + result.summary();
 		return new ReviewResult(null, null, summary, result.findings(), result.followUps(), result.resolvedRefs());
+	}
+
+	/**
+	 * Qualifies a result whose comparison against earlier feedback did not happen — the comparison
+	 * call failed, or the agent never fetched the entries. Findings, score and assessment stand: they
+	 * judge the document itself, which was reviewed in full. Only the silence about earlier feedback
+	 * must not read as "nothing resolved, nothing recurring".
+	 *
+	 * @param result the result as the strategy produced it; may be {@code null}
+	 * @return a copy with the note appended to the summary, or {@code null} for a {@code null} result
+	 */
+	public static ReviewResult qualifyUncompared(ReviewResult result) {
+		if (result == null) {
+			return null;
+		}
+		String summary = result.summary() == null || result.summary().isBlank()
+				? EARLIER_FEEDBACK_UNCHECKED
+				: result.summary() + "\n\n" + EARLIER_FEEDBACK_UNCHECKED;
+		return result.withSummary(summary);
 	}
 }

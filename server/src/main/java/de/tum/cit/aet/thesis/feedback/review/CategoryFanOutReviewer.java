@@ -162,6 +162,11 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 		ReviewResult merged = merge(request.type(), outcomes.findings(), alreadyRaised, compared.persistRefs(),
 				request.progress(), meter, total)
 				.withComparison(compared.followUps(), compared.resolvedRefs());
+		if (compared.failed()) {
+			// Outlives the progress list: the saved summary and the supervisor preview both say that
+			// earlier feedback went unchecked.
+			merged = IncompleteCoverage.qualifyUncompared(merged);
+		}
 		// A constant number of sequential stages however many categories there are: the fan-out is
 		// concurrent, each category verifies its own findings inside that same concurrent task, and
 		// the merge waits for all of them. Two stages, or three when any category made a verification
@@ -296,7 +301,7 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 				log.warn("Comparison against {} earlier feedback entries failed ({}); reviewing without it",
 						completed.size(), request.type(), e);
 				progress.stepFailed(EARLIER_FEEDBACK_STEP_ID, stepIndex, total, STEP_FAILURE_MESSAGE);
-				return EarlierFeedbackChecker.Outcome.EMPTY;
+				return EarlierFeedbackChecker.Outcome.FAILED;
 			}
 		}, reviewExecutor);
 	}

@@ -1,8 +1,10 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
+import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
 import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
 import de.tum.cit.aet.thesis.feedback.model.EarlierFeedback;
 import de.tum.cit.aet.thesis.feedback.model.Finding;
@@ -24,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
@@ -106,11 +109,38 @@ class IterationComparisonTest {
 	}
 
 	@Test
+	void theCutoffIsWhenThePreviousReviewReadItsBaselineNotWhenItsSummaryWasSaved() {
+		Instant baselineAt = T0.plusSeconds(100);
+		AIReviewSummary previous = new AIReviewSummary();
+		previous.setBaselineCapturedAt(baselineAt);
+		previous.setUpdatedAt(T0.plusSeconds(500));
+		Thesis thesis = new Thesis();
+		thesis.setId(UUID.randomUUID());
+		thesis.setFeedback(new ArrayList<>());
+		when(summaryRepository.findByThesisIdAndType(thesis.getId(), ReviewType.PROPOSAL))
+				.thenReturn(Optional.of(previous));
+
+		IterationComparison.Baseline baseline = new IterationComparison(summaryRepository, 1)
+				.load(thesis, ReviewType.PROPOSAL);
+
+		assertThat(baseline.lastReviewAt()).isEqualTo(baselineAt);
+		assertThat(baseline.capturedAt()).isNotNull();
+
+		// Completed while the previous review was still running: open in its baseline, so this
+		// review is the first to check it as completed and must acknowledge it.
+		EarlierFeedback completedMidReview = earlier("E1", T0.plusSeconds(300), 0, false);
+		IterationComparison.Compared compared = new IterationComparison(summaryRepository, 1)
+				.apply(result(List.of(), List.of(), List.of("E1")),
+						new IterationComparison.Baseline(List.of(completedMidReview), baseline.lastReviewAt(), T0));
+		assertThat(compared.resolvedIds()).containsExactly(completedMidReview.id());
+	}
+
+	@Test
 	void aRecurringCompletedDefectIsFollowedUpAndLinkedToItsEntry() {
 		EarlierFeedback completed = earlier("E1", T0, 0, false);
 		IterationComparison.Compared compared = new IterationComparison(summaryRepository, 1)
 				.apply(result(List.of(), List.of(followUp("E1")), List.of()),
-						new IterationComparison.Baseline(List.of(completed), null));
+						new IterationComparison.Baseline(List.of(completed), null, T0));
 
 		assertThat(compared.drafts()).singleElement().satisfies(draft -> {
 			assertThat(draft.followsUpId()).isEqualTo(completed.id());
@@ -126,7 +156,7 @@ class IterationComparisonTest {
 		EarlierFeedback followedUpOnce = earlier("E1", T0, 1, false);
 		IterationComparison.Compared compared = new IterationComparison(summaryRepository, 1)
 				.apply(result(List.of(), List.of(followUp("E1")), List.of()),
-						new IterationComparison.Baseline(List.of(followedUpOnce), null));
+						new IterationComparison.Baseline(List.of(followedUpOnce), null, T0));
 
 		AIFeedbackDraftDTO draft = compared.drafts().getFirst();
 		assertThat(draft.deferredToSupervisor()).isTrue();
@@ -139,7 +169,7 @@ class IterationComparisonTest {
 	void anAlreadyDeferredDefectRaisesNoFurtherEntryButIsNamedInTheSummary() {
 		IterationComparison.Compared compared = new IterationComparison(summaryRepository, 1)
 				.apply(result(List.of(), List.of(followUp("E1")), List.of()),
-						new IterationComparison.Baseline(List.of(earlier("E1", T0, 2, true)), null));
+						new IterationComparison.Baseline(List.of(earlier("E1", T0, 2, true)), null, T0));
 
 		assertThat(compared.drafts()).isEmpty();
 		assertThat(compared.result().summary()).contains("keeps recurring");
@@ -149,7 +179,7 @@ class IterationComparisonTest {
 	void aRecurrenceOfAnOpenEntryIsDroppedAndAnUnknownRefIsKeptAsANewFinding() {
 		IterationComparison.Compared compared = new IterationComparison(summaryRepository, 1)
 				.apply(result(List.of(), List.of(followUp("E1"), followUp("E9")), List.of()),
-						new IterationComparison.Baseline(List.of(earlier("E1", null, 0, false)), null));
+						new IterationComparison.Baseline(List.of(earlier("E1", null, 0, false)), null, T0));
 
 		assertThat(compared.drafts()).singleElement().satisfies(draft -> {
 			assertThat(draft.followsUpId()).isNull();
@@ -167,7 +197,7 @@ class IterationComparisonTest {
 
 		IterationComparison.Compared compared = new IterationComparison(summaryRepository, 1)
 				.apply(result(List.of(), List.of(followUp("E3")), List.of("E1", "E2", "E3", "E4", "E2")),
-						new IterationComparison.Baseline(List.of(before, after, alsoAfterButRecurring, open), lastReview));
+						new IterationComparison.Baseline(List.of(before, after, alsoAfterButRecurring, open), lastReview, T0));
 
 		assertThat(compared.resolvedIds()).containsExactly(after.id());
 		assertThat(compared.result().summary())

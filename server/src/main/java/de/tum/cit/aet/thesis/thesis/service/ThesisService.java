@@ -3,6 +3,7 @@ package de.tum.cit.aet.thesis.thesis.service;
 import de.tum.cit.aet.thesis.core.admin.service.MailingService;
 import de.tum.cit.aet.thesis.core.application.entity.Application;
 import de.tum.cit.aet.thesis.core.constants.StringLimits;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceAlreadyExistsException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
@@ -48,10 +49,13 @@ import de.tum.cit.aet.thesis.thesis.repository.ThesisFileRepository;
 import de.tum.cit.aet.thesis.thesis.repository.ThesisRepository;
 import de.tum.cit.aet.thesis.thesis.repository.ThesisRoleRepository;
 import de.tum.cit.aet.thesis.thesis.repository.ThesisStateChangeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -76,6 +80,8 @@ import java.util.stream.Collectors;
 /** Manages the full thesis lifecycle, including creation, state transitions, proposals, assessments, and grading. */
 @Service
 public class ThesisService {
+	private static final Logger log = LoggerFactory.getLogger(ThesisService.class);
+
 	private final ThesisRoleRepository thesisRoleRepository;
 	private final ThesisRepository thesisRepository;
 	private final ThesisStateChangeRepository thesisStateChangeRepository;
@@ -670,7 +676,17 @@ public class ThesisService {
 						"A follow-up must refer to an existing feedback entry of the same thesis and type.");
 			}
 		}
-
+		// An entry gets at most one follow-up. One that already has a successor — saved by another
+		// review while this batch was being prepared, or earlier in this same batch — still gets
+		// the text saved, just unlinked, so no parallel chain arises. A save racing this one is
+		// caught by the unique index below.
+		Set<UUID> requestedParents = requestedChanges.stream()
+				.map(RequestChangesPayload.RequestedChange::followsUpId)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+		Set<UUID> takenParents = requestedParents.isEmpty()
+				? new HashSet<>()
+				: new HashSet<>(thesisFeedbackRepository.findFollowedUpIds(requestedParents));
 		for (var requestedChange : requestedChanges) {
 			ThesisFeedback feedback = new ThesisFeedback();
 
@@ -686,11 +702,27 @@ public class ThesisService {
 			// (AI_REVIEWED_BY_HUMAN) rows; fall back to the batch source when the item omits it.
 			feedback.setGenerationSource(requestedChange.source() != null ? requestedChange.source() : source);
 			feedback.setDocumentVersionId(documentVersionId);
-			feedback.setFollowsUpId(requestedChange.followsUpId());
-			feedback.setDeferredToSupervisor(requestedChange.followsUpId() != null
+			UUID followsUpId = requestedChange.followsUpId();
+			if (followsUpId != null && !takenParents.add(followsUpId)) {
+				log.info("Feedback {} already has a follow-up; saving the new entry unlinked", followsUpId);
+				followsUpId = null;
+			}
+			feedback.setFollowsUpId(followsUpId);
+			feedback.setDeferredToSupervisor(followsUpId != null
 					&& Boolean.TRUE.equals(requestedChange.deferredToSupervisor()));
 
-			feedback = thesisFeedbackRepository.save(feedback);
+			if (followsUpId == null) {
+				feedback = thesisFeedbackRepository.save(feedback);
+			} else {
+				try {
+					// Flushed so a concurrent save that linked the same parent first fails here, as
+					// a conflict, rather than at commit with an opaque error. The whole batch rolls back.
+					feedback = thesisFeedbackRepository.saveAndFlush(feedback);
+				} catch (DataIntegrityViolationException e) {
+					throw new ResourceAlreadyExistsException(
+							"Another follow-up to the same feedback entry was just saved. Please reload and try again.");
+				}
+			}
 
 			thesis.getFeedback().add(feedback);
 			thesis.setFeedback(thesis.getFeedback());

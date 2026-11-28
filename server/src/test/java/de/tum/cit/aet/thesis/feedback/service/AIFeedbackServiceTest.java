@@ -124,7 +124,7 @@ class AIFeedbackServiceTest {
 
 		// A preview is supervisor-only and provisional (drafts may be edited/discarded), so it must
 		// never persist a summary the student-visible feedback overview would then show.
-		verify(summaryWriter, never()).record(any(), any(), any(), any(), anyList());
+		verify(summaryWriter, never()).record(any(), any(), any(), any(), anyList(), any());
 	}
 
 	@Test
@@ -183,7 +183,7 @@ class AIFeedbackServiceTest {
 		assertThat(change.category()).isEqualTo(ThesisFeedbackCategory.STRUCTURE);
 		assertThat(change.severity()).isEqualTo(ThesisFeedbackSeverity.MAJOR);
 
-		verify(summaryWriter).record(eq(thesis), eq(ReviewType.PROPOSAL), any(), eq(versionId), anyList());
+		verify(summaryWriter).record(eq(thesis), eq(ReviewType.PROPOSAL), any(), eq(versionId), anyList(), any());
 	}
 
 	@Test
@@ -194,7 +194,7 @@ class AIFeedbackServiceTest {
 		assertThat(service.autoReviewAndSave(thesis, ReviewType.PROPOSAL)).isSameAs(thesis);
 
 		verify(thesisService, never()).requestChanges(any(), any(), anyList(), any(), any());
-		verify(summaryWriter).record(eq(thesis), eq(ReviewType.PROPOSAL), any(), eq(versionId), anyList());
+		verify(summaryWriter).record(eq(thesis), eq(ReviewType.PROPOSAL), any(), eq(versionId), anyList(), any());
 	}
 
 	@Test
@@ -211,7 +211,7 @@ class AIFeedbackServiceTest {
 		assertThatThrownBy(() -> service.autoReviewAndSave(thesis, ReviewType.PROPOSAL))
 				.isInstanceOf(ResourceInvalidParametersException.class);
 
-		verify(summaryWriter, never()).record(any(), any(), any(), any(), anyList());
+		verify(summaryWriter, never()).record(any(), any(), any(), any(), anyList(), any());
 	}
 
 	@Test

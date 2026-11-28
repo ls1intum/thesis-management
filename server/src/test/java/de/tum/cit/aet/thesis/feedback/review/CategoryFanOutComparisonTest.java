@@ -121,13 +121,14 @@ class CategoryFanOutComparisonTest {
 	void theComparisonRunsAlongsideTheCategoriesAndItsOutcomeReachesTheResult() {
 		FollowUp followUp = new FollowUp("E1", new Finding("MINOR", "WRITING", "Still wrong", "Again.", List.of()));
 		when(checker.check(eq(ReviewType.PROPOSAL), eq(List.of(COMPLETED)), anyList(), anyList()))
-				.thenReturn(new EarlierFeedbackChecker.Outcome(List.of(followUp), List.of("E1"), List.of()));
+				.thenReturn(new EarlierFeedbackChecker.Outcome(List.of(followUp), List.of("E1"), List.of(), false));
 
 		ReviewResult result = reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdf, progress,
 				List.of(COMPLETED, OPEN)));
 
 		assertThat(result.followUps()).containsExactly(followUp);
 		assertThat(result.summary()).isEqualTo("Merged.");
+		assertThat(result.summary()).doesNotContain(IncompleteCoverage.EARLIER_FEEDBACK_UNCHECKED);
 		int total = ReviewCategory.values().length + 2;
 		verify(progress).stepStarted(eq(CategoryFanOutReviewer.EARLIER_FEEDBACK_STEP_ID), anyString(), eq(total - 1),
 				eq(total));
@@ -142,7 +143,10 @@ class CategoryFanOutComparisonTest {
 				List.of(COMPLETED)));
 
 		assertThat(result.assessment()).isEqualTo(AssessmentCategory.ACCEPTABLE);
+		assertThat(result.score()).isEqualTo(70);
 		assertThat(result.followUps()).isEmpty();
+		// The failure outlives the progress list: the saved summary says the comparison did not happen.
+		assertThat(result.summary()).isEqualTo("Merged.\n\n" + IncompleteCoverage.EARLIER_FEEDBACK_UNCHECKED);
 		verify(progress).stepFailed(eq(CategoryFanOutReviewer.EARLIER_FEEDBACK_STEP_ID), any(Integer.class),
 				any(Integer.class), anyString());
 	}

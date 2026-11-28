@@ -79,6 +79,13 @@ public class AIReviewSummary {
 	@JdbcTypeCode(SqlTypes.JSON)
 	private List<UUID> resolvedFeedbackIds;
 
+	/**
+	 * When the review behind this summary read the feedback it compared against. The next review
+	 * acknowledges only entries completed after it. Null for rows written before the column existed;
+	 * {@link #updatedAt} stands in for those.
+	 */
+	@Column(name = "baseline_captured_at")
+	private Instant baselineCapturedAt;
 	@UpdateTimestamp
 	@Column(name = "updated_at", nullable = false)
 	private Instant updatedAt;
