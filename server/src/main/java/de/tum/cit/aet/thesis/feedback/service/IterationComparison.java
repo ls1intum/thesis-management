@@ -139,9 +139,13 @@ public class IterationComparison {
 	}
 
 	/**
-	 * Picks and labels the entries to compare against. Package-private for tests.
+	 * Picks and labels the entries to compare against: open entries and the head of every
+	 * follow-up chain, newest first, capped at {@value #MAX_ENTRIES}.
+	 *
+	 * @param feedback the feedback of one thesis and document type
+	 * @return the entries, with refs assigned in the order they were raised
 	 */
-	static List<EarlierFeedback> selectEntries(List<ThesisFeedback> feedback) {
+	public static List<EarlierFeedback> selectEntries(List<ThesisFeedback> feedback) {
 		Map<UUID, ThesisFeedback> byId = feedback.stream()
 				.filter(entry -> entry.getId() != null)
 				.collect(Collectors.toMap(ThesisFeedback::getId, Function.identity(), (a, b) -> a, LinkedHashMap::new));

@@ -687,10 +687,13 @@ public class ThesisService {
 						"The reviewed document version does not belong to this thesis and feedback type.");
 			}
 		}
-		// An entry gets at most one follow-up. One that already has a successor — saved by another
-		// review while this batch was being prepared, or earlier in this same batch — still gets
-		// the text saved, just unlinked, so no parallel chain arises. A save racing this one is
-		// caught by the unique index below.
+		// A follow-up is only valid for a completed entry that has no follow-up yet. Anything else —
+		// an entry that got a follow-up from another review while this batch was prepared, a second
+		// follow-up to the same entry within this batch, or an entry the student re-opened — would,
+		// once saved, be a second comparison root for the same defect and restart its recurrence
+		// count. So it is not saved at all: an automatic review skips it (the defect is already on
+		// the student's list), and a person saving drafts is told why, before anything is written.
+		// A save racing this one past these checks is caught by the unique index below.
 		Set<UUID> requestedParents = requestedChanges.stream()
 				.map(RequestChangesPayload.RequestedChange::followsUpId)
 				.filter(Objects::nonNull)
@@ -698,16 +701,32 @@ public class ThesisService {
 		Set<UUID> takenParents = requestedParents.isEmpty()
 				? new HashSet<>()
 				: new HashSet<>(thesisFeedbackRepository.findFollowedUpIds(requestedParents));
-		// Only a completed entry can be followed up; an open one is still on the student's list. Read
-		// from the database: the student may have re-opened the entry while a review or a supervisor's
-		// preview was in progress, and a batch must not fail over that — the entry is saved unlinked.
+		// Read from the database rather than the thesis entity, which the automatic flow loaded before
+		// a minute-long review started.
 		Set<UUID> completedParents = requestedParents.isEmpty()
 				? Set.of()
 				: thesisFeedbackRepository.findAllById(requestedParents).stream()
 						.filter(parent -> parent.getCompletedAt() != null)
 						.map(ThesisFeedback::getId)
 						.collect(Collectors.toSet());
+		List<RequestChangesPayload.RequestedChange> changesToSave = new ArrayList<>();
 		for (var requestedChange : requestedChanges) {
+			UUID parent = requestedChange.followsUpId();
+			String conflict = parent == null ? null
+					: !completedParents.contains(parent) ? "is open again"
+					: !takenParents.add(parent) ? "already has a follow-up"
+					: null;
+			if (conflict == null) {
+				changesToSave.add(requestedChange);
+			} else if (source == de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource.AI) {
+				log.info("Skipping an automatic follow-up: feedback {} {}", parent, conflict);
+			} else {
+				throw new ResourceAlreadyExistsException("The feedback entry \"" + abbreviate(requestedChange.feedback())
+						+ "\" follows up an earlier entry that " + conflict
+						+ ". Please remove that entry and save again.");
+			}
+		}
+		for (var requestedChange : changesToSave) {
 			ThesisFeedback feedback = new ThesisFeedback();
 
 			feedback.setRequestedAt(Instant.now());
@@ -727,13 +746,6 @@ public class ThesisService {
 					? requestedChange.documentVersionId()
 					: documentVersionId);
 			UUID followsUpId = requestedChange.followsUpId();
-			if (followsUpId != null && !completedParents.contains(followsUpId)) {
-				log.info("Feedback {} is open again; saving the follow-up to it unlinked", followsUpId);
-				followsUpId = null;
-			} else if (followsUpId != null && !takenParents.add(followsUpId)) {
-				log.info("Feedback {} already has a follow-up; saving the new entry unlinked", followsUpId);
-				followsUpId = null;
-			}
 			feedback.setFollowsUpId(followsUpId);
 			feedback.setDeferredToSupervisor(followsUpId != null
 					&& Boolean.TRUE.equals(requestedChange.deferredToSupervisor()));
@@ -771,6 +783,12 @@ public class ThesisService {
 	 * the thesis has no matching document yet — callers save the row anyway; the field just stays
 	 * unset until a document exists.
 	 */
+	/** The opening of a feedback text, for naming an entry in an error message. */
+	private static String abbreviate(String text) {
+		String flat = text == null ? "" : text.strip().replaceAll("\\s+", " ");
+		return flat.length() <= 60 ? flat : flat.substring(0, 60).strip() + "…";
+	}
+
 	/** Every revision a feedback row of the given type may point at. */
 	private static Set<UUID> documentVersionIdsOf(Thesis thesis, ThesisFeedbackType type) {
 		return switch (type) {
