@@ -104,7 +104,7 @@
     "linkifyjs": "4.4.0",
     "mini-css-extract-plugin": "2.10.2",
     "patch-package": "8.0.1",
-    "postcss": "8.5.33",
+    "postcss": "8.5.34",
     "postcss-loader": "8.2.2",
     "postcss-preset-mantine": "1.18.0",
     "prettier": "3.10.1",
