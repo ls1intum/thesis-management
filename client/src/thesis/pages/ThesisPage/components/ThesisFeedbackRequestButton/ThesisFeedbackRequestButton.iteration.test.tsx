@@ -76,6 +76,7 @@ describe('ThesisFeedbackRequestButton — follow-ups from an AI preview', () => 
             score: 70,
             summary: 'Better.',
             resolvedFeedbackIds: ['fb-figures'],
+            documentVersionId: 'proposal-v1',
             drafts: [
               {
                 feedback: 'Follow-up to "Fix subject-verb agreement": still wrong.',
@@ -114,6 +115,8 @@ describe('ThesisFeedbackRequestButton — follow-ups from an AI preview', () => 
                 feedback: 'Follow-up to "Fix subject-verb agreement": still wrong.',
                 followsUpId: 'fb-grammar',
                 deferredToSupervisor: false,
+                // Pinned to the revision the preview reviewed, even if a newer one exists by now.
+                documentVersionId: 'proposal-v1',
               }),
               expect.objectContaining({
                 feedback: 'Add a related work section.',

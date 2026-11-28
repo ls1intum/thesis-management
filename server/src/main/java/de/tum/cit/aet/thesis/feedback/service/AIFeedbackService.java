@@ -200,7 +200,8 @@ public class AIFeedbackService {
 				result.normalizedScore(),
 				result.summary(),
 				reviewed.drafts().stream().sorted(BY_SEVERITY).toList(),
-				reviewed.resolvedIds());
+				reviewed.resolvedIds(),
+				reviewed.documentVersionId());
 	}
 
 	/**

@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.feedback.eval;
 
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.model.Finding;
+import de.tum.cit.aet.thesis.feedback.model.FollowUp;
 import de.tum.cit.aet.thesis.feedback.model.Location;
 import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
@@ -344,18 +345,35 @@ public class EvalWriter implements AutoCloseable {
 		md.append("\n## Findings\n");
 		if (result.findings().isEmpty()) {
 			md.append("\n_No findings._\n");
-			return md.toString();
 		}
 		int index = 0;
 		for (Finding finding : result.findings()) {
 			index++;
-			md.append("\n### ").append(index).append(". ").append(blankTo(finding.title(), "(untitled)")).append("\n\n");
-			md.append("`").append(blankTo(finding.severity(), "?")).append("` · `")
-					.append(blankTo(finding.category(), "?")).append("`\n\n");
-			md.append(blankTo(finding.description(), "_no description_")).append("\n");
-			appendLocations(md, finding.locations());
+			appendFinding(md, index + ". ", finding);
+		}
+
+		// Only for a document compared against earlier feedback; a first upload reads as before.
+		if (!result.followUps().isEmpty() || !result.resolvedRefs().isEmpty()) {
+			md.append("\n## Follow-ups\n");
+			if (result.followUps().isEmpty()) {
+				md.append("\n_No follow-ups._\n");
+			}
+			for (FollowUp followUp : result.followUps()) {
+				appendFinding(md, followUp.ref() + ": ", followUp.finding());
+			}
+			md.append("\n## Resolved\n\n")
+					.append(result.resolvedRefs().isEmpty() ? "_none_" : String.join(", ", result.resolvedRefs()))
+					.append("\n");
 		}
 		return md.toString();
+	}
+
+	private static void appendFinding(StringBuilder md, String prefix, Finding finding) {
+		md.append("\n### ").append(prefix).append(blankTo(finding.title(), "(untitled)")).append("\n\n");
+		md.append("`").append(blankTo(finding.severity(), "?")).append("` · `")
+				.append(blankTo(finding.category(), "?")).append("`\n\n");
+		md.append(blankTo(finding.description(), "_no description_")).append("\n");
+		appendLocations(md, finding.locations());
 	}
 
 	private static void appendLocations(StringBuilder md, List<Location> locations) {

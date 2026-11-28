@@ -499,7 +499,9 @@ public class ReviewToolbox {
 			return "Rejected: that quote does not appear in the new version. Use get_page_text or search_document to "
 					+ "find the exact wording, then record the follow-up again. Nothing was recorded.";
 		}
-		Integer page = arg.page() != null && arg.page() >= 1 && arg.page() <= pages.size() ? arg.page() : null;
+		// The page is taken from where the quote actually is, so the follow-up never points at a page
+		// the student cannot find its quote on.
+		Integer page = Grounding.pageOf(pages, quote, arg.page());
 		String section = strip(arg.section());
 		List<Location> locations = page == null && section == null && quote == null
 				? List.of()

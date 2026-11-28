@@ -472,6 +472,7 @@ class AIFeedbackServiceTest {
 		AIPreviewResponseDTO response = service.previewReview(thesis, ReviewType.PROPOSAL);
 
 		assertThat(response.resolvedFeedbackIds()).containsExactly(completed.getId());
+		assertThat(response.documentVersionId()).isEqualTo(versionId);
 		assertThat(response.summary()).contains("Well done: one issue from earlier feedback is resolved");
 	}
 }

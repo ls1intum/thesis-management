@@ -81,6 +81,26 @@ class IterationComparisonTest {
 	}
 
 	@Test
+	void aChainIsWalkedToItsEndHoweverLongAndACycleStillTerminates() {
+		List<ThesisFeedback> chain = new ArrayList<>();
+		chain.add(feedback("Entry 0", T0, T0, null));
+		for (int i = 1; i <= 25; i++) {
+			chain.add(feedback("Entry " + i, T0.plusSeconds(i), T0.plusSeconds(i), chain.get(i - 1).getId()));
+		}
+		assertThat(IterationComparison.selectEntries(chain)).singleElement()
+				.satisfies(head -> assertThat(head.followUpDepth()).isEqualTo(25));
+
+		ThesisFeedback a = feedback("A", T0, T0, null);
+		ThesisFeedback b = feedback("B", T0, T0, a.getId());
+		ThesisFeedback c = feedback("C", T0, T0, b.getId());
+		a.setFollowsUpId(c.getId());
+		ThesisFeedback head = feedback("Head", T0.plusSeconds(1), T0.plusSeconds(1), c.getId());
+		// a -> c -> b -> a is a cycle and Head follows up C: only Head is a chain head, and the walk stops.
+		assertThat(IterationComparison.selectEntries(List.of(a, b, c, head))).singleElement()
+				.satisfies(entry -> assertThat(entry.followUpDepth()).isEqualTo(3));
+	}
+
+	@Test
 	void theCapKeepsEveryOpenEntryAndTheMostRecentlyCompletedOnes() {
 		List<ThesisFeedback> feedback = new ArrayList<>();
 		feedback.add(feedback("Open", T0, null, null));
@@ -172,7 +192,8 @@ class IterationComparisonTest {
 						new IterationComparison.Baseline(List.of(earlier("E1", T0, 2, true)), null, T0));
 
 		assertThat(compared.drafts()).isEmpty();
-		assertThat(compared.result().summary()).contains("keeps recurring");
+		// No new entry is raised, so the summary has to say which issue it is.
+		assertThat(compared.result().summary()).contains("keeps recurring").contains("\"Original entry E1.\"");
 	}
 
 	@Test

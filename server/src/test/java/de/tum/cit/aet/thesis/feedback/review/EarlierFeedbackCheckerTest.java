@@ -48,6 +48,16 @@ class EarlierFeedbackCheckerTest {
 	}
 
 	@Test
+	void aFollowUpPointsAtThePageItsQuoteIsOnNotThePageTheModelClaimed() {
+		String onPageTwo = "We present a novel approach to scheduling.";
+		EarlierFeedbackChecker.Outcome outcome = EarlierFeedbackChecker.interpret(List.of(
+				new Verdict("E1", "PERSISTS", 1, "Introduction", onPageTwo, "t", "e")),
+				List.of(GRAMMAR), PAGES);
+
+		assertThat(outcome.followUps().getFirst().finding().locations().getFirst().page()).isEqualTo(2);
+	}
+
+	@Test
 	void aPersistingVerdictWithAnInventedQuoteDecidesNothing() {
 		EarlierFeedbackChecker.Outcome outcome = EarlierFeedbackChecker.interpret(List.of(
 				new Verdict("E1", "PERSISTS", 1, null, "This passage was never part of the uploaded document at all.",

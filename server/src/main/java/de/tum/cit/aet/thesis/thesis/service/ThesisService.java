@@ -599,6 +599,12 @@ public class ThesisService {
 
 		thesisFeedbackRepository.deleteById(feedbackId);
 
+		// The database unlinked any follow-up to the deleted entry (ON DELETE SET NULL); mirror that in
+		// the loaded entities so the response does not point at an entry that no longer exists.
+		thesis.getFeedback().stream()
+				.filter(feedback -> feedbackId.equals(feedback.getFollowsUpId()))
+				.forEach(feedback -> feedback.setFollowsUpId(null));
+
 		thesis.setFeedback(new ArrayList<>(
 				thesis.getFeedback().stream().filter(feedback -> !feedback.getId().equals(feedbackId)).toList()
 		));
@@ -670,10 +676,15 @@ public class ThesisService {
 				.filter(existing -> existing.getType() == type)
 				.map(ThesisFeedback::getId)
 				.collect(Collectors.toSet());
+		Set<UUID> versionIds = documentVersionIdsOf(thesis, type);
 		for (var requestedChange : requestedChanges) {
 			if (requestedChange.followsUpId() != null && !linkableIds.contains(requestedChange.followsUpId())) {
 				throw new ResourceInvalidParametersException(
 						"A follow-up must refer to an existing feedback entry of the same thesis and type.");
+			}
+			if (requestedChange.documentVersionId() != null && !versionIds.contains(requestedChange.documentVersionId())) {
+				throw new ResourceInvalidParametersException(
+						"The reviewed document version does not belong to this thesis and feedback type.");
 			}
 		}
 		// An entry gets at most one follow-up. One that already has a successor — saved by another
@@ -687,6 +698,15 @@ public class ThesisService {
 		Set<UUID> takenParents = requestedParents.isEmpty()
 				? new HashSet<>()
 				: new HashSet<>(thesisFeedbackRepository.findFollowedUpIds(requestedParents));
+		// Only a completed entry can be followed up; an open one is still on the student's list. Read
+		// from the database: the student may have re-opened the entry while a review or a supervisor's
+		// preview was in progress, and a batch must not fail over that — the entry is saved unlinked.
+		Set<UUID> completedParents = requestedParents.isEmpty()
+				? Set.of()
+				: thesisFeedbackRepository.findAllById(requestedParents).stream()
+						.filter(parent -> parent.getCompletedAt() != null)
+						.map(ThesisFeedback::getId)
+						.collect(Collectors.toSet());
 		for (var requestedChange : requestedChanges) {
 			ThesisFeedback feedback = new ThesisFeedback();
 
@@ -701,9 +721,16 @@ public class ThesisService {
 			// Per-item source wins so a mixed batch can carry both manual (HUMAN) and AI-reviewed
 			// (AI_REVIEWED_BY_HUMAN) rows; fall back to the batch source when the item omits it.
 			feedback.setGenerationSource(requestedChange.source() != null ? requestedChange.source() : source);
-			feedback.setDocumentVersionId(documentVersionId);
+			// An AI draft carries the revision its review read; it keeps that one even when a newer
+			// document was uploaded before the draft was saved. Everything else gets the batch's.
+			feedback.setDocumentVersionId(requestedChange.documentVersionId() != null
+					? requestedChange.documentVersionId()
+					: documentVersionId);
 			UUID followsUpId = requestedChange.followsUpId();
-			if (followsUpId != null && !takenParents.add(followsUpId)) {
+			if (followsUpId != null && !completedParents.contains(followsUpId)) {
+				log.info("Feedback {} is open again; saving the follow-up to it unlinked", followsUpId);
+				followsUpId = null;
+			} else if (followsUpId != null && !takenParents.add(followsUpId)) {
 				log.info("Feedback {} already has a follow-up; saving the new entry unlinked", followsUpId);
 				followsUpId = null;
 			}
@@ -744,6 +771,20 @@ public class ThesisService {
 	 * the thesis has no matching document yet — callers save the row anyway; the field just stays
 	 * unset until a document exists.
 	 */
+	/** Every revision a feedback row of the given type may point at. */
+	private static Set<UUID> documentVersionIdsOf(Thesis thesis, ThesisFeedbackType type) {
+		return switch (type) {
+			case PROPOSAL -> thesis.getProposals() == null ? Set.of() : thesis.getProposals().stream()
+					.map(de.tum.cit.aet.thesis.proposal.entity.ThesisProposal::getId)
+					.collect(Collectors.toSet());
+			case THESIS -> thesis.getFiles() == null ? Set.of() : thesis.getFiles().stream()
+					.filter(file -> "THESIS".equals(file.getType()))
+					.map(ThesisFile::getId)
+					.collect(Collectors.toSet());
+			case PRESENTATION -> Set.of();
+		};
+	}
+
 	private UUID resolveLatestDocumentVersionId(Thesis thesis, ThesisFeedbackType type) {
 		return switch (type) {
 			case PROPOSAL -> {

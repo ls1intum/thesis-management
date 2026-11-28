@@ -64,6 +64,9 @@ interface INewEntry {
   // through to the save so the follow-up stays linked to the entry it follows up.
   followsUpId?: string
   deferredToSupervisor?: boolean
+  // The document revision the AI review read. Sent with the save so the draft stays pinned to it
+  // even when the student uploads a newer document while the dialog is open.
+  documentVersionId?: string
 }
 
 interface IAIDraft {
@@ -105,6 +108,7 @@ interface IAIPreviewResponse {
   summary?: string
   drafts?: IAIDraft[]
   resolvedFeedbackIds?: string[]
+  documentVersionId?: string
 }
 
 const NO_SUGGESTION_MESSAGE =
@@ -219,7 +223,11 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
    * otherwise sit below. The source is the caller's to decide: a finding the AI made is
    * AI-authored, whereas an imported note is the instructor's own — the AI only split it up.
    */
-  const appendEntries = (drafts: IAIDraft[], source: ThesisFeedbackSource) => {
+  const appendEntries = (
+    drafts: IAIDraft[],
+    source: ThesisFeedbackSource,
+    documentVersionId?: string,
+  ) => {
     setEntries((prev) => {
       const cleaned = prev.filter((entry) => entry.feedback.trim().length > 0)
       const newRows: INewEntry[] = drafts.map((draft) => ({
@@ -230,6 +238,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
         source,
         followsUpId: draft.followsUpId ?? undefined,
         deferredToSupervisor: draft.deferredToSupervisor ?? false,
+        documentVersionId,
       }))
       const merged = [...cleaned, ...newRows]
       return merged.length === 0 ? [emptyEntry()] : merged
@@ -467,7 +476,11 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
       if (response.ok) {
         const drafts = response.data.drafts ?? []
         // AI-drafted rows the instructor reviews before saving are persisted as AI + Instructor.
-        appendEntries(drafts, ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN)
+        appendEntries(
+          drafts,
+          ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN,
+          response.data.documentVersionId,
+        )
         setAiAssessment(response.data)
       } else {
         showSimpleError(getApiResponseErrorMessage(response))
@@ -502,6 +515,7 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
           source: entry.source,
           followsUpId: entry.followsUpId ?? null,
           deferredToSupervisor: entry.deferredToSupervisor ?? false,
+          documentVersionId: entry.documentVersionId ?? null,
         })),
       },
     })

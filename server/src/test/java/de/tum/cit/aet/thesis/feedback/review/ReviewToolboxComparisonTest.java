@@ -116,6 +116,16 @@ class ReviewToolboxComparisonTest {
 	}
 
 	@Test
+	void aFollowUpIsLocatedOnThePageItsQuoteIsOn() {
+		ReviewToolbox toolbox = toolbox(List.of(COMPLETED));
+
+		call(toolbox, "record_follow_up",
+				"{\"ref\": \"E1\", \"title\": \"t\", \"page\": 1, \"quote\": \"We present a novel approach to scheduling.\"}");
+
+		assertThat(toolbox.close().followUps().getFirst().finding().locations().getFirst().page()).isEqualTo(2);
+	}
+
+	@Test
 	void aFollowUpToAnOpenEntryIsRefused() {
 		ReviewToolbox toolbox = toolbox(List.of(OPEN));
 

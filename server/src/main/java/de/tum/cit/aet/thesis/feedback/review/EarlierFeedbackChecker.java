@@ -141,7 +141,7 @@ public class EarlierFeedbackChecker {
 						continue;
 					}
 					persists.add(entry.ref());
-					followUps.add(new FollowUp(entry.ref(), toFinding(entry, verdict, quote, pages.size())));
+					followUps.add(new FollowUp(entry.ref(), toFinding(entry, verdict, quote, pages)));
 				}
 				default -> {
 					// UNCLEAR or an unknown token: no claim either way.
@@ -152,10 +152,8 @@ public class EarlierFeedbackChecker {
 	}
 
 	private static Finding toFinding(EarlierFeedback entry, EarlierFeedbackVerdicts.Verdict verdict, String quote,
-			int pageCount) {
-		Integer page = verdict.page() != null && verdict.page() >= 1 && verdict.page() <= pageCount
-				? verdict.page()
-				: null;
+			List<String> pages) {
+		Integer page = Grounding.pageOf(pages, quote, verdict.page());
 		String section = strip(verdict.section());
 		List<Location> locations = page == null && section == null && quote == null
 				? List.of()

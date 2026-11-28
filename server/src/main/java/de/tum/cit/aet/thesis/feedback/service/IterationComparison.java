@@ -57,9 +57,6 @@ public class IterationComparison {
 	 */
 	static final int MAX_ENTRIES = 60;
 
-	/** Longest follow-up chain walked; guards against a cycle in hand-edited data. */
-	private static final int MAX_CHAIN_LENGTH = 20;
-
 	/** Characters of the original entry quoted in a follow-up's text. */
 	private static final int ORIGINAL_EXCERPT_LENGTH = 120;
 
@@ -184,11 +181,15 @@ public class IterationComparison {
 	}
 
 	private static int depthOf(ThesisFeedback entry, Map<UUID, ThesisFeedback> byId) {
+		// Walked to the end however long the chain is, so any configured cap is honoured; the visited
+		// set only stops a cycle, which the schema cannot rule out for hand-edited data.
 		int depth = 0;
+		Set<UUID> visited = new HashSet<>();
+		visited.add(entry.getId());
 		ThesisFeedback current = entry;
-		while (current.getFollowsUpId() != null && depth < MAX_CHAIN_LENGTH) {
+		while (current.getFollowsUpId() != null) {
 			ThesisFeedback parent = byId.get(current.getFollowsUpId());
-			if (parent == null) {
+			if (parent == null || !visited.add(parent.getId())) {
 				break;
 			}
 			depth++;
@@ -244,11 +245,13 @@ public class IterationComparison {
 				.map(EarlierFeedback::id)
 				.toList();
 
-		String summary = appendNotes(result.summary(), resolvedIds.size(), deferredNow.size() + stillDeferred.size());
+		List<EarlierFeedback> deferred = new ArrayList<>(deferredNow);
+		deferred.addAll(stillDeferred);
+		String summary = appendNotes(result.summary(), resolvedIds.size(), deferred);
 		return new Compared(result.withSummary(summary), List.copyOf(drafts), resolvedIds);
 	}
 
-	private static String appendNotes(String summary, int resolved, int deferred) {
+	private static String appendNotes(String summary, int resolved, List<EarlierFeedback> deferred) {
 		List<String> notes = new ArrayList<>();
 		if (summary != null && !summary.isBlank()) {
 			notes.add(summary.strip());
@@ -258,10 +261,17 @@ public class IterationComparison {
 		} else if (resolved > 1) {
 			notes.add("Well done: " + resolved + " issues from earlier feedback are resolved in this version.");
 		}
-		if (deferred == 1) {
-			notes.add("One issue keeps recurring despite earlier feedback. Please discuss it with your supervisor.");
-		} else if (deferred > 1) {
-			notes.add(deferred + " issues keep recurring despite earlier feedback. Please discuss them with your supervisor.");
+		// Named, not just counted: an already-deferred defect raises no new entry, so the summary is the
+		// only place this review mentions it.
+		String named = deferred.stream()
+				.map(entry -> "\"" + excerpt(entry.text()) + "\"")
+				.collect(Collectors.joining("; "));
+		if (deferred.size() == 1) {
+			notes.add("One issue keeps recurring despite earlier feedback. Please discuss it with your supervisor: "
+					+ named);
+		} else if (deferred.size() > 1) {
+			notes.add(deferred.size() + " issues keep recurring despite earlier feedback. Please discuss them with your "
+					+ "supervisor: " + named);
 		}
 		return notes.isEmpty() ? summary : String.join("\n\n", notes);
 	}

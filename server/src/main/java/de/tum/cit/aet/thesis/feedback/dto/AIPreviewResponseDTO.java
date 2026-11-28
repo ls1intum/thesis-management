@@ -16,6 +16,8 @@ import java.util.UUID;
  * @param summary             the review summary
  * @param drafts              the editable drafts, follow-ups included
  * @param resolvedFeedbackIds completed earlier entries the review found resolved
+ * @param documentVersionId   the revision the review read; sent back with the saved drafts so they
+ *                            stay pinned to it even when a newer document is uploaded meanwhile
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record AIPreviewResponseDTO(
@@ -23,7 +25,8 @@ public record AIPreviewResponseDTO(
 		Integer score,
 		String summary,
 		List<AIFeedbackDraftDTO> drafts,
-		List<UUID> resolvedFeedbackIds
+		List<UUID> resolvedFeedbackIds,
+		UUID documentVersionId
 ) {
 	/**
 	 * A preview without any comparison against earlier feedback.
@@ -35,6 +38,6 @@ public record AIPreviewResponseDTO(
 	 */
 	public AIPreviewResponseDTO(AssessmentCategory assessment, Integer score, String summary,
 			List<AIFeedbackDraftDTO> drafts) {
-		this(assessment, score, summary, drafts, List.of());
+		this(assessment, score, summary, drafts, List.of(), null);
 	}
 }
