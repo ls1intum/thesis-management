@@ -253,7 +253,10 @@ public record ThesisFeedbackDto(
 	ThesisFeedbackCategory category,
 	ThesisFeedbackSeverity severity,
 	ThesisFeedbackSource generationSource,
-	UUID documentVersionId
+	UUID documentVersionId,
+	// The earlier entry this one follows up, when its defect recurred in a newer version.
+	UUID followsUpId,
+	boolean deferredToSupervisor
 ) {
 
 	public static ThesisFeedbackDto fromThesisFeedbackEntity(ThesisFeedback feedback) {
@@ -271,7 +274,9 @@ public record ThesisFeedbackDto(
 		feedback.getCategory(),
 		feedback.getSeverity(),
 		feedback.getGenerationSource(),
-		feedback.getDocumentVersionId()
+		feedback.getDocumentVersionId(),
+		feedback.getFollowsUpId(),
+		feedback.isDeferredToSupervisor()
 	);
 	}
 }
@@ -285,6 +290,8 @@ public record ThesisAIReviewSummaryDto(
 	// Points at the proposalId (PROPOSAL) or thesis fileId (THESIS) the review ran against. The
 	// client compares it with the latest revision and hides the summary once it no longer matches.
 	UUID documentVersionId,
+	// Completed feedback entries this review found resolved in the reviewed version.
+	List<UUID> resolvedFeedbackIds,
 	Instant updatedAt
 ) {
 
@@ -299,6 +306,7 @@ public record ThesisAIReviewSummaryDto(
 		summary.getAssessment(),
 		summary.getSummary(),
 		summary.getDocumentVersionId(),
+		summary.getResolvedFeedbackIds(),
 		summary.getUpdatedAt()
 	);
 	}

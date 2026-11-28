@@ -52,6 +52,10 @@ import java.util.stream.IntStream;
  * {@code finish_review} costs the run its verdict, not its findings.</li>
  * </ul>
  *
+ * <p>When the document has earlier feedback, the toolbox also offers {@code get_earlier_feedback},
+ * {@code record_follow_up} and {@code mark_resolved}. Whether the agent fetched the earlier entries
+ * is recorded like category coverage, and a run that never did says so in its summary.
+ *
  * <p>Text only, on purpose: the agent re-sends its whole conversation every turn, and page images
  * carried across a dozen turns cost more than the figure checks they enable are worth. A review
  * that must judge figure rendering belongs on the fan-out, which pays for the images exactly once.
@@ -78,6 +82,10 @@ public class AgenticReviewer implements ThesisReviewer {
 	private static final int PAGE_PREVIEW_LENGTH = 200;
 
 	private static final String FINISH_TOOL = "finish_review";
+
+	/** Note added to the summary of a run that was offered the comparison but skipped it. */
+	static final String EARLIER_FEEDBACK_UNCHECKED = "Earlier feedback was not compared with this version, so "
+			+ "resolved and recurring issues are not reported.";
 
 	private final PdfService pdfService;
 	private final ChatClient chatClient;
@@ -110,8 +118,8 @@ public class AgenticReviewer implements ThesisReviewer {
 	public ReviewResult review(ReviewRequest request) {
 		List<String> pages = pdfService.extractTextFromPdf(request.document());
 		ReviewMeter meter = new ReviewMeter();
-		ReviewToolbox toolbox = new ReviewToolbox(pages, request.guidelines(), request.type(), request.progress(),
-				meter);
+		ReviewToolbox toolbox = new ReviewToolbox(pages, request.guidelines(), request.type(),
+				request.earlierFeedback(), request.progress(), meter);
 
 		try {
 			runAgent(toolbox, meter, request.type(), pages);
@@ -129,7 +137,8 @@ public class AgenticReviewer implements ThesisReviewer {
 		metricsRecorder.record(meter.snapshot(strategy(), toolbox.coveredCount(),
 				ReviewCategory.values().length));
 
-		if (missing.size() == ReviewCategory.values().length && result.findings().isEmpty()) {
+		if (missing.size() == ReviewCategory.values().length && result.findings().isEmpty()
+				&& result.followUps().isEmpty()) {
 			// Nothing was checked and nothing was found: there is no review here to qualify, only a
 			// failure to report as one.
 			throw new IllegalStateException("Agentic review produced no findings and checked no category");
@@ -137,6 +146,12 @@ public class AgenticReviewer implements ThesisReviewer {
 		if (!missing.isEmpty()) {
 			log.warn("Agentic review covered {} of {} categories; {} were never checked",
 					toolbox.coveredCount(), ReviewCategory.values().length, slugsOf(missing));
+		}
+		if (toolbox.earlierFeedbackUnchecked()) {
+			// Coverage of the comparison is recorded like coverage of a category: the entries exist
+			// only behind get_earlier_feedback, so an agent that never called it cannot have compared.
+			log.warn("Agentic review never fetched the {} earlier feedback entries", request.earlierFeedback().size());
+			result = result.withSummary(appendNote(result.summary(), EARLIER_FEEDBACK_UNCHECKED));
 		}
 		if (missing.isEmpty() && !toolbox.finished()) {
 			// Every category's rules were fetched, but the agent stopped before finish_review, so
@@ -166,8 +181,8 @@ public class AgenticReviewer implements ThesisReviewer {
 	 */
 	protected void runAgent(ReviewToolbox toolbox, ReviewMeter meter, ReviewType type, List<String> pages) {
 		chatClient.prompt()
-				.system(AgentPrompt.systemPrompt(type))
-				.user(openingMessage(type, pages))
+				.system(AgentPrompt.systemPrompt(type, toolbox.compares()))
+				.user(openingMessage(type, pages, toolbox.compares()))
 				.toolCallbacks(toolbox.callbacks())
 				.advisors(ToolCallingAdvisor.builder()
 						.toolCallingManager(toolCallingManager)
@@ -242,12 +257,14 @@ public class AgenticReviewer implements ThesisReviewer {
 	/**
 	 * Builds the first user message: the brief, and either the whole document or an index of it.
 	 */
-	private static String openingMessage(ReviewType type, List<String> pages) {
+	private static String openingMessage(ReviewType type, List<String> pages, boolean compares) {
 		String document = type == ReviewType.PROPOSAL ? "proposal" : "thesis";
 		int characters = pages.stream().mapToInt(String::length).sum();
 		String brief = ("You are reviewing a %d-page student %s. Work through every review dimension, record grounded "
 				+ "findings with verbatim quotes, then call finish_review.")
-						.formatted(pages.size(), document);
+						.formatted(pages.size(), document)
+				+ (compares ? " This " + document + " already received feedback on earlier versions: compare against it "
+						+ "with get_earlier_feedback, record_follow_up and mark_resolved." : "");
 
 		if (characters <= INLINE_DOCUMENT_LIMIT) {
 			return brief + "\n\nThe full text follows; use get_page_text and search_document to verify exact wording.\n\n"
@@ -272,6 +289,10 @@ public class AgenticReviewer implements ThesisReviewer {
 				.mapToObj(index -> "=== PAGE " + (index + 1) + " ===\n" + pages.get(index))
 				.collect(Collectors.joining("\n\n"));
 		return "<" + ReviewToolbox.PAGE_TEXT_TAG + ">\n" + body + "\n</" + ReviewToolbox.PAGE_TEXT_TAG + ">";
+	}
+
+	private static String appendNote(String summary, String note) {
+		return summary == null || summary.isBlank() ? note : summary + "\n\n" + note;
 	}
 
 	private static String slugsOf(List<ReviewCategory> categories) {

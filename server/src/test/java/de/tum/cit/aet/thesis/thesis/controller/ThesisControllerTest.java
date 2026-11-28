@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import de.tum.cit.aet.thesis.feedback.entity.AIReviewSummary;
+import de.tum.cit.aet.thesis.feedback.model.ReviewType;
+import de.tum.cit.aet.thesis.feedback.repository.AIReviewSummaryRepository;
 import de.tum.cit.aet.thesis.mock.BaseIntegrationTest;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationType;
 import de.tum.cit.aet.thesis.presentation.constants.ThesisPresentationVisibility;
@@ -59,6 +62,9 @@ class ThesisControllerTest extends BaseIntegrationTest {
 	private ThesisRepository thesisRepository;
 
 	@Autowired
+	private AIReviewSummaryRepository aiReviewSummaryRepository;
+
+	@Autowired
 	private ThesisFeedbackRepository thesisFeedbackRepository;
 
 	@Autowired
@@ -110,6 +116,28 @@ class ThesisControllerTest extends BaseIntegrationTest {
 			assertThat(json.get("language").asString()).isEqualTo("ENGLISH");
 			assertThat(json.get("state").asString()).isEqualTo("PROPOSAL");
 			assertThat(json.get("visibility").asString()).isEqualTo("INTERNAL");
+		}
+
+		@Test
+		void getThesis_returnsTheEntriesTheLatestAiReviewFoundResolved() throws Exception {
+			UUID thesisId = createTestThesis("Resolved entries thesis");
+			UUID resolvedId = UUID.randomUUID();
+			AIReviewSummary summary = new AIReviewSummary();
+			summary.setThesis(thesisRepository.findById(thesisId).orElseThrow());
+			summary.setType(ReviewType.THESIS);
+			summary.setSummary("Well done.");
+			summary.setResolvedFeedbackIds(List.of(resolvedId));
+			aiReviewSummaryRepository.save(summary);
+
+			// Round-trips through the jsonb column and back out of the thesis DTO.
+			assertThat(aiReviewSummaryRepository.findByThesisIdAndType(thesisId, ReviewType.THESIS).orElseThrow()
+					.getResolvedFeedbackIds()).containsExactly(resolvedId);
+			String response = mockMvc.perform(MockMvcRequestBuilders.get("/v2/theses/{thesisId}", thesisId)
+							.header("Authorization", createRandomAdminAuthentication()))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			JsonNode summaries = objectMapper.readTree(response).get("aiReviewSummaries");
+			assertThat(summaries.get(0).get("resolvedFeedbackIds").get(0).asString()).isEqualTo(resolvedId.toString());
 		}
 
 		@Test
@@ -483,6 +511,62 @@ class ThesisControllerTest extends BaseIntegrationTest {
 									"Manually typed feedback", ThesisFeedbackSource.HUMAN),
 							org.assertj.core.groups.Tuple.tuple(
 									"AI-drafted feedback", ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN));
+		}
+
+		@Test
+		void requestChanges_persistsAFollowUpLinkedToAnEarlierEntryOfTheSameThesis() throws Exception {
+			UUID thesisId = createTestThesis("Follow-up thesis");
+			String adminAuth = createRandomAdminAuthentication();
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
+							.header("Authorization", adminAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(new RequestChangesPayload(ThesisFeedbackType.THESIS,
+									List.of(new RequestChangesPayload.RequestedChange("Original", false, null, null, null))))))
+					.andExpect(status().isOk());
+			UUID originalId = thesisFeedbackRepository.findAll().getFirst().getId();
+
+			String response = mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
+							.header("Authorization", adminAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(new RequestChangesPayload(ThesisFeedbackType.THESIS,
+									List.of(new RequestChangesPayload.RequestedChange("Follow-up", false, null, null,
+											ThesisFeedbackSource.AI_REVIEWED_BY_HUMAN, originalId, true))))))
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			JsonNode followUp = null;
+			for (JsonNode entry : objectMapper.readTree(response).get("feedback")) {
+				if ("Follow-up".equals(entry.get("feedback").asString())) {
+					followUp = entry;
+				}
+			}
+			assertThat(followUp).isNotNull();
+			assertThat(followUp.get("followsUpId").asString()).isEqualTo(originalId.toString());
+			assertThat(followUp.get("deferredToSupervisor").asBoolean()).isTrue();
+		}
+
+		@Test
+		void requestChanges_rejectsAFollowUpOfAnotherThesisOrType() throws Exception {
+			UUID otherThesisId = createTestThesis("Other thesis");
+			UUID thesisId = createTestThesis("Follow-up thesis");
+			String adminAuth = createRandomAdminAuthentication();
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", otherThesisId)
+							.header("Authorization", adminAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(new RequestChangesPayload(ThesisFeedbackType.THESIS,
+									List.of(new RequestChangesPayload.RequestedChange("Foreign", false, null, null, null))))))
+					.andExpect(status().isOk());
+			UUID foreignId = thesisFeedbackRepository.findAll().getFirst().getId();
+
+			mockMvc.perform(MockMvcRequestBuilders.post("/v2/theses/{thesisId}/feedback", thesisId)
+							.header("Authorization", adminAuth)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(objectMapper.writeValueAsString(new RequestChangesPayload(ThesisFeedbackType.THESIS,
+									List.of(new RequestChangesPayload.RequestedChange("Follow-up", false, null, null, null,
+											foreignId, false))))))
+					.andExpect(status().isBadRequest());
+
+			assertThat(thesisFeedbackRepository.count()).isEqualTo(1);
 		}
 
 		@Test

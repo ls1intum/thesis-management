@@ -34,6 +34,10 @@ import { useReviewProgress } from '@/core/hooks/useReviewProgress'
 import AiReviewProgress from '@/thesis/components/AiReviewProgress/AiReviewProgress'
 import FeedbackCategoryCounts from '@/thesis/components/FeedbackCategoryCounts/FeedbackCategoryCounts'
 import {
+  FollowUpBadge,
+  ResolvedFeedbackList,
+} from '@/thesis/components/FeedbackIteration/FeedbackIteration'
+import {
   ASSESSMENT_LABEL,
   countByCategory,
   FEEDBACK_CATEGORY_OPTIONS,
@@ -56,12 +60,18 @@ interface INewEntry {
   // AI_REVIEWED_BY_HUMAN (an AI draft the instructor reviews before saving). Persisted so the
   // feedback overview can badge AI-assisted entries correctly.
   source: ThesisFeedbackSource
+  // Set on an AI draft that reports a defect of an earlier, addressed entry as recurring. Carried
+  // through to the save so the follow-up stays linked to the entry it follows up.
+  followsUpId?: string
+  deferredToSupervisor?: boolean
 }
 
 interface IAIDraft {
   feedback: string
   category?: ThesisFeedbackCategory | null
   severity?: ThesisFeedbackSeverity | null
+  followsUpId?: string | null
+  deferredToSupervisor?: boolean
 }
 
 interface IFeedbackClassification {
@@ -94,6 +104,7 @@ interface IAIPreviewResponse {
   score?: number | null
   summary?: string
   drafts?: IAIDraft[]
+  resolvedFeedbackIds?: string[]
 }
 
 const NO_SUGGESTION_MESSAGE =
@@ -217,6 +228,8 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
         category: draft.category ?? '',
         severity: draft.severity ?? '',
         source,
+        followsUpId: draft.followsUpId ?? undefined,
+        deferredToSupervisor: draft.deferredToSupervisor ?? false,
       }))
       const merged = [...cleaned, ...newRows]
       return merged.length === 0 ? [emptyEntry()] : merged
@@ -487,6 +500,8 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
           category: entry.category || null,
           severity: entry.severity || null,
           source: entry.source,
+          followsUpId: entry.followsUpId ?? null,
+          deferredToSupervisor: entry.deferredToSupervisor ?? false,
         })),
       },
     })
@@ -658,10 +673,14 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                     </Text>
                   )}
                   {aiAssessment.summary && (
-                    <Text size='sm' c='dimmed'>
+                    <Text size='sm' c='dimmed' style={{ whiteSpace: 'pre-line' }}>
                       {aiAssessment.summary}
                     </Text>
                   )}
+                  <ResolvedFeedbackList
+                    resolvedFeedbackIds={aiAssessment.resolvedFeedbackIds}
+                    feedback={(thesis.feedback ?? []).filter((change) => change.type === type)}
+                  />
                   <FeedbackCategoryCounts counts={categoryCounts} />
                   <Text size='xs' c='dimmed'>
                     Entries below are drafts — edit or delete them before saving.
@@ -683,6 +702,11 @@ const ThesisFeedbackRequestButton = (props: IThesisFeedbackRequestButtonProps) =
                       <Text size='sm' fw={500}>
                         Entry {index + 1}
                       </Text>
+                      <FollowUpBadge
+                        followsUpId={entry.followsUpId}
+                        deferredToSupervisor={entry.deferredToSupervisor}
+                        feedback={thesis.feedback ?? []}
+                      />
                       {entry.severity && (
                         <Tooltip
                           label={SEVERITY_DESCRIPTION[entry.severity]}

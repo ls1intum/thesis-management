@@ -51,7 +51,7 @@ public final class IncompleteCoverage {
 				? warning
 				: warning + "\n\n" + result.summary();
 
-		return new ReviewResult(null, null, summary, result.findings());
+		return new ReviewResult(null, null, summary, result.findings(), result.followUps(), result.resolvedRefs());
 	}
 
 	/**
@@ -71,6 +71,6 @@ public final class IncompleteCoverage {
 		String summary = result.summary() == null || result.summary().isBlank()
 				? warning
 				: warning + "\n\n" + result.summary();
-		return new ReviewResult(null, null, summary, result.findings());
+		return new ReviewResult(null, null, summary, result.findings(), result.followUps(), result.resolvedRefs());
 	}
 }

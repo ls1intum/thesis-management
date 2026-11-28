@@ -71,6 +71,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /** Manages the full thesis lifecycle, including creation, state transitions, proposals, assessments, and grading. */
 @Service
@@ -623,13 +624,52 @@ public class ThesisService {
 			ThesisFeedbackType type,
 			List<RequestChangesPayload.RequestedChange> requestedChanges,
 			de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource source) {
+		return requestChanges(thesis, type, requestedChanges, source, null);
+	}
+
+	/**
+	 * Persists a batch of feedback items pinned to an explicit document revision. The AI auto flow
+	 * passes the revision it reviewed: a student can upload a newer document while the review runs,
+	 * and pinning its findings to that newer upload would attribute them to a version they were never
+	 * checked against.
+	 *
+	 * @param thesis the thesis the feedback belongs to
+	 * @param type the feedback type (proposal, thesis, or presentation)
+	 * @param requestedChanges the feedback rows to persist
+	 * @param source the batch-level source applied when a row does not specify its own
+	 * @param reviewedVersionId the revision the feedback refers to; {@code null} pins it to the
+	 *                          currently-latest revision
+	 * @return the thesis with the new feedback rows attached
+	 */
+	@Transactional
+	public Thesis requestChanges(
+			Thesis thesis,
+			ThesisFeedbackType type,
+			List<RequestChangesPayload.RequestedChange> requestedChanges,
+			de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource source,
+			UUID reviewedVersionId) {
 		requireNotAnonymized(thesis);
 		currentUserProvider().assertCanAccessResearchGroup(thesis.getResearchGroup());
 
 		// Pin every new feedback row to the currently-latest revision of the underlying document
 		// so later uploads don't silently re-target old comments at v2/v3. Presentation feedback
 		// is not versioned — its column stays null.
-		UUID documentVersionId = resolveLatestDocumentVersionId(thesis, type);
+		UUID documentVersionId = reviewedVersionId != null
+				? reviewedVersionId
+				: resolveLatestDocumentVersionId(thesis, type);
+
+		// Validated up front, before any row is written: a follow-up link is client input and must
+		// not point at another thesis's feedback or at feedback on a different document type.
+		Set<UUID> linkableIds = thesis.getFeedback().stream()
+				.filter(existing -> existing.getType() == type)
+				.map(ThesisFeedback::getId)
+				.collect(Collectors.toSet());
+		for (var requestedChange : requestedChanges) {
+			if (requestedChange.followsUpId() != null && !linkableIds.contains(requestedChange.followsUpId())) {
+				throw new ResourceInvalidParametersException(
+						"A follow-up must refer to an existing feedback entry of the same thesis and type.");
+			}
+		}
 
 		for (var requestedChange : requestedChanges) {
 			ThesisFeedback feedback = new ThesisFeedback();
@@ -646,6 +686,9 @@ public class ThesisService {
 			// (AI_REVIEWED_BY_HUMAN) rows; fall back to the batch source when the item omits it.
 			feedback.setGenerationSource(requestedChange.source() != null ? requestedChange.source() : source);
 			feedback.setDocumentVersionId(documentVersionId);
+			feedback.setFollowsUpId(requestedChange.followsUpId());
+			feedback.setDeferredToSupervisor(requestedChange.followsUpId() != null
+					&& Boolean.TRUE.equals(requestedChange.deferredToSupervisor()));
 
 			feedback = thesisFeedbackRepository.save(feedback);
 

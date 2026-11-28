@@ -90,11 +90,12 @@ class SinglePromptReviewerTest {
 	@Test
 	void oneCallReturnsTheReviewAsTheModelConsolidatedIt() {
 		ReviewResult expected = new ReviewResult(AssessmentCategory.ACCEPTABLE, 60, "Summary.", List.of());
-		when(callResponseSpec.responseEntity(anyConverter())).thenReturn(new ResponseEntity<>(null, expected));
+		when(callResponseSpec.responseEntity(anyConverter())).thenReturn(new ResponseEntity<>(null,
+				new ReviewVerdict(expected.assessment(), expected.score(), expected.summary(), expected.findings())));
 
 		ReviewResult actual = reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdf, progress));
 
-		assertThat(actual).isSameAs(expected);
+		assertThat(actual).isEqualTo(expected);
 		verify(chatClient).prompt();
 		verify(pdfService, never()).extractImagesFromPdf(any(Resource.class));
 		verify(progress).stepStarted(eq("review"), anyString(), eq(1), eq(1));
@@ -112,7 +113,7 @@ class SinglePromptReviewerTest {
 	@Test
 	void theSystemPromptCarriesEveryCategorysTaskAndRulesAndTheUploadStaysFenced() {
 		when(callResponseSpec.responseEntity(anyConverter()))
-				.thenReturn(new ResponseEntity<>(null, new ReviewResult(null, null, null, List.of())));
+				.thenReturn(new ResponseEntity<>(null, new ReviewVerdict(null, null, null, List.of())));
 		when(promptSystemSpec.text(anyString())).thenReturn(promptSystemSpec);
 		when(promptUserSpec.text(anyString())).thenReturn(promptUserSpec);
 		when(promptUserSpec.media(any(Media[].class))).thenReturn(promptUserSpec);
@@ -168,7 +169,7 @@ class SinglePromptReviewerTest {
 		verify(progress, never()).stepCompleted(anyString(), anyInt(), anyInt());
 	}
 
-	private static StructuredOutputConverter<ReviewResult> anyConverter() {
+	private static StructuredOutputConverter<ReviewVerdict> anyConverter() {
 		return any();
 	}
 

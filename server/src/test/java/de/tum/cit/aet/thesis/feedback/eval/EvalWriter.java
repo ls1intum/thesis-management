@@ -36,6 +36,8 @@ import java.util.Map;
  *     result.json                                  the raw ReviewResult
  *     metrics.json                                 what the run cost
  *     trace.json                                   per-category findings before the merge, and failures
+ *     comparison.json                              only for a document with earlier feedback: the
+ *                                                  comparison scored against its ground truth
  *     error.txt                                    only when the run failed
  * </pre>
  *
@@ -179,7 +181,23 @@ public class EvalWriter implements AutoCloseable {
 	 * @param metrics what the run cost, or {@code null} when the strategy reported none
 	 */
 	public void writeRun(EvalRun run, ReviewResult result, ReviewRunMetrics metrics) {
+		writeRun(run, result, metrics, null);
+	}
+
+	/**
+	 * Writes one completed review of a document that was compared against earlier feedback,
+	 * together with how well that comparison matched the ground truth.
+	 *
+	 * @param run        which model, approach, document and seed produced it
+	 * @param result     the review
+	 * @param metrics    what the run cost, or {@code null} when the strategy reported none
+	 * @param comparison the comparison's score, or {@code null} for a first upload
+	 */
+	public void writeRun(EvalRun run, ReviewResult result, ReviewRunMetrics metrics, EvalComparisonScore comparison) {
 		Path directory = directoryFor(run);
+		if (comparison != null) {
+			write(directory.resolve("comparison.json"), JSON.writeValueAsString(comparison) + "\n");
+		}
 		write(directory.resolve("result.json"), JSON.writeValueAsString(result) + "\n");
 		write(directory.resolve("feedback.md"), renderFeedback(run, result, metrics));
 		if (metrics != null) {
@@ -194,6 +212,11 @@ public class EvalWriter implements AutoCloseable {
 		record.put("summary", result.summary());
 		record.put("findings", result.findings());
 		record.put("metrics", metrics);
+		if (comparison != null) {
+			record.put("followUps", result.followUps());
+			record.put("resolvedRefs", result.resolvedRefs());
+			record.put("comparison", comparison);
+		}
 		appendJsonl(record);
 	}
 

@@ -90,20 +90,21 @@ public class SinglePromptReviewer implements ThesisReviewer {
 		progress.stepStarted(STEP_ID, "Reviewing the document", 1, 1);
 		ReviewResult result;
 		try {
-			ResponseEntity<ChatResponse, ReviewResult> response = chatClient.prompt()
+			ResponseEntity<ChatResponse, ReviewVerdict> response = chatClient.prompt()
 					.advisors(new MeteringAdvisor(meter))
 					.system(systemMessage -> systemMessage.text(systemPrompt(request)))
 					.user(userMessage -> userMessage
 							.text(CategoryReviewer.fencedPages(pages))
 							.media(images.toArray(new Media[0])))
 					.call()
-					.responseEntity(LenientOutputConverter.forType(ReviewResult.class));
-			result = response.getEntity();
-			if (result == null) {
+					.responseEntity(LenientOutputConverter.forType(ReviewVerdict.class));
+			ReviewVerdict verdict = response.getEntity();
+			if (verdict == null) {
 				// A model can answer with the JSON literal null, which parses cleanly. Treat it as the
 				// failure it is rather than completing the step and handing the caller nothing.
 				throw new IllegalStateException("The single-prompt review returned no result");
 			}
+			result = verdict.toResult();
 		} catch (RuntimeException e) {
 			// One call is the whole review, so unlike the fan-out there is nothing left to keep.
 			log.warn("AI review failed in the single-prompt strategy ({})", request.type(), e);

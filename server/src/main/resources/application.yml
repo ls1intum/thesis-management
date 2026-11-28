@@ -109,6 +109,10 @@ thesis-management:
     reviewer: ${AI_REVIEWER:category-fan-out}
     # Hard cap on the model turns one agentic review may take. Ignored by the fan-out strategy.
     agent-max-turns: ${AI_AGENT_MAX_TURNS:40}
+    # Comparison across iterations: how many follow-ups an AI review raises for a defect that keeps
+    # recurring after the student marked its feedback entry resolved. The next recurrence is deferred
+    # to the supervisor ("discuss with your supervisor") instead of being explained once more.
+    max-follow-ups: ${AI_MAX_FOLLOW_UPS:1}
     # Check each category's findings against that category's own rules before consolidating them,
     # dropping ungrounded quotes and findings that enforce a rule the guidelines do not state.
     # Costs one extra LLM call per category that found something. Fan-out strategy only.

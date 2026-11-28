@@ -1,6 +1,7 @@
 package de.tum.cit.aet.thesis.feedback.service;
 
 import de.tum.cit.aet.thesis.feedback.dto.AIFeedbackDraftDTO;
+import de.tum.cit.aet.thesis.feedback.model.EarlierFeedback;
 import de.tum.cit.aet.thesis.feedback.model.Finding;
 import de.tum.cit.aet.thesis.feedback.model.Location;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackCategory;
@@ -63,6 +64,25 @@ final class FeedbackMapper {
 
 		// Defensive fallback: shouldn't happen since the LLM contract requires a title.
 		return sb.isEmpty() ? "AI feedback finding" : sb.toString();
+	}
+
+	/**
+	 * Maps a recurring defect to a draft linked to the entry it follows up. The text names the
+	 * original entry, so the link survives anywhere the text is shown without the UI's badge.
+	 *
+	 * @param finding  the restated defect
+	 * @param original the earlier, completed entry whose defect recurs
+	 * @param deferred whether the defect is handed to the supervisor rather than restated again
+	 * @return the draft
+	 */
+	static AIFeedbackDraftDTO toFollowUpDraft(Finding finding, EarlierFeedback original, boolean deferred) {
+		String reference = "\"" + IterationComparison.excerpt(original.text()) + "\"";
+		String prefix = deferred
+				? "Discuss with your supervisor: this issue keeps recurring after earlier feedback (" + reference + "). "
+				: "Follow-up to " + reference + ": ";
+		ThesisFeedbackCategory category = toCategory(finding.category());
+		ThesisFeedbackSeverity severity = toSeverity(finding.severity());
+		return new AIFeedbackDraftDTO(prefix + toFeedbackText(finding), category, severity, original.id(), deferred);
 	}
 
 	private static void append(StringBuilder sb, String value, String separator) {

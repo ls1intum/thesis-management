@@ -74,6 +74,18 @@ public final class AgentPrompt {
 	 * @return the full system prompt
 	 */
 	public static String systemPrompt(ReviewType type) {
+		return systemPrompt(type, false);
+	}
+
+	/**
+	 * Builds the agent's system prompt for one review type, with the comparison against earlier
+	 * feedback when the document has any.
+	 *
+	 * @param type     whether the document is reviewed as a proposal or as a final thesis
+	 * @param compares whether the comparison tools are offered
+	 * @return the full system prompt
+	 */
+	public static String systemPrompt(ReviewType type, boolean compares) {
 		String document = type == ReviewType.PROPOSAL ? "student proposal" : "student thesis";
 		String role = ("You are an autonomous %s review agent for a computer science research group at a top European "
 				+ "university. You review one %s against the group's guidelines and produce a consolidated, actionable "
@@ -83,6 +95,10 @@ public final class AgentPrompt {
 		// The shared block comes before the method, not after: it describes findings in the shape the
 		// fan-out collects them, and the record_finding bullet below has to be the model's last word
 		// on how a finding reaches this pipeline.
-		return String.join("\n\n", SECURITY, role, Prompts.SHARED.getPrompt(type), METHOD);
+		if (!compares) {
+			return String.join("\n\n", SECURITY, role, Prompts.SHARED.getPrompt(type), METHOD);
+		}
+		return String.join("\n\n", SECURITY, EarlierFeedbackPrompt.SECURITY, role, Prompts.SHARED.getPrompt(type), METHOD,
+				EarlierFeedbackPrompt.agentMethod());
 	}
 }

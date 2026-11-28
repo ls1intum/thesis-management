@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.feedback.eval;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
+import de.tum.cit.aet.thesis.feedback.progress.ProgressReporter;
 import de.tum.cit.aet.thesis.feedback.review.ReviewRequest;
 import de.tum.cit.aet.thesis.feedback.review.ThesisReviewer;
 import de.tum.cit.aet.thesis.feedback.service.PdfService;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Runs the review pipeline over a fixed corpus in several server configurations and writes what
@@ -136,9 +138,14 @@ public final class EvalApplication {
 		metrics.reset();
 		Instant started = Instant.now();
 		try {
+			// A document with an .earlier.json sidecar is the new version of an iteration pair: it is
+			// reviewed against that earlier feedback, and the comparison is scored against the truth.
+			Optional<EvalEarlierFeedback> earlier = EvalEarlierFeedback.sidecarFor(document.file());
 			ReviewResult result = reviewer.review(new ReviewRequest(
-					document.type(), EvalGuidelines.forType(document.type()), new FileSystemResource(document.file())));
-			writer.writeRun(run, result, metrics.last());
+					document.type(), EvalGuidelines.forType(document.type()), new FileSystemResource(document.file()),
+					ProgressReporter.NOOP, earlier.map(EvalEarlierFeedback::toEarlierFeedback).orElse(List.of())));
+			writer.writeRun(run, result, metrics.last(),
+					earlier.map(truth -> EvalComparisonScore.score(truth, result)).orElse(null));
 			writer.writeTrace(run, metrics.candidates(), metrics.categoryFailures());
 			System.out.printf("  [%d/%d] %s seed=%d -> %d findings, %ds%n",
 					done, total, document.id(), seed, result.findings().size(), elapsed(started));
