@@ -93,6 +93,7 @@ services:
       - OPENAI_CHAT_TEMPERATURE
       - OPENAI_TIMEOUT
       - AI_REVIEW_INCLUDE_IMAGES
+      - AI_MAX_FOLLOW_UPS
     networks:
       - thesis-management-network
 

@@ -5,7 +5,9 @@ import de.tum.cit.aet.thesis.feedback.model.ReviewType;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +23,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -67,6 +70,22 @@ public class AIReviewSummary {
 	@Column(name = "document_version_id")
 	private UUID documentVersionId;
 
+	/**
+	 * Completed feedback entries of this type that the review found resolved in the reviewed
+	 * revision, so the UI can acknowledge them next to the score. Null for rows written before the
+	 * column existed.
+	 */
+	@Column(name = "resolved_feedback_ids", columnDefinition = "jsonb")
+	@JdbcTypeCode(SqlTypes.JSON)
+	private List<UUID> resolvedFeedbackIds;
+
+	/**
+	 * When the review behind this summary read the feedback it compared against. The next review
+	 * acknowledges only entries completed after it. Null for rows written before the column existed;
+	 * {@link #updatedAt} stands in for those.
+	 */
+	@Column(name = "baseline_captured_at")
+	private Instant baselineCapturedAt;
 	@UpdateTimestamp
 	@Column(name = "updated_at", nullable = false)
 	private Instant updatedAt;

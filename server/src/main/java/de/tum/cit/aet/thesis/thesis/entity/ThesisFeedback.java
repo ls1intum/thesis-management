@@ -81,4 +81,14 @@ public class ThesisFeedback {
 	// created, so later uploads don't reassign old comments to the wrong version.
 	@Column(name = "document_version_id")
 	private UUID documentVersionId;
+
+	// The earlier, completed entry whose defect this entry reports as recurring in a newer version.
+	// Kept as a plain id rather than an association: the chain is only ever walked over the
+	// feedback list the thesis already holds, so a lazy proxy would add queries and nothing else.
+	@Column(name = "follows_up_id")
+	private UUID followsUpId;
+
+	// A follow-up that hands a repeatedly recurring defect to the supervisor instead of restating it.
+	@Column(name = "deferred_to_supervisor", nullable = false)
+	private boolean deferredToSupervisor;
 }

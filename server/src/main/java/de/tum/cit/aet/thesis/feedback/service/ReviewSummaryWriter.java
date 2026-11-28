@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -53,6 +55,22 @@ public class ReviewSummaryWriter {
 	 *                          tell a current summary from one describing an older upload
 	 */
 	public void record(Thesis thesis, ReviewType reviewType, ReviewResult result, UUID documentVersionId) {
+		record(thesis, reviewType, result, documentVersionId, List.of(), null);
+	}
+
+	/**
+	 * Same as {@link #record(Thesis, ReviewType, ReviewResult, UUID)}, additionally recording which
+	 * completed feedback entries the review found resolved.
+	 *
+	 * @param thesis              the thesis that was reviewed
+	 * @param reviewType          whether the proposal or the thesis document was reviewed
+	 * @param result              the merged review result to persist
+	 * @param documentVersionId   the id of the document revision the review ran against
+	 * @param resolvedFeedbackIds the completed entries newly found resolved
+	 * @param baselineCapturedAt  when the review read the feedback it compared against
+	 */
+	public void record(Thesis thesis, ReviewType reviewType, ReviewResult result, UUID documentVersionId,
+			List<UUID> resolvedFeedbackIds, Instant baselineCapturedAt) {
 		// A review takes long enough for the student to upload a new document while it runs. The
 		// single (thesis, type) row would then be overwritten with a result about a superseded
 		// revision — clobbering the summary of a review that already finished for the newer one.
@@ -64,18 +82,19 @@ public class ReviewSummaryWriter {
 		}
 
 		try {
-			save(thesis, reviewType, result, documentVersionId);
+			save(thesis, reviewType, result, documentVersionId, resolvedFeedbackIds, baselineCapturedAt);
 		} catch (DataIntegrityViolationException e) {
 			// Two review runs for the same (thesis, type) raced: both found no existing row and both
 			// tried to insert. Retry as an update against the row the other one just created, so a
 			// concurrent request fails on this bookkeeping rather than on the review itself.
 			log.debug("Retrying AI review summary upsert for thesis {} ({}) after a concurrent insert",
 					thesis.getId(), reviewType);
-			save(thesis, reviewType, result, documentVersionId);
+			save(thesis, reviewType, result, documentVersionId, resolvedFeedbackIds, baselineCapturedAt);
 		}
 	}
 
-	private void save(Thesis thesis, ReviewType reviewType, ReviewResult result, UUID documentVersionId) {
+	private void save(Thesis thesis, ReviewType reviewType, ReviewResult result, UUID documentVersionId,
+			List<UUID> resolvedFeedbackIds, Instant baselineCapturedAt) {
 		AIReviewSummary summary = repository.findByThesisIdAndType(thesis.getId(), reviewType)
 				.orElseGet(AIReviewSummary::new);
 		summary.setThesis(thesis);
@@ -84,6 +103,8 @@ public class ReviewSummaryWriter {
 		summary.setAssessment(result.assessment());
 		summary.setSummary(result.summary());
 		summary.setDocumentVersionId(documentVersionId);
+		summary.setResolvedFeedbackIds(List.copyOf(resolvedFeedbackIds));
+		summary.setBaselineCapturedAt(baselineCapturedAt);
 		repository.save(summary);
 	}
 }

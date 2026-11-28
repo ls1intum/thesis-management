@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.feedback.review;
 
 import de.tum.cit.aet.thesis.feedback.config.AIFeaturesEnabled;
 import de.tum.cit.aet.thesis.feedback.config.LenientOutputConverter;
+import de.tum.cit.aet.thesis.feedback.model.EarlierFeedback;
 import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
@@ -50,6 +51,11 @@ import java.util.stream.Collectors;
  * as incomplete by {@link IncompleteCoverage}, so reduced coverage is never passed off as a clean
  * result.
  *
+ * <p>When the document has earlier feedback, one more call runs alongside the categories:
+ * {@link EarlierFeedbackChecker} judges every completed entry against the new version, and the
+ * merge receives the open and persisting entries so it does not raise them again. Its failure is
+ * contained like a category's — the review then simply goes without the comparison.
+ *
  * <p>Selected by {@code thesis-management.ai.reviewer=category-fan-out}, which is also the default;
  * {@link AgenticReviewer} is the model-driven alternative and {@link SinglePromptReviewer} the
  * one-call baseline. A further strategy replaces this bean by
@@ -66,6 +72,9 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 
 	/** Progress step id for the merge call, reported after every category has been reviewed. */
 	private static final String MERGE_STEP_ID = "merge";
+
+	/** Progress step id for the comparison against earlier feedback, run alongside the categories. */
+	static final String EARLIER_FEEDBACK_STEP_ID = "earlier-feedback";
 
 	/**
 	 * What a failed step reports to the client. Deliberately fixed: the underlying exception comes
@@ -134,9 +143,30 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 		List<String> pages = pdfService.extractTextFromPdf(request.document());
 		List<Media> images = includeImages ? pdfService.extractImagesFromPdf(request.document()) : List.of();
 		ReviewMeter meter = new ReviewMeter();
+		List<EarlierFeedback> completed = request.earlierFeedback().stream().filter(EarlierFeedback::completed).toList();
+		List<EarlierFeedback> open = request.earlierFeedback().stream().filter(entry -> !entry.completed()).toList();
+		// Categories, then the comparison when there is anything to compare, then the merge.
+		int total = ReviewCategory.values().length + (completed.isEmpty() ? 0 : 1) + 1;
 
-		CategoryOutcomes outcomes = reviewEachCategory(request, pages, images, meter);
-		ReviewResult merged = merge(request.type(), outcomes.findings(), request.progress(), meter);
+		// Dispatched before the categories are awaited, so it runs concurrently with them and the
+		// merge — which needs its verdicts to avoid re-raising a persisting defect — waits for it
+		// no longer than for the slowest category.
+		CompletableFuture<EarlierFeedbackChecker.Outcome> comparison = completed.isEmpty()
+				? CompletableFuture.completedFuture(EarlierFeedbackChecker.Outcome.EMPTY)
+				: compareWithEarlierFeedback(request, completed, pages, images, meter, total);
+		CategoryOutcomes outcomes = reviewEachCategory(request, pages, images, meter, total);
+		EarlierFeedbackChecker.Outcome compared = comparison.join();
+
+		List<EarlierFeedback> alreadyRaised = new ArrayList<>(open);
+		completed.stream().filter(entry -> compared.persistRefs().contains(entry.ref())).forEach(alreadyRaised::add);
+		ReviewResult merged = merge(request.type(), outcomes.findings(), alreadyRaised, compared.persistRefs(),
+				request.progress(), meter, total)
+				.withComparison(compared.followUps(), compared.resolvedRefs());
+		if (compared.failed()) {
+			// Outlives the progress list: the saved summary and the supervisor preview both say that
+			// earlier feedback went unchecked.
+			merged = IncompleteCoverage.qualifyUncompared(merged);
+		}
 		// A constant number of sequential stages however many categories there are: the fan-out is
 		// concurrent, each category verifies its own findings inside that same concurrent task, and
 		// the merge waits for all of them. Two stages, or three when any category made a verification
@@ -157,9 +187,8 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	 * @return what the categories that succeeded found, plus the ones that did not
 	 */
 	private CategoryOutcomes reviewEachCategory(ReviewRequest request, List<String> pages,
-			List<Media> images, ReviewMeter meter) {
+			List<Media> images, ReviewMeter meter, int total) {
 		ProgressReporter progress = request.progress();
-		int total = ReviewCategory.values().length + 1;
 
 		Map<ReviewCategory, CompletableFuture<CategoryFindings>> futures = new EnumMap<>(ReviewCategory.class);
 		AtomicBoolean verificationRan = new AtomicBoolean();
@@ -252,20 +281,53 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 		return new CategoryOutcomes(results, List.copyOf(failed), verificationRan.get());
 	}
 
+	/**
+	 * Runs the comparison against the completed earlier entries on the review executor. A failure is
+	 * contained: the review goes on without a comparison, exactly as it would on a first upload, and
+	 * the step is marked failed so the student sees that earlier feedback was not checked.
+	 */
+	private CompletableFuture<EarlierFeedbackChecker.Outcome> compareWithEarlierFeedback(ReviewRequest request,
+			List<EarlierFeedback> completed, List<String> pages, List<Media> images, ReviewMeter meter, int total) {
+		ProgressReporter progress = request.progress();
+		int stepIndex = total - 1;
+		progress.stepStarted(EARLIER_FEEDBACK_STEP_ID, "Checking earlier feedback", stepIndex, total);
+		return CompletableFuture.supplyAsync(() -> {
+			try {
+				EarlierFeedbackChecker.Outcome outcome = createEarlierFeedbackChecker(meter)
+						.check(request.type(), completed, pages, images);
+				progress.stepCompleted(EARLIER_FEEDBACK_STEP_ID, stepIndex, total);
+				return outcome;
+			} catch (RuntimeException e) {
+				log.warn("Comparison against {} earlier feedback entries failed ({}); reviewing without it",
+						completed.size(), request.type(), e);
+				progress.stepFailed(EARLIER_FEEDBACK_STEP_ID, stepIndex, total, STEP_FAILURE_MESSAGE);
+				return EarlierFeedbackChecker.Outcome.FAILED;
+			}
+		}, reviewExecutor);
+	}
+
 	private ReviewResult merge(ReviewType reviewType, Map<String, CategoryFindings> perCategory,
-			ProgressReporter progress, ReviewMeter meter) {
-		int total = ReviewCategory.values().length + 1;
+			List<EarlierFeedback> alreadyRaised, List<String> persistRefs, ProgressReporter progress, ReviewMeter meter,
+			int total) {
 		progress.stepStarted(MERGE_STEP_ID, "Consolidating findings", total, total);
 		try {
-			String mergerSystemPrompt = Prompts.MERGER.getPrompt(reviewType);
-			ResponseEntity<ChatResponse, ReviewResult> response = chatClient.prompt()
+			String mergerSystemPrompt = alreadyRaised.isEmpty()
+					? Prompts.MERGER.getPrompt(reviewType)
+					: Prompts.MERGER.getPrompt(reviewType) + "\n" + EarlierFeedbackPrompt.mergeAddendum();
+			ResponseEntity<ChatResponse, ReviewVerdict> response = chatClient.prompt()
 					.advisors(new MeteringAdvisor(meter))
 					.system(systemMessage -> systemMessage.text(mergerSystemPrompt))
-					.user(userMessage -> userMessage.text(buildMergePrompt(perCategory)))
+					.user(userMessage -> userMessage.text(buildMergePrompt(perCategory, alreadyRaised, persistRefs)))
 					.call()
-					.responseEntity(LenientOutputConverter.forType(ReviewResult.class));
+					.responseEntity(LenientOutputConverter.forType(ReviewVerdict.class));
+			ReviewVerdict verdict = response.getEntity();
+			if (verdict == null) {
+				// A JSON null parses cleanly; passed on as an empty review it would read as a clean bill
+				// of health, so it fails the merge like any other unusable answer.
+				throw new IllegalStateException("The merge step returned no result");
+			}
 			progress.stepCompleted(MERGE_STEP_ID, total, total);
-			return response.getEntity();
+			return verdict.toResult();
 		} catch (RuntimeException e) {
 			log.warn("AI review failed consolidating {} findings ({})", perCategory.size(), reviewType, e);
 			progress.stepFailed(MERGE_STEP_ID, total, total, STEP_FAILURE_MESSAGE);
@@ -279,8 +341,27 @@ public class CategoryFanOutReviewer implements ThesisReviewer {
 	 * prompt text. The MERGER prompt repeats this instruction explicitly.
 	 */
 	String buildMergePrompt(Map<String, CategoryFindings> perCategory) {
+		return buildMergePrompt(perCategory, List.of(), List.of());
+	}
+
+	/**
+	 * The merge prompt, with the entries the student already has appended in their own fence so the
+	 * merge drops new findings that repeat them.
+	 */
+	String buildMergePrompt(Map<String, CategoryFindings> perCategory, List<EarlierFeedback> alreadyRaised,
+			List<String> persistRefs) {
 		String json = objectMapper.writeValueAsString(perCategory);
-		return "<" + FINDINGS_FENCE_TAG + ">\n" + json + "\n</" + FINDINGS_FENCE_TAG + ">\n";
+		String findings = "<" + FINDINGS_FENCE_TAG + ">\n" + json + "\n</" + FINDINGS_FENCE_TAG + ">\n";
+		if (alreadyRaised.isEmpty()) {
+			return findings;
+		}
+		return findings + "\n" + EarlierFeedbackPrompt.fenced(alreadyRaised,
+				entry -> persistRefs.contains(entry.ref()) ? "persists" : "open") + "\n";
+	}
+
+	/** Overridable so tests can substitute the comparison call. */
+	protected EarlierFeedbackChecker createEarlierFeedbackChecker(ReviewMeter meter) {
+		return new EarlierFeedbackChecker(chatClient, meter);
 	}
 
 	/** Overridable so tests can substitute the verification call. */

@@ -20,11 +20,13 @@ import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
 import de.tum.cit.aet.thesis.feedback.model.FeedbackClassificationResult;
 import de.tum.cit.aet.thesis.feedback.model.Finding;
+import de.tum.cit.aet.thesis.feedback.model.FollowUp;
 import de.tum.cit.aet.thesis.feedback.model.Location;
 import de.tum.cit.aet.thesis.feedback.model.NoteEntry;
 import de.tum.cit.aet.thesis.feedback.model.NoteSplitResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
 import de.tum.cit.aet.thesis.feedback.model.ReviewType;
+import de.tum.cit.aet.thesis.feedback.repository.AIReviewSummaryRepository;
 import de.tum.cit.aet.thesis.feedback.review.ReviewRequest;
 import de.tum.cit.aet.thesis.feedback.review.ThesisReviewer;
 import de.tum.cit.aet.thesis.feedback.service.ReviewDocuments.ReviewDocument;
@@ -34,6 +36,7 @@ import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.controller.payload.RequestChangesPayload.RequestedChange;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
+import de.tum.cit.aet.thesis.thesis.entity.ThesisFeedback;
 import de.tum.cit.aet.thesis.thesis.service.ThesisService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,6 +76,9 @@ class AIFeedbackServiceTest {
 	private NoteSplittingService noteSplittingService;
 
 	@Mock
+	private AIReviewSummaryRepository summaryRepository;
+
+	@Mock
 	private Thesis thesis;
 
 	private AIFeedbackService service;
@@ -86,7 +92,7 @@ class AIFeedbackServiceTest {
 	@BeforeEach
 	void setUp() {
 		service = new AIFeedbackService(reviewer, thesisService, guidelinesGate, documents, summaryWriter,
-				feedbackClassificationService, noteSplittingService);
+				feedbackClassificationService, noteSplittingService, new IterationComparison(summaryRepository, 1));
 	}
 
 	/** Wires the happy path up to (but excluding) the review call itself. */
@@ -118,7 +124,7 @@ class AIFeedbackServiceTest {
 
 		// A preview is supervisor-only and provisional (drafts may be edited/discarded), so it must
 		// never persist a summary the student-visible feedback overview would then show.
-		verify(summaryWriter, never()).record(any(), any(), any(), any());
+		verify(summaryWriter, never()).record(any(), any(), any(), any(), anyList(), any());
 	}
 
 	@Test
@@ -163,21 +169,21 @@ class AIFeedbackServiceTest {
 				new Finding("MAJOR", "STRUCTURE", "Missing related work", "Add a section.",
 						List.of(new Location(4, "Introduction", "..."))))));
 		Thesis updated = org.mockito.Mockito.mock(Thesis.class);
-		when(thesisService.requestChanges(any(), any(), anyList(), any())).thenReturn(updated);
+		when(thesisService.requestChanges(any(), any(), anyList(), any(), any())).thenReturn(updated);
 
 		assertThat(service.autoReviewAndSave(thesis, ReviewType.PROPOSAL)).isSameAs(updated);
 
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<List<RequestedChange>> changes = ArgumentCaptor.forClass(List.class);
 		verify(thesisService).requestChanges(eq(thesis), eq(ThesisFeedbackType.PROPOSAL), changes.capture(),
-				eq(ThesisFeedbackSource.AI));
+				eq(ThesisFeedbackSource.AI), eq(versionId));
 		assertThat(changes.getValue()).hasSize(1);
 		RequestedChange change = changes.getValue().getFirst();
 		assertThat(change.feedback()).isEqualTo("Missing related work — Add a section. (Page 4, Introduction)");
 		assertThat(change.category()).isEqualTo(ThesisFeedbackCategory.STRUCTURE);
 		assertThat(change.severity()).isEqualTo(ThesisFeedbackSeverity.MAJOR);
 
-		verify(summaryWriter).record(eq(thesis), eq(ReviewType.PROPOSAL), any(), eq(versionId));
+		verify(summaryWriter).record(eq(thesis), eq(ReviewType.PROPOSAL), any(), eq(versionId), anyList(), any());
 	}
 
 	@Test
@@ -187,8 +193,8 @@ class AIFeedbackServiceTest {
 
 		assertThat(service.autoReviewAndSave(thesis, ReviewType.PROPOSAL)).isSameAs(thesis);
 
-		verify(thesisService, never()).requestChanges(any(), any(), anyList(), any());
-		verify(summaryWriter).record(eq(thesis), eq(ReviewType.PROPOSAL), any(), eq(versionId));
+		verify(thesisService, never()).requestChanges(any(), any(), anyList(), any(), any());
+		verify(summaryWriter).record(eq(thesis), eq(ReviewType.PROPOSAL), any(), eq(versionId), anyList(), any());
 	}
 
 	@Test
@@ -199,13 +205,13 @@ class AIFeedbackServiceTest {
 
 		// requestChanges is transactional, so a rejected batch leaves no feedback rows behind — the
 		// score describing those rows must not be persisted on its own either.
-		when(thesisService.requestChanges(any(), any(), anyList(), any()))
+		when(thesisService.requestChanges(any(), any(), anyList(), any(), any()))
 				.thenThrow(new ResourceInvalidParametersException("Feedback text too long"));
 
 		assertThatThrownBy(() -> service.autoReviewAndSave(thesis, ReviewType.PROPOSAL))
 				.isInstanceOf(ResourceInvalidParametersException.class);
 
-		verify(summaryWriter, never()).record(any(), any(), any(), any());
+		verify(summaryWriter, never()).record(any(), any(), any(), any(), anyList(), any());
 	}
 
 	@Test
@@ -413,5 +419,60 @@ class AIFeedbackServiceTest {
 				.isInstanceOf(AccessDeniedException.class);
 
 		verify(noteSplittingService, never()).split(any());
+	}
+
+	@Test
+	void autoReviewComparesAgainstEarlierFeedbackAndPersistsTheFollowUpLinked() {
+		ThesisFeedback completed = new ThesisFeedback();
+		completed.setId(UUID.randomUUID());
+		completed.setType(ThesisFeedbackType.PROPOSAL);
+		completed.setFeedback("Grammar in the abstract.");
+		completed.setRequestedAt(java.time.Instant.parse("2026-10-01T10:00:00Z"));
+		completed.setCompletedAt(java.time.Instant.parse("2026-10-02T10:00:00Z"));
+		when(thesis.getFeedback()).thenReturn(List.of(completed));
+		givenReadyGuidelinesAndDocument(ReviewType.PROPOSAL);
+		givenReviewResult(new ReviewResult(AssessmentCategory.ACCEPTABLE, 70, "Better.", List.of(),
+				List.of(new FollowUp("E1", new Finding("MINOR", "WRITING", "Still wrong", "Explained again.", List.of()))),
+				List.of()));
+		when(thesisService.requestChanges(any(), any(), anyList(), any(), any())).thenReturn(thesis);
+
+		service.autoReviewAndSave(thesis, ReviewType.PROPOSAL);
+
+		ArgumentCaptor<ReviewRequest> request = ArgumentCaptor.forClass(ReviewRequest.class);
+		verify(reviewer).review(request.capture());
+		assertThat(request.getValue().earlierFeedback()).singleElement().satisfies(entry -> {
+			assertThat(entry.ref()).isEqualTo("E1");
+			assertThat(entry.id()).isEqualTo(completed.getId());
+			assertThat(entry.completed()).isTrue();
+		});
+
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<List<RequestedChange>> changes = ArgumentCaptor.forClass(List.class);
+		verify(thesisService).requestChanges(eq(thesis), eq(ThesisFeedbackType.PROPOSAL), changes.capture(),
+				eq(ThesisFeedbackSource.AI), eq(versionId));
+		assertThat(changes.getValue()).singleElement().satisfies(change -> {
+			assertThat(change.followsUpId()).isEqualTo(completed.getId());
+			assertThat(change.deferredToSupervisor()).isFalse();
+			assertThat(change.feedback()).startsWith("Follow-up to \"Grammar in the abstract.\"");
+		});
+	}
+
+	@Test
+	void previewReviewReturnsTheEntriesTheNewVersionResolved() {
+		ThesisFeedback completed = new ThesisFeedback();
+		completed.setId(UUID.randomUUID());
+		completed.setType(ThesisFeedbackType.PROPOSAL);
+		completed.setFeedback("Number the figures.");
+		completed.setRequestedAt(java.time.Instant.parse("2026-10-01T10:00:00Z"));
+		completed.setCompletedAt(java.time.Instant.parse("2026-10-02T10:00:00Z"));
+		when(thesis.getFeedback()).thenReturn(List.of(completed));
+		givenReadyGuidelinesAndDocument(ReviewType.PROPOSAL);
+		givenReviewResult(new ReviewResult(AssessmentCategory.GOOD, 85, "Good.", List.of(), List.of(), List.of("E1")));
+
+		AIPreviewResponseDTO response = service.previewReview(thesis, ReviewType.PROPOSAL);
+
+		assertThat(response.resolvedFeedbackIds()).containsExactly(completed.getId());
+		assertThat(response.documentVersionId()).isEqualTo(versionId);
+		assertThat(response.summary()).contains("Well done: one issue from earlier feedback is resolved");
 	}
 }

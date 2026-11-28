@@ -64,6 +64,59 @@ final class Grounding {
 	}
 
 	/**
+	 * The page a location should point at, given its quote: the claimed page when the quote occurs
+	 * on it (or runs across a page break into or out of it), otherwise the first page the quote
+	 * occurs on. A location must not name a page the student cannot find its quote on.
+	 *
+	 * @param pages       the document's per-page extracted text
+	 * @param quote       the grounded quote, or {@code null} for a location without one
+	 * @param claimedPage the 1-based page the model gave, or {@code null}
+	 * @return the page to keep, or {@code null} when none can be named
+	 */
+	static Integer pageOf(List<String> pages, String quote, Integer claimedPage) {
+		Integer claimed = claimedPage != null && claimedPage >= 1 && claimedPage <= pages.size() ? claimedPage : null;
+		if (quote == null || normalize(quote).length() < MIN_CHECKED_LENGTH) {
+			// Nothing to locate by: a missing thing, or a quote too short to match meaningfully.
+			return claimed;
+		}
+		if (claimed != null && (occursIn(pages.get(claimed - 1), quote) || spansBreak(pages, claimed - 1, quote))) {
+			return claimed;
+		}
+		for (int i = 0; i < pages.size(); i++) {
+			if (occursIn(pages.get(i), quote)) {
+				return i + 1;
+			}
+		}
+		for (int i = 0; i + 1 < pages.size(); i++) {
+			if (occursIn(pages.get(i) + " " + pages.get(i + 1), quote)) {
+				// Runs across the break: the page it starts on.
+				return i + 1;
+			}
+		}
+		return null;
+	}
+
+	/** Whether the quote crosses the page break before or after the given 0-based page. */
+	private static boolean spansBreak(List<String> pages, int index, String quote) {
+		boolean fromPrevious = index > 0 && occursIn(pages.get(index - 1) + " " + pages.get(index), quote)
+				&& !occursIn(pages.get(index - 1), quote);
+		boolean intoNext = index + 1 < pages.size() && occursIn(pages.get(index) + " " + pages.get(index + 1), quote)
+				&& !occursIn(pages.get(index + 1), quote);
+		return fromPrevious || intoNext;
+	}
+
+	/** The same comparison as {@link #isGrounded}, against one piece of text. */
+	private static boolean occursIn(String text, String quote) {
+		String needle = normalize(quote);
+		List<String> haystacks = lineBreakVariants(text).map(Grounding::normalize).toList();
+		if (haystacks.stream().anyMatch(candidate -> candidate.contains(needle))) {
+			return true;
+		}
+		String folded = foldLigatures(needle);
+		return haystacks.stream().anyMatch(candidate -> foldLigatures(candidate).contains(folded));
+	}
+
+	/**
 	 * A page as extracted, plus the two readings of a hyphen at the end of a line. Extraction keeps
 	 * the line break, so {@code inter-\noperability} would normalize to {@code inter- operability}
 	 * and match neither spelling a model writes. Whether that hyphen splits a word or belongs to a

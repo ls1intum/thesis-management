@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
 import de.tum.cit.aet.thesis.feedback.model.Finding;
+import de.tum.cit.aet.thesis.feedback.model.FollowUp;
 import de.tum.cit.aet.thesis.feedback.model.Location;
 import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
@@ -43,6 +44,31 @@ class EvalWriterTest {
 		assertThat(directory.resolve("result.json")).exists();
 		assertThat(directory.resolve("metrics.json")).exists();
 		assertThat(Files.readString(directory.resolve("result.json"))).contains("Subject-verb disagreement");
+	}
+
+	@Test
+	void aComparedReviewRendersItsFollowUpsAndResolvedEntriesAndItsScore(@TempDir Path root) throws IOException {
+		ReviewResult compared = new ReviewResult(AssessmentCategory.ACCEPTABLE, 70, "Better.", List.of(),
+				List.of(new FollowUp("E1", new Finding("MINOR", "WRITING", "Agreement still wrong", "Use does not.",
+						List.of(new Location(2, "Method", null))))),
+				List.of("E2"));
+		EvalComparisonScore score = EvalComparisonScore.score(new EvalEarlierFeedback(List.of(
+				new EvalEarlierFeedback.Entry("Agreement.", null, null, true, "PERSISTS"),
+				new EvalEarlierFeedback.Entry("Figures.", null, null, true, "RESOLVED"))), compared);
+
+		try (EvalWriter writer = new EvalWriter(root)) {
+			writer.writeRun(RUN, compared, METRICS, score);
+		}
+
+		Path directory = root.resolve("openai_gpt-oss-120b/agentic/proposal-01/seed-2");
+		// Only follow-ups, no new findings: the follow-ups must still be readable in the Markdown.
+		assertThat(Files.readString(directory.resolve("feedback.md")))
+				.contains("_No findings._")
+				.contains("## Follow-ups")
+				.contains("### E1: Agreement still wrong")
+				.contains("Page 2, Method")
+				.contains("## Resolved\n\nE2");
+		assertThat(Files.readString(directory.resolve("comparison.json"))).contains("\"followUpPrecision\" : 1.0");
 	}
 
 	@Test

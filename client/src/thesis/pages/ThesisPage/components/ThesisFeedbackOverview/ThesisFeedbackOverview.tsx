@@ -29,6 +29,10 @@ import { MagnifyingGlass, Trash } from '@phosphor-icons/react'
 import ConfirmationButton from '@/core/components/ConfirmationButton/ConfirmationButton'
 import FeedbackCategoryCounts from '@/thesis/components/FeedbackCategoryCounts/FeedbackCategoryCounts'
 import {
+  FollowUpBadge,
+  ResolvedFeedbackList,
+} from '@/thesis/components/FeedbackIteration/FeedbackIteration'
+import {
   ASSESSMENT_COLOR,
   ASSESSMENT_LABEL,
   CATEGORY_DESCRIPTION,
@@ -232,10 +236,14 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
             </Text>
           )}
           {reviewSummary.summary && (
-            <Text size='sm' c='dimmed'>
+            <Text size='sm' c='dimmed' style={{ whiteSpace: 'pre-line' }}>
               {reviewSummary.summary}
             </Text>
           )}
+          <ResolvedFeedbackList
+            resolvedFeedbackIds={reviewSummary.resolvedFeedbackIds}
+            feedback={feedbackForType}
+          />
           <Text size='xs' c='dimmed'>
             {summaryProvenance}
           </Text>
@@ -347,6 +355,11 @@ const ThesisFeedbackOverview = (props: IThesisFeedbackOverviewProps) => {
                             Addressed
                           </Badge>
                         )}
+                        <FollowUpBadge
+                          followsUpId={item.followsUpId}
+                          deferredToSupervisor={item.deferredToSupervisor}
+                          feedback={feedbackForType}
+                        />
                         {item.severity && (
                           <Tooltip
                             label={SEVERITY_DESCRIPTION[item.severity]}

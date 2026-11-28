@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import de.tum.cit.aet.thesis.core.admin.service.MailingService;
+import de.tum.cit.aet.thesis.core.exception.request.ResourceAlreadyExistsException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceInvalidParametersException;
 import de.tum.cit.aet.thesis.core.exception.request.ResourceNotFoundException;
 import de.tum.cit.aet.thesis.core.group.entity.ResearchGroup;
@@ -23,11 +24,15 @@ import de.tum.cit.aet.thesis.core.user.service.UserService;
 import de.tum.cit.aet.thesis.mock.EntityMockFactory;
 import de.tum.cit.aet.thesis.proposal.entity.ThesisProposal;
 import de.tum.cit.aet.thesis.proposal.repository.ThesisProposalRepository;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackSource;
+import de.tum.cit.aet.thesis.thesis.constants.ThesisFeedbackType;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisRoleName;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisState;
 import de.tum.cit.aet.thesis.thesis.constants.ThesisVisibility;
+import de.tum.cit.aet.thesis.thesis.controller.payload.RequestChangesPayload;
 import de.tum.cit.aet.thesis.thesis.entity.Thesis;
 import de.tum.cit.aet.thesis.thesis.entity.ThesisAssessment;
+import de.tum.cit.aet.thesis.thesis.entity.ThesisFeedback;
 import de.tum.cit.aet.thesis.thesis.entity.ThesisFile;
 import de.tum.cit.aet.thesis.thesis.entity.ThesisStateChange;
 import de.tum.cit.aet.thesis.thesis.entity.key.ThesisStateChangeId;
@@ -465,5 +470,55 @@ class ThesisServiceTest {
 		assertEquals(ThesisState.FINISHED, result.getState());
 		verify(thesisRepository).save(testThesis);
 		verify(accessManagementService).removeStudentGroup(student);
+	}
+
+	@Test
+	void requestChanges_anAutomaticReviewSkipsAFollowUpWhoseEntryAlreadyHasOne() {
+		ThesisFeedback original = new ThesisFeedback();
+		original.setId(UUID.randomUUID());
+		original.setType(ThesisFeedbackType.THESIS);
+		original.setFeedback("Original");
+		original.setCompletedAt(java.time.Instant.now());
+		testThesis.setFeedback(new ArrayList<>(List.of(original)));
+		when(currentUserProvider.getUser()).thenReturn(testUser);
+		when(thesisFeedbackRepository.findFollowedUpIds(any())).thenReturn(List.of(original.getId()));
+		when(thesisFeedbackRepository.findAllById(any())).thenReturn(List.of(original));
+		when(thesisFeedbackRepository.save(any(ThesisFeedback.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+		// Another review linked the entry first. Failing here would throw away this review's other
+		// findings, and saving the duplicate unlinked would start a second chain for the same defect.
+		thesisService.requestChanges(testThesis, ThesisFeedbackType.THESIS, List.of(
+				new RequestChangesPayload.RequestedChange("New finding", false, null, null, null),
+				new RequestChangesPayload.RequestedChange("Duplicate follow-up", false, null, null, null,
+						original.getId(), false)),
+				ThesisFeedbackSource.AI, null);
+
+		org.mockito.ArgumentCaptor<ThesisFeedback> saved = org.mockito.ArgumentCaptor.forClass(ThesisFeedback.class);
+		verify(thesisFeedbackRepository).save(saved.capture());
+		assertEquals("New finding", saved.getValue().getFeedback());
+		org.mockito.Mockito.verify(thesisFeedbackRepository, org.mockito.Mockito.never()).saveAndFlush(any());
+	}
+
+	@Test
+	void requestChanges_aPersonSavingADuplicateFollowUpIsToldWhyBeforeAnythingIsWritten() {
+		ThesisFeedback original = new ThesisFeedback();
+		original.setId(UUID.randomUUID());
+		original.setType(ThesisFeedbackType.THESIS);
+		original.setFeedback("Original");
+		original.setCompletedAt(java.time.Instant.now());
+		testThesis.setFeedback(new ArrayList<>(List.of(original)));
+		when(thesisFeedbackRepository.findFollowedUpIds(any())).thenReturn(List.of());
+		when(thesisFeedbackRepository.findAllById(any())).thenReturn(List.of(original));
+
+		// Two follow-ups to the same entry in one batch: the second would be a second root.
+		ResourceAlreadyExistsException error = assertThrows(ResourceAlreadyExistsException.class,
+				() -> thesisService.requestChanges(testThesis, ThesisFeedbackType.THESIS, List.of(
+						new RequestChangesPayload.RequestedChange("First", false, null, null, null, original.getId(), false),
+						new RequestChangesPayload.RequestedChange("Second", false, null, null, null, original.getId(), false)),
+						ThesisFeedbackSource.HUMAN, null));
+
+		assertTrue(error.getMessage().contains("already has a follow-up"));
+		org.mockito.Mockito.verify(thesisFeedbackRepository, org.mockito.Mockito.never()).save(any());
+		org.mockito.Mockito.verify(thesisFeedbackRepository, org.mockito.Mockito.never()).saveAndFlush(any());
 	}
 }

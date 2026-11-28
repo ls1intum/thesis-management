@@ -2,7 +2,9 @@ package de.tum.cit.aet.thesis.feedback.review;
 
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.model.AssessmentCategory;
+import de.tum.cit.aet.thesis.feedback.model.EarlierFeedback;
 import de.tum.cit.aet.thesis.feedback.model.Finding;
+import de.tum.cit.aet.thesis.feedback.model.FollowUp;
 import de.tum.cit.aet.thesis.feedback.model.Location;
 import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
@@ -17,8 +19,11 @@ import org.springframework.ai.tool.function.FunctionToolCallback;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -53,6 +58,9 @@ public class ReviewToolbox {
 	/** Fence tag wrapping uploaded page text wherever a tool hands it back to the model. */
 	static final String PAGE_TEXT_TAG = "student-upload-page-text";
 
+	/** Progress step id for the comparison against earlier feedback. */
+	static final String EARLIER_FEEDBACK_STEP_ID = "earlier-feedback";
+
 	/** Most search hits one call returns, so a common word cannot flood the context window. */
 	private static final int MAX_SEARCH_HITS = 12;
 
@@ -73,10 +81,15 @@ public class ReviewToolbox {
 	private final ReviewType reviewType;
 	private final ProgressReporter progress;
 	private final ReviewMeter meter;
-	private final int totalSteps = ReviewCategory.values().length + 1;
+	private final List<EarlierFeedback> earlierFeedback;
+	private final boolean compares;
+	private final int totalSteps;
 
 	private final List<Finding> findings = Collections.synchronizedList(new ArrayList<>());
 	private final Set<ReviewCategory> covered = Collections.synchronizedSet(EnumSet.noneOf(ReviewCategory.class));
+	private final Map<String, FollowUp> followUps = Collections.synchronizedMap(new LinkedHashMap<>());
+	private final Set<String> resolved = Collections.synchronizedSet(new LinkedHashSet<>());
+	private volatile boolean earlierFeedbackChecked;
 
 	private volatile AssessmentCategory assessment;
 	private volatile Integer score;
@@ -94,14 +107,37 @@ public class ReviewToolbox {
 	 */
 	public ReviewToolbox(List<String> pages, StructuredGuidelines guidelines, ReviewType reviewType,
 			ProgressReporter progress, ReviewMeter meter) {
+		this(pages, guidelines, reviewType, List.of(), progress, meter);
+	}
+
+	/**
+	 * Opens a toolbox for one run that also compares the document against earlier feedback. With
+	 * no earlier entries it is the plain toolbox: the comparison tools are not offered at all.
+	 *
+	 * @param pages           the document's per-page extracted text, in document order
+	 * @param guidelines      the research group's structured guidelines
+	 * @param reviewType      whether the document is reviewed as a proposal or as a final thesis
+	 * @param earlierFeedback the entries raised on earlier versions; may be empty
+	 * @param progress        sink for the per-category progress events
+	 * @param meter           the run's meter; every tool call is recorded against it
+	 */
+	public ReviewToolbox(List<String> pages, StructuredGuidelines guidelines, ReviewType reviewType,
+			List<EarlierFeedback> earlierFeedback, ProgressReporter progress, ReviewMeter meter) {
 		this.pages = List.copyOf(pages);
 		this.guidelines = guidelines;
 		this.reviewType = reviewType;
+		this.earlierFeedback = List.copyOf(earlierFeedback);
+		this.compares = !this.earlierFeedback.isEmpty();
 		this.progress = progress;
 		this.meter = meter;
+		// Categories, the comparison when there is one, and the finalize step.
+		this.totalSteps = ReviewCategory.values().length + (compares ? 1 : 0) + 1;
 
 		for (ReviewCategory category : ReviewCategory.values()) {
 			progress.stepStarted(category.getSlug(), category.getDisplayName(), stepIndex(category), totalSteps);
+		}
+		if (compares) {
+			progress.stepStarted(EARLIER_FEEDBACK_STEP_ID, "Checking earlier feedback", totalSteps - 1, totalSteps);
 		}
 	}
 
@@ -111,6 +147,55 @@ public class ReviewToolbox {
 	 * @return the tool callbacks, in the order the system prompt introduces them
 	 */
 	public List<ToolCallback> callbacks() {
+		List<ToolCallback> tools = new ArrayList<>(reviewTools());
+		if (compares) {
+			tools.addAll(comparisonTools());
+		}
+		return List.copyOf(tools);
+	}
+
+	/**
+	 * Whether this run compares against earlier feedback, i.e. whether the comparison tools are
+	 * offered.
+	 *
+	 * @return {@code true} when earlier entries exist
+	 */
+	public boolean compares() {
+		return compares;
+	}
+
+	/**
+	 * Whether the agent skipped the comparison: earlier entries existed, but it never fetched them.
+	 *
+	 * @return {@code true} when the comparison was offered and not done
+	 */
+	public boolean earlierFeedbackUnchecked() {
+		return compares && !earlierFeedbackChecked;
+	}
+
+	private List<ToolCallback> comparisonTools() {
+		return List.of(
+				FunctionToolCallback.builder("get_earlier_feedback", (Supplier<String>) this::earlierFeedback)
+						.description("List the feedback entries raised on earlier versions of this document, each with "
+								+ "its ref and whether the student marked it resolved (completed) or not (open).")
+						.toolCallResultConverter(PLAIN_TEXT)
+						.build(),
+				FunctionToolCallback.builder("record_follow_up", (Function<FollowUpArg, String>) this::recordFollowUp)
+						.description("For a COMPLETED earlier entry whose defect still occurs: record ONE follow-up that "
+								+ "explains the defect more explicitly, with an example of a conforming passage. The "
+								+ "quote must be copied verbatim from the new version.")
+						.inputType(FollowUpArg.class)
+						.toolCallResultConverter(PLAIN_TEXT)
+						.build(),
+				FunctionToolCallback.builder("mark_resolved", (Function<RefArg, String>) this::markResolved)
+						.description("For a COMPLETED earlier entry whose defect the new version no longer shows. Only "
+								+ "for an entry you actually checked.")
+						.inputType(RefArg.class)
+						.toolCallResultConverter(PLAIN_TEXT)
+						.build());
+	}
+
+	private List<ToolCallback> reviewTools() {
 		return List.of(
 				FunctionToolCallback.builder("list_review_categories", (Supplier<String>) this::listCategories)
 						.description("List the review dimensions this review must cover, with the id to pass to get_category_rules.")
@@ -196,7 +281,25 @@ public class ReviewToolbox {
 			progress.stepFailed(category.getSlug(), stepIndex(category), totalSteps, NOT_CHECKED_MESSAGE);
 		}
 		progress.stepStarted(FINALIZE_STEP_ID, "Consolidating findings", totalSteps, totalSteps);
-		ReviewResult result = new ReviewResult(assessment, score, summary, List.copyOf(findings));
+		if (compares) {
+			if (earlierFeedbackChecked) {
+				progress.stepCompleted(EARLIER_FEEDBACK_STEP_ID, totalSteps - 1, totalSteps);
+			} else {
+				progress.stepFailed(EARLIER_FEEDBACK_STEP_ID, totalSteps - 1, totalSteps, NOT_CHECKED_MESSAGE);
+			}
+		}
+		List<String> resolvedRefs;
+		synchronized (resolved) {
+			// A ref that was both marked resolved and followed up is contradictory; the follow-up,
+			// which carries a grounded quote, wins.
+			resolvedRefs = resolved.stream().filter(ref -> !followUps.containsKey(ref)).toList();
+		}
+		List<FollowUp> recordedFollowUps;
+		synchronized (followUps) {
+			recordedFollowUps = List.copyOf(followUps.values());
+		}
+		ReviewResult result = new ReviewResult(assessment, score, summary, List.copyOf(findings), recordedFollowUps,
+				resolvedRefs);
 		progress.stepCompleted(FINALIZE_STEP_ID, totalSteps, totalSteps);
 		return result;
 	}
@@ -255,6 +358,28 @@ public class ReviewToolbox {
 	 * @param summary    a two-to-three sentence summary of strengths and weaknesses
 	 */
 	public record FinishArg(String assessment, Integer score, String summary) {
+	}
+
+	/**
+	 * Argument of {@code record_follow_up}. Flat for the same reason as {@link FindingArg}.
+	 *
+	 * @param ref         the earlier entry's ref, e.g. {@code E3}
+	 * @param title       a one-line restatement of the defect
+	 * @param description a more explicit explanation, with an example of a conforming passage
+	 * @param section     the section of the new version the defect is in; may be omitted
+	 * @param quote       a verbatim excerpt of the new version; omitted only for an absence
+	 * @param page        the 1-based page of the new version; may be omitted
+	 */
+	public record FollowUpArg(String ref, String title, String description, String section, String quote,
+			Integer page) {
+	}
+
+	/**
+	 * Argument of {@code mark_resolved}.
+	 *
+	 * @param ref the earlier entry's ref, e.g. {@code E3}
+	 */
+	public record RefArg(String ref) {
 	}
 
 	// --- Tool implementations ------------------------------------------------------------------
@@ -347,6 +472,67 @@ public class ReviewToolbox {
 		findings.add(new Finding(upper(arg.severity()), upper(arg.category()), title, strip(arg.description()),
 				locations));
 		return "Recorded finding #" + findings.size() + ".";
+	}
+
+	private String earlierFeedback() {
+		meter.recordToolCall();
+		earlierFeedbackChecked = true;
+		return EarlierFeedbackPrompt.fenced(earlierFeedback, entry -> entry.completed() ? "completed" : "open");
+	}
+
+	private String recordFollowUp(FollowUpArg arg) {
+		meter.recordToolCall();
+		EarlierFeedback entry = earlierEntry(arg.ref());
+		if (entry == null) {
+			return "Rejected: there is no earlier entry '" + arg.ref() + "'. Call get_earlier_feedback for the refs.";
+		}
+		if (!entry.completed()) {
+			return "Rejected: " + entry.ref() + " is still open — the student still sees it, so do not repeat it. "
+					+ "Nothing was recorded.";
+		}
+		String title = strip(arg.title());
+		if (title == null) {
+			return "Rejected: a follow-up needs a title. Nothing was recorded.";
+		}
+		String quote = strip(arg.quote());
+		if (quote != null && !Grounding.isGrounded(pages, quote)) {
+			return "Rejected: that quote does not appear in the new version. Use get_page_text or search_document to "
+					+ "find the exact wording, then record the follow-up again. Nothing was recorded.";
+		}
+		// The page is taken from where the quote actually is, so the follow-up never points at a page
+		// the student cannot find its quote on.
+		Integer page = Grounding.pageOf(pages, quote, arg.page());
+		String section = strip(arg.section());
+		List<Location> locations = page == null && section == null && quote == null
+				? List.of()
+				: List.of(new Location(page, section, quote));
+		// Same labels as the original entry: it is the same defect.
+		Finding finding = new Finding(entry.severity(), entry.category(), title, strip(arg.description()), locations);
+		if (followUps.putIfAbsent(entry.ref(), new FollowUp(entry.ref(), finding)) != null) {
+			return "Rejected: " + entry.ref() + " already has a follow-up. Nothing was recorded.";
+		}
+		return "Recorded a follow-up to " + entry.ref() + ".";
+	}
+
+	private String markResolved(RefArg arg) {
+		meter.recordToolCall();
+		EarlierFeedback entry = earlierEntry(arg.ref());
+		if (entry == null) {
+			return "Rejected: there is no earlier entry '" + arg.ref() + "'. Call get_earlier_feedback for the refs.";
+		}
+		if (!entry.completed()) {
+			return "Ignored: " + entry.ref() + " is still open; only the student can mark it resolved.";
+		}
+		resolved.add(entry.ref());
+		return "Marked " + entry.ref() + " as resolved.";
+	}
+
+	private EarlierFeedback earlierEntry(String ref) {
+		if (ref == null) {
+			return null;
+		}
+		String wanted = ref.strip();
+		return earlierFeedback.stream().filter(entry -> entry.ref().equalsIgnoreCase(wanted)).findFirst().orElse(null);
 	}
 
 	private String finishReview(FinishArg arg) {

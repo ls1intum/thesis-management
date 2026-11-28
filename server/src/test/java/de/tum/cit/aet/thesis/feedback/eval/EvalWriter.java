@@ -2,6 +2,7 @@ package de.tum.cit.aet.thesis.feedback.eval;
 
 import de.tum.cit.aet.thesis.feedback.entity.jsonb.StructuredGuidelines;
 import de.tum.cit.aet.thesis.feedback.model.Finding;
+import de.tum.cit.aet.thesis.feedback.model.FollowUp;
 import de.tum.cit.aet.thesis.feedback.model.Location;
 import de.tum.cit.aet.thesis.feedback.model.ReviewCategory;
 import de.tum.cit.aet.thesis.feedback.model.ReviewResult;
@@ -36,6 +37,8 @@ import java.util.Map;
  *     result.json                                  the raw ReviewResult
  *     metrics.json                                 what the run cost
  *     trace.json                                   per-category findings before the merge, and failures
+ *     comparison.json                              only for a document with earlier feedback: the
+ *                                                  comparison scored against its ground truth
  *     error.txt                                    only when the run failed
  * </pre>
  *
@@ -179,7 +182,23 @@ public class EvalWriter implements AutoCloseable {
 	 * @param metrics what the run cost, or {@code null} when the strategy reported none
 	 */
 	public void writeRun(EvalRun run, ReviewResult result, ReviewRunMetrics metrics) {
+		writeRun(run, result, metrics, null);
+	}
+
+	/**
+	 * Writes one completed review of a document that was compared against earlier feedback,
+	 * together with how well that comparison matched the ground truth.
+	 *
+	 * @param run        which model, approach, document and seed produced it
+	 * @param result     the review
+	 * @param metrics    what the run cost, or {@code null} when the strategy reported none
+	 * @param comparison the comparison's score, or {@code null} for a first upload
+	 */
+	public void writeRun(EvalRun run, ReviewResult result, ReviewRunMetrics metrics, EvalComparisonScore comparison) {
 		Path directory = directoryFor(run);
+		if (comparison != null) {
+			write(directory.resolve("comparison.json"), JSON.writeValueAsString(comparison) + "\n");
+		}
 		write(directory.resolve("result.json"), JSON.writeValueAsString(result) + "\n");
 		write(directory.resolve("feedback.md"), renderFeedback(run, result, metrics));
 		if (metrics != null) {
@@ -194,6 +213,11 @@ public class EvalWriter implements AutoCloseable {
 		record.put("summary", result.summary());
 		record.put("findings", result.findings());
 		record.put("metrics", metrics);
+		if (comparison != null) {
+			record.put("followUps", result.followUps());
+			record.put("resolvedRefs", result.resolvedRefs());
+			record.put("comparison", comparison);
+		}
 		appendJsonl(record);
 	}
 
@@ -321,18 +345,35 @@ public class EvalWriter implements AutoCloseable {
 		md.append("\n## Findings\n");
 		if (result.findings().isEmpty()) {
 			md.append("\n_No findings._\n");
-			return md.toString();
 		}
 		int index = 0;
 		for (Finding finding : result.findings()) {
 			index++;
-			md.append("\n### ").append(index).append(". ").append(blankTo(finding.title(), "(untitled)")).append("\n\n");
-			md.append("`").append(blankTo(finding.severity(), "?")).append("` · `")
-					.append(blankTo(finding.category(), "?")).append("`\n\n");
-			md.append(blankTo(finding.description(), "_no description_")).append("\n");
-			appendLocations(md, finding.locations());
+			appendFinding(md, index + ". ", finding);
+		}
+
+		// Only for a document compared against earlier feedback; a first upload reads as before.
+		if (!result.followUps().isEmpty() || !result.resolvedRefs().isEmpty()) {
+			md.append("\n## Follow-ups\n");
+			if (result.followUps().isEmpty()) {
+				md.append("\n_No follow-ups._\n");
+			}
+			for (FollowUp followUp : result.followUps()) {
+				appendFinding(md, followUp.ref() + ": ", followUp.finding());
+			}
+			md.append("\n## Resolved\n\n")
+					.append(result.resolvedRefs().isEmpty() ? "_none_" : String.join(", ", result.resolvedRefs()))
+					.append("\n");
 		}
 		return md.toString();
+	}
+
+	private static void appendFinding(StringBuilder md, String prefix, Finding finding) {
+		md.append("\n### ").append(prefix).append(blankTo(finding.title(), "(untitled)")).append("\n\n");
+		md.append("`").append(blankTo(finding.severity(), "?")).append("` · `")
+				.append(blankTo(finding.category(), "?")).append("`\n\n");
+		md.append(blankTo(finding.description(), "_no description_")).append("\n");
+		appendLocations(md, finding.locations());
 	}
 
 	private static void appendLocations(StringBuilder md, List<Location> locations) {

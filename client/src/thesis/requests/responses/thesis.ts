@@ -148,6 +148,10 @@ export interface IThesis extends IThesisOverview {
     // Points at a proposalId (PROPOSAL feedback) or a thesis fileId (THESIS feedback). The
     // client resolves it to a "v{n}" label by matching against thesis.proposals / thesis.files.
     documentVersionId?: string | null
+    // The earlier, addressed entry whose defect this entry reports as recurring in a newer
+    // version. A deferral hands a repeatedly recurring defect to the supervisor.
+    followsUpId?: string | null
+    deferredToSupervisor?: boolean
   }>
   // The AI review pipeline's latest read on the proposal/thesis document — persisted on every
   // auto-review run, independent of which findings (if any) were saved.
@@ -159,6 +163,8 @@ export interface IThesis extends IThesisOverview {
     // The proposalId (PROPOSAL) or thesis fileId (THESIS) the review ran against. A summary
     // whose version is not the latest upload describes a superseded document and is hidden.
     documentVersionId?: string | null
+    // Addressed feedback entries this review found resolved in the reviewed version.
+    resolvedFeedbackIds?: string[]
     updatedAt: string
   }>
   grade: null | {

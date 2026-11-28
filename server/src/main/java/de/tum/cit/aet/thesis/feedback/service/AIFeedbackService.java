@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -81,7 +82,7 @@ public class AIFeedbackService {
 	private final ReviewSummaryWriter summaryWriter;
 	private final FeedbackClassificationService feedbackClassificationService;
 	private final NoteSplittingService noteSplittingService;
-
+	private final IterationComparison iterationComparison;
 	/**
 	 * Creates the AI feedback service.
 	 *
@@ -95,11 +96,13 @@ public class AIFeedbackService {
 	 *                                      severity for a manually written feedback line
 	 * @param noteSplittingService          the single-call splitter used to turn offline notes into
 	 *                                      individual feedback entries
+	 * @param iterationComparison           selects the earlier feedback a review is compared against
+	 *                                      and turns the comparison into follow-ups and acknowledgements
 	 */
 	public AIFeedbackService(ThesisReviewer reviewer, ThesisService thesisService, GuidelinesGate guidelinesGate,
 			ReviewDocuments documents, ReviewSummaryWriter summaryWriter,
 			FeedbackClassificationService feedbackClassificationService,
-			NoteSplittingService noteSplittingService) {
+			NoteSplittingService noteSplittingService, IterationComparison iterationComparison) {
 		this.reviewer = reviewer;
 		this.thesisService = thesisService;
 		this.guidelinesGate = guidelinesGate;
@@ -107,6 +110,7 @@ public class AIFeedbackService {
 		this.summaryWriter = summaryWriter;
 		this.feedbackClassificationService = feedbackClassificationService;
 		this.noteSplittingService = noteSplittingService;
+		this.iterationComparison = iterationComparison;
 	}
 
 	/**
@@ -141,20 +145,26 @@ public class AIFeedbackService {
 						draft.category(),
 						draft.severity(),
 						// Null → inherit the batch source (AI) passed to requestChanges below.
-						null))
+						null,
+						draft.followsUpId(),
+						draft.deferredToSupervisor()))
 				.toList();
 
 		Thesis updated = thesis;
 		if (changes.isEmpty()) {
 			log.info("AI auto review for thesis {} ({}) produced no actionable findings", thesis.getId(), reviewType);
 		} else {
-			updated = thesisService.requestChanges(thesis, toFeedbackType(reviewType), changes, ThesisFeedbackSource.AI);
+			// Pinned to the revision that was reviewed, not whatever is newest by the time the review
+			// finishes — an upload that landed meanwhile was never checked.
+			updated = thesisService.requestChanges(thesis, toFeedbackType(reviewType), changes, ThesisFeedbackSource.AI,
+					reviewed.documentVersionId());
 		}
 
 		// Last, so the summary only ever describes findings that actually landed: requestChanges is
 		// transactional, and persisting the score first would leave it standing on its own if saving
 		// the feedback rows failed and rolled them back.
-		summaryWriter.record(thesis, reviewType, reviewed.result(), reviewed.documentVersionId());
+		summaryWriter.record(thesis, reviewType, reviewed.result(), reviewed.documentVersionId(),
+				reviewed.resolvedIds(), reviewed.baselineCapturedAt());
 
 		return updated;
 	}
@@ -189,7 +199,9 @@ public class AIFeedbackService {
 				result.assessment(),
 				result.normalizedScore(),
 				result.summary(),
-				reviewed.drafts().stream().sorted(BY_SEVERITY).toList());
+				reviewed.drafts().stream().sorted(BY_SEVERITY).toList(),
+				reviewed.resolvedIds(),
+				reviewed.documentVersionId());
 	}
 
 	/**
@@ -317,7 +329,8 @@ public class AIFeedbackService {
 	}
 
 	/** One completed review: the raw result, its drafts, and the revision it ran against. */
-	private record Reviewed(ReviewResult result, List<AIFeedbackDraftDTO> drafts, UUID documentVersionId) {
+	private record Reviewed(ReviewResult result, List<AIFeedbackDraftDTO> drafts, UUID documentVersionId,
+			List<UUID> resolvedIds, Instant baselineCapturedAt) {
 	}
 
 	/**
@@ -328,15 +341,17 @@ public class AIFeedbackService {
 	private Reviewed execute(Thesis thesis, ReviewType reviewType, ProgressReporter progress) {
 		StructuredGuidelines guidelines = guidelinesGate.requireReady(thesis.getResearchGroup());
 		ReviewDocument document = documents.load(thesis, reviewType);
+		IterationComparison.Baseline baseline = iterationComparison.load(thesis, reviewType);
 
-		ReviewResult result = reviewer.review(new ReviewRequest(reviewType, guidelines, document.resource(), progress));
-		log.debug("Review of thesis {} ({}) by {} produced {} findings",
-				thesis.getId(), reviewType, reviewer.strategy(), result.findings().size());
+		ReviewResult result = reviewer.review(new ReviewRequest(reviewType, guidelines, document.resource(), progress,
+				baseline.entries()));
+		log.debug("Review of thesis {} ({}) by {} produced {} findings and {} follow-ups against {} earlier entries",
+				thesis.getId(), reviewType, reviewer.strategy(), result.findings().size(), result.followUps().size(),
+				baseline.entries().size());
 
-		return new Reviewed(
-				result,
-				result.findings().stream().map(FeedbackMapper::toDraft).toList(),
-				document.versionId());
+		IterationComparison.Compared compared = iterationComparison.apply(result, baseline);
+		return new Reviewed(compared.result(), compared.drafts(), document.versionId(), compared.resolvedIds(),
+				baseline.capturedAt());
 	}
 
 	private static ThesisFeedbackType toFeedbackType(ReviewType reviewType) {

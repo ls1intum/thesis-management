@@ -2,7 +2,7 @@ package de.tum.cit.aet.thesis.feedback.review;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -115,7 +115,7 @@ public class CategoryFanOutReviewerTest {
 
 		ReviewResult actualResult = reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource));
 
-		assertSame(expectedResult, actualResult);
+		assertEquals(expectedResult, actualResult);
 		verify(pdfService).extractTextFromPdf(pdfResource);
 		verify(pdfService).extractImagesFromPdf(pdfResource);
 		// Fan-out remains one call per ReviewCategory even after parallelization — the executor
@@ -261,7 +261,7 @@ public class CategoryFanOutReviewerTest {
 		ReviewResult actualResult = reviewer.review(new ReviewRequest(ReviewType.PROPOSAL, GUIDELINES, pdfResource));
 
 		// Nothing is qualified when every category answered — the merger's verdict stands as-is.
-		assertSame(expectedResult, actualResult);
+		assertEquals(expectedResult, actualResult);
 	}
 
 	@Test
@@ -466,9 +466,9 @@ public class CategoryFanOutReviewerTest {
 
 	/**
 	 * Matches the structured-output converter the reviewer hands to {@code responseEntity(...)}: a
-	 * lenient one built for {@link ReviewResult} rather than the plain class literal.
+	 * lenient one built for {@link ReviewVerdict} rather than the plain class literal.
 	 */
-	private static StructuredOutputConverter<ReviewResult> anyReviewResultConverter() {
+	private static StructuredOutputConverter<ReviewVerdict> anyReviewResultConverter() {
 		return any();
 	}
 
@@ -477,7 +477,8 @@ public class CategoryFanOutReviewerTest {
 	 * null: the reviewer only reads it to meter token usage, which tolerates a response that
 	 * carries none.
 	 */
-	private static ResponseEntity<ChatResponse, ReviewResult> merged(ReviewResult result) {
-		return new ResponseEntity<>(null, result);
+	private static ResponseEntity<ChatResponse, ReviewVerdict> merged(ReviewResult result) {
+		return new ResponseEntity<>(null,
+				new ReviewVerdict(result.assessment(), result.score(), result.summary(), result.findings()));
 	}
 }
